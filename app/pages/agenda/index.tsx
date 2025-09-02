@@ -1,3 +1,9 @@
+import { View, Text } from 'react-native'
+
 export default function Agenda() {
-  return null;
+  return (
+    <View>
+      <Text>Agenda</Text>
+    </View>
+  );
 }

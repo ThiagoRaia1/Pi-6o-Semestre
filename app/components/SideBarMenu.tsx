@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { getGlobalStyles } from "../../globalStyles";
+import { router } from "expo-router";
+import { pageNames } from "../../utils/pageNames";
 
 export default function SideBarMenu() {
   const globalStyles = getGlobalStyles();
@@ -21,9 +23,11 @@ export default function SideBarMenu() {
     },
     button: {
       width: "100%",
+      maxWidth: 300,
       padding: 10,
-      borderWidth: 1,
-      borderRadius: 5,
+      borderWidth: 2,
+      borderRadius: 10,
+      borderColor: "#7dcce0",
       alignItems: "center",
       justifyContent: "center",
     },
@@ -31,6 +35,7 @@ export default function SideBarMenu() {
       color: textMainColor,
       fontSize: 20,
       fontWeight: 600,
+      textAlign: "center",
     },
   });
 
@@ -53,20 +58,32 @@ export default function SideBarMenu() {
         <FontAwesome name="user-circle" size={iconSize} color={iconMainColor} />
         <Text style={styles.text}>{"Usuario: {Nome do usuário}"}</Text>
 
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.text}>AGENDA</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.setParams({ pageName: pageNames.agenda })}
+        >
+          <Text style={styles.text}>{pageNames.agenda}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.text}>ALUNOS</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.setParams({ pageName: pageNames.alunos })}
+        >
+          <Text style={styles.text}>{pageNames.alunos}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.text}>EQUIPE</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.setParams({ pageName: pageNames.equipe })}
+        >
+          <Text style={styles.text}>{pageNames.equipe}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.text}>FINANCEIRO</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.setParams({ pageName: pageNames.financeiro })}
+        >
+          <Text style={styles.text}>{pageNames.financeiro}</Text>
         </TouchableOpacity>
       </View>
 
@@ -77,6 +94,7 @@ export default function SideBarMenu() {
           alignItems: "center",
           height: logoutButtonHeight,
         }}
+        onPress={() => router.push("/")}
       >
         <Text style={styles.text}>LOGOUT</Text>
       </TouchableOpacity>

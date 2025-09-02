@@ -14,5 +14,6 @@ export const getGlobalStyles = () =>
       justifyContent: "center",
       alignItems: "center",
       gap: 20,
+      backgroundColor: "#eee",
     },
   });
