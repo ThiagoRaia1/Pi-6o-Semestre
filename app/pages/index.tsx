@@ -2,7 +2,7 @@ import { View, Text } from "react-native";
 import { getGlobalStyles } from "../../globalStyles";
 import SideBarMenu from "../components/SideBarMenu";
 import Agenda from "./agenda";
-import { useLocalSearchParams, usePathname } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import Alunos from "./alunos";
 import Equipe from "./equipe";
 import Financeiro from "./financeiro";

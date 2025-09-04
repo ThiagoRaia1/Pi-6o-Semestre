@@ -7,7 +7,7 @@ import { pageNames } from "../../utils/pageNames";
 
 export default function SideBarMenu() {
   const globalStyles = getGlobalStyles();
-  const logoutButtonHeight = 50;
+  const logoutButtonHeight = 60;
   const textMainColor = "white";
   const iconMainColor = "#D581A2";
   const iconSize = 100;
@@ -30,6 +30,7 @@ export default function SideBarMenu() {
       borderColor: "#7dcce0",
       alignItems: "center",
       justifyContent: "center",
+      boxShadow: "0px 0px 10px rgba(0, 0, 0, 1)",
     },
     text: {
       color: textMainColor,
@@ -65,12 +66,12 @@ export default function SideBarMenu() {
           <Text style={styles.text}>{pageNames.agenda}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.button}
           onPress={() => router.setParams({ pageName: pageNames.alunos })}
         >
           <Text style={styles.text}>{pageNames.alunos}</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity
           style={styles.button}
@@ -88,12 +89,7 @@ export default function SideBarMenu() {
       </View>
 
       <TouchableOpacity
-        style={{
-          width: "100%",
-          justifyContent: "center",
-          alignItems: "center",
-          height: logoutButtonHeight,
-        }}
+        style={[styles.button, { maxWidth: 150, marginBottom: 10 }]}
         onPress={() => router.push("/")}
       >
         <Text style={styles.text}>LOGOUT</Text>

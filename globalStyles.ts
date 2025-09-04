@@ -38,6 +38,7 @@ export const getGlobalStyles = () =>
       borderRadius: 10,
       backgroundColor: "#4086DC",
       zIndex: 10,
+      boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.4)"
     },
     topBarMainMenuOptionsButtonText: {
       color: "white",
