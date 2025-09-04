@@ -1,22 +1,36 @@
 import { View, Text } from "react-native";
 import { getGlobalStyles } from "../../../globalStyles";
-import MenuButton from "../../components/TopBarMenuOption";
+import MenuButton from "../../components/MenuButton";
+import { router, useLocalSearchParams } from "expo-router";
+import { pageNames } from "../../../utils/pageNames";
 
 export default function Financeiro() {
   const globalStyles = getGlobalStyles();
   const dropdownOptions = ["Aluno", "Instrutor", "Usuário"];
+  const params = useLocalSearchParams();
 
   return (
     <View style={globalStyles.container}>
-      <View style={globalStyles.topBarMainMenuOptionsContainer}>
-        <MenuButton label="Registrar" options={dropdownOptions} />
-        <MenuButton label="Editar" options={dropdownOptions} />
-        <MenuButton label="Pesquisar" options={dropdownOptions} />
-        <MenuButton label="Excluir" options={dropdownOptions} />
+      <View style={globalStyles.topBarSubMenuOptionsContainer}>
+        <MenuButton
+          label="Dashboards"
+          onPress={() =>
+            router.setParams({ subPage: pageNames.financeiro.dashboards })
+          } // sem options vira botão normal
+        />
+        <MenuButton
+          label="Agenda"
+          onPress={() => router.setParams({ pageName: pageNames.agenda })} // sem options vira botão normal
+        />
+        <MenuButton
+          label="Agenda"
+          onPress={() => router.setParams({ pageName: pageNames.agenda })} // sem options vira botão normal
+        />
       </View>
-
       <View style={{ flex: 1, justifyContent: "center" }}>
-        <Text>Financeiro</Text>
+        {params.subPage === pageNames.financeiro.dashboards && (
+          <Text>Financeiro - Dashboards</Text>
+        )}
       </View>
     </View>
   );

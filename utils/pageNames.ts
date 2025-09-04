@@ -1,8 +1,13 @@
 export const pageNames = {
-  agenda: "AGENDA",
+  agenda: {
+    main: "AGENDA",
+  },
   alunos: "ALUNOS",
   equipe: "EQUIPE",
-  financeiro: "FINANCEIRO",
+  financeiro: {
+    main: "FINANCEIRO",
+    dashboards: "DASHBOARDS",
+  },
 };
 
 export const pagePathnames = {
@@ -13,5 +18,6 @@ export const pagePathnames = {
     login: "/auth/login",
     logout: "/auth/logout",
     register: "/auth/register",
-  }
+  },
+  meuPerfil: "/meuPerfil",
 };
