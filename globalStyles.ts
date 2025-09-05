@@ -21,27 +21,11 @@ export const getGlobalStyles = () =>
     },
     topBarMainMenuOptionsContainer: {
       width: "100%",
-      backgroundColor: "#89B6D5",
+      // backgroundColor: "#89B6D5",
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-evenly",
       padding: 10,
       zIndex: 8,
-    },
-    topBarMainMenuOptionsButton: {
-      flexDirection: "row",
-      minWidth: 250,
-      alignItems: "center",
-      justifyContent: "center",
-      padding: 10,
-      gap: 5,
-      borderRadius: 10,
-      backgroundColor: "#4086DC",
-      zIndex: 10,
-      boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.4)"
-    },
-    topBarMainMenuOptionsButtonText: {
-      color: "white",
-      fontWeight: 600,
     },
   });

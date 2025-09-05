@@ -8,13 +8,13 @@ import {
 import { getGlobalStyles } from "../globalStyles";
 import { useState } from "react";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { pagePathnames } from "../utils/pageNames";
+import { pageNames, pagePathnames } from "../utils/pageNames";
 import { router } from "expo-router";
 
 export default function Login() {
   const globalStyles = getGlobalStyles();
-  const textMainColor = "white";
-  const textInputMainColor = "black";
+  const textMainColor: string = "white";
+  const textInputMainColor: string = "black";
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -84,6 +84,14 @@ export default function Login() {
     },
   });
 
+  const handleLogin = () => {
+    // Fazer a rota de login
+    router.push({
+      pathname: pagePathnames.pages,
+      params: { pageName: pageNames.agenda },
+    });
+  };
+
   return (
     <View style={[globalStyles.container, { flexDirection: "row" }]}>
       <View style={styles.leftContainer}>
@@ -138,13 +146,7 @@ export default function Login() {
             </View>
           </View>
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              // Implementar lógica de login
-              router.push(pagePathnames.pages);
-            }}
-          >
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
         </View>

@@ -10,24 +10,32 @@ import {
 import Entypo from "@expo/vector-icons/Entypo";
 import { getGlobalStyles } from "../../globalStyles";
 
+type MenuOption = {
+  label: string;
+  onPress?: () => void;
+};
+
 export default function MenuButton({
   label,
   options,
+  onPress,
 }: {
   label: string;
-  options?: string[];
+  options?: MenuOption[];
+  onPress?: () => void;
 }) {
   const globalStyles = getGlobalStyles();
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
-  // animações dropdown
+  const mainColor: string = "black";
+  const dropdownIconSize: number = 20;
+
+  // animações
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(-10)).current;
-
-  // animação do ícone
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
-  const animationDuration = 300;
+  const animationDuration = 400;
 
   const styles = StyleSheet.create({
     dropdown: {
@@ -41,12 +49,11 @@ export default function MenuButton({
       marginTop: -7,
       paddingTop: 10,
       zIndex: 9,
-      elevation: 5, // sombra Android
-      shadowColor: "#000", // sombra iOS
+      elevation: 5,
+      shadowColor: "#000",
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.3,
       shadowRadius: 6,
-      // sombra Web
       ...(Platform.OS === "web"
         ? { boxShadow: "0px 4px 10px rgba(0,0,0,0.4)" }
         : {}),
@@ -58,9 +65,29 @@ export default function MenuButton({
       color: "white",
       fontSize: 14,
     },
+    topBarMainMenuOptionsButton: {
+      flexDirection: "row",
+      minWidth: 250,
+      height: 40,
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 10,
+      gap: 5,
+      borderRadius: 10,
+      backgroundColor: "#EEEEEE",
+      // backgroundColor: "#89B6D5",
+      zIndex: 10,
+      boxShadow: "0px 5px 5px rgba(0, 0, 0, 0.4)",
+    },
+    topBarMainMenuOptionsButtonText: {
+      color: mainColor,
+      fontWeight: 600,
+    },
   });
 
   useEffect(() => {
+    if (!options) return;
+
     if (dropdownVisible) {
       Animated.parallel([
         Animated.timing(fadeAnim, {
@@ -98,9 +125,8 @@ export default function MenuButton({
         }),
       ]).start();
     }
-  }, [dropdownVisible]);
+  }, [dropdownVisible, options]);
 
-  // ângulo do ícone (0 = baixo, 180 = cima)
   const rotate = rotateAnim.interpolate({
     inputRange: [0, 1],
     outputRange: ["0deg", "180deg"],
@@ -109,22 +135,34 @@ export default function MenuButton({
   return (
     <Pressable
       style={{ position: "relative" }}
-      onHoverIn={() => Platform.OS === "web" && setDropdownVisible(true)}
-      onHoverOut={() => Platform.OS === "web" && setDropdownVisible(false)}
+      onHoverIn={() =>
+        options && Platform.OS === "web" && setDropdownVisible(true)
+      }
+      onHoverOut={() =>
+        options && Platform.OS === "web" && setDropdownVisible(false)
+      }
     >
       <TouchableOpacity
-        style={globalStyles.topBarMainMenuOptionsButton}
-        onPress={() =>
-          Platform.OS !== "web" && setDropdownVisible((prev) => !prev)
-        }
-        disabled={Platform.OS === "web"} // no web só hover funciona
+        style={styles.topBarMainMenuOptionsButton}
+        onPress={() => {
+          if (options) {
+            if (Platform.OS !== "web") {
+              setDropdownVisible((prev) => !prev);
+            }
+          } else if (onPress) {
+            onPress();
+          }
+        }}
+        disabled={Platform.OS === "web" && !!options}
       >
-        <Text style={globalStyles.topBarMainMenuOptionsButtonText}>
-          {label}
-        </Text>
+        <Text style={styles.topBarMainMenuOptionsButtonText}>{label}</Text>
         {options && (
           <Animated.View style={{ transform: [{ rotate }] }}>
-            <Entypo name="chevron-down" size={20} color="white" />
+            <Entypo
+              name="chevron-down"
+              size={dropdownIconSize}
+              color={mainColor}
+            />
           </Animated.View>
         )}
       </TouchableOpacity>
@@ -136,8 +174,7 @@ export default function MenuButton({
             {
               opacity: fadeAnim,
               transform: [{ translateY: slideAnim }],
-              // remove display
-              pointerEvents: dropdownVisible ? "auto" : "none", // evita clique quando fechado
+              pointerEvents: dropdownVisible ? "auto" : "none",
             },
           ]}
         >
@@ -153,8 +190,12 @@ export default function MenuButton({
                     borderBottomColor: "#555",
                   },
                 ]}
+                onPress={() => {
+                  option.onPress?.();
+                  setDropdownVisible(false);
+                }}
               >
-                <Text style={styles.dropdownText}>{option}</Text>
+                <Text style={styles.dropdownText}>{option.label}</Text>
               </TouchableOpacity>
             );
           })}

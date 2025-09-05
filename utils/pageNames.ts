@@ -13,5 +13,6 @@ export const pagePathnames = {
     login: "/auth/login",
     logout: "/auth/logout",
     register: "/auth/register",
-  }
+  },
+  meuPerfil: "/meuPerfil",
 };
