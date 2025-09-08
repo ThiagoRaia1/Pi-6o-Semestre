@@ -2,7 +2,10 @@ export const pageNames = {
   agenda: "AGENDA",
   alunos: "ALUNOS",
   equipe: "EQUIPE",
-  financeiro: "FINANCEIRO",
+  financeiro: {
+    main: "FINANCEIRO",
+    dashboards: "DASHBOARDS",
+  },
 };
 
 export const pagePathnames = {

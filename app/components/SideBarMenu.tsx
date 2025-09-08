@@ -82,9 +82,11 @@ export default function SideBarMenu() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => router.setParams({ pageName: pageNames.financeiro })}
+          onPress={() =>
+            router.setParams({ pageName: pageNames.financeiro.main })
+          }
         >
-          <Text style={styles.text}>{pageNames.financeiro}</Text>
+          <Text style={styles.text}>{pageNames.financeiro.main}</Text>
         </TouchableOpacity>
       </View>
 

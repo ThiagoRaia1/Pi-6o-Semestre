@@ -21,7 +21,16 @@ export const getGlobalStyles = () =>
     },
     topBarMainMenuOptionsContainer: {
       width: "100%",
-      // backgroundColor: "#89B6D5",
+      backgroundColor: "#89B6D5",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-evenly",
+      padding: 10,
+      zIndex: 8,
+    },
+    topBarSubMenuOptionsContainer: {
+      width: "100%",
+      backgroundColor: "#80acc9ff",
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-evenly",

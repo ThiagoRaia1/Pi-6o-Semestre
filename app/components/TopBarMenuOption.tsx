@@ -27,7 +27,7 @@ export default function MenuButton({
   const globalStyles = getGlobalStyles();
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
-  const mainColor: string = "black";
+  const mainColor: string = "white";
   const dropdownIconSize: number = 20;
 
   // animações
@@ -74,8 +74,7 @@ export default function MenuButton({
       padding: 10,
       gap: 5,
       borderRadius: 10,
-      backgroundColor: "#EEEEEE",
-      // backgroundColor: "#89B6D5",
+      backgroundColor: "#89B6D5",
       zIndex: 10,
       boxShadow: "0px 5px 5px rgba(0, 0, 0, 0.4)",
     },

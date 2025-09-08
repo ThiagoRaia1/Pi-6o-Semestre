@@ -5,8 +5,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import Alunos from "./alunos";
 import Equipe from "./equipe";
 import Financeiro from "./financeiro";
-import { pageNames } from "../../utils/pageNames";
-import { useEffect } from "react";
+import { pageNames, pagePathnames } from "../../utils/pageNames";
 import MenuButton from "../components/TopBarMenuOption";
 
 export default function MainPage() {
@@ -18,7 +17,12 @@ export default function MainPage() {
       <View style={globalStyles.topBarMainMenuOptionsContainer}>
         <MenuButton
           label="Agenda"
-          onPress={() => router.setParams({ pageName: pageNames.agenda })} // sem options vira botão normal
+          onPress={() =>
+            router.replace({
+              pathname: pagePathnames.pages, // mantém a tela atual
+              params: { pageName: pageNames.agenda }, // só define pageName
+            })
+          }
         />
 
         <MenuButton
@@ -31,7 +35,12 @@ export default function MainPage() {
 
         <MenuButton
           label="Financeiro"
-          onPress={() => router.setParams({ pageName: pageNames.financeiro })} // sem options vira botão normal
+          onPress={() =>
+            router.setParams({
+              pageName: pageNames.financeiro.main,
+              subPage: pageNames.financeiro.dashboards,
+            })
+          } // sem options vira botão normal
         />
 
         <MenuButton
@@ -48,7 +57,7 @@ export default function MainPage() {
         {params.pageName === pageNames.agenda && <Agenda />}
         {params.pageName === pageNames.alunos && <Alunos />}
         {params.pageName === pageNames.equipe && <Equipe />}
-        {params.pageName === pageNames.financeiro && <Financeiro />}
+        {params.pageName === pageNames.financeiro.main && <Financeiro />}
       </View>
     </View>
   );
