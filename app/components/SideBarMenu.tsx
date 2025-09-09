@@ -3,7 +3,8 @@ import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { getGlobalStyles } from "../../globalStyles";
 import { router } from "expo-router";
-import { pageNames } from "../../utils/pageNames";
+import { pageNames, pagePathnames } from "../../utils/pageNames";
+import { colors } from "../../utils/colors";
 
 export default function SideBarMenu() {
   const globalStyles = getGlobalStyles();
@@ -44,7 +45,12 @@ export default function SideBarMenu() {
     <View
       style={[
         globalStyles.mainContent,
-        { paddingHorizontal: 20, backgroundColor: "#89B6D5" },
+        {
+          paddingHorizontal: 20,
+          backgroundColor: colors.main,
+          boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.4)",
+          zIndex: 10,
+        },
       ]}
     >
       <View
@@ -61,9 +67,9 @@ export default function SideBarMenu() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => router.setParams({ pageName: pageNames.agenda })}
+          onPress={() => router.setParams({ pageName: pageNames.agenda.main })}
         >
-          <Text style={styles.text}>{pageNames.agenda}</Text>
+          <Text style={styles.text}>{pageNames.agenda.main}</Text>
         </TouchableOpacity>
 
         {/* <TouchableOpacity
@@ -91,10 +97,13 @@ export default function SideBarMenu() {
       </View>
 
       <TouchableOpacity
-        style={[styles.button, { maxWidth: 150, marginBottom: 10 }]}
-        onPress={() => router.push("/")}
+        style={[
+          styles.button,
+          { maxWidth: 150, marginBottom: 10, maxHeight: 40 },
+        ]}
+        onPress={() => router.push(pagePathnames.main)}
       >
-        <Text style={styles.text}>LOGOUT</Text>
+        <Text style={[styles.text, { fontSize: 18 }]}>LOGOUT</Text>
       </TouchableOpacity>
     </View>
   );

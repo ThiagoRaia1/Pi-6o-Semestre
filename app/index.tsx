@@ -22,14 +22,14 @@ export default function Login() {
 
   const styles = StyleSheet.create({
     leftContainer: {
-      flex: 1,
+      flex: 7,
       height: "100%",
       justifyContent: "center",
       alignItems: "center",
       backgroundColor: "#eee",
     },
     loginContainer: {
-      width: 600,
+      flex: 3,
       height: "100%",
       padding: 60,
       backgroundColor: "#89B6D5",
@@ -88,7 +88,7 @@ export default function Login() {
     // Fazer a rota de login
     router.push({
       pathname: pagePathnames.pages,
-      params: { pageName: pageNames.agenda },
+      params: { pageName: pageNames.agenda.main, subPage: "AGENDAR AULA" },
     });
   };
 

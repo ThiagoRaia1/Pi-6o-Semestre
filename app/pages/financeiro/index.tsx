@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 import { getGlobalStyles } from "../../../globalStyles";
-import MenuButton from "../../components/TopBarMenuOption";
+import MenuButton from "../../components/MenuButton";
 import { router, useLocalSearchParams } from "expo-router";
 import { pageNames } from "../../../utils/pageNames";
 

@@ -1,0 +1,4 @@
+1. O arquivo utils/breakpoint.ts define larguras para responsividade em diferentes dispositivos;
+2. O arquivos utils/pageNames.ts possui as rotas e nome das paginas para condicionais
+3. "FEAT ME:" Encontrar pontos que estão para ser desenvolvidos
+4. "FIX ME:" Encontrar pontos que estão para ser corrijidos

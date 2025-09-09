@@ -1,5 +1,7 @@
 export const pageNames = {
-  agenda: "AGENDA",
+  agenda: {
+    main: "AGENDA",
+  },
   alunos: "ALUNOS",
   equipe: "EQUIPE",
   financeiro: {

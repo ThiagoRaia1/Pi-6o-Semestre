@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 import { getGlobalStyles } from "../../../globalStyles";
-import MenuButton from "../../components/TopBarMenuOption";
+import MenuButton from "../../components/MenuButton";
 
 export default function Equipe() {
   const globalStyles = getGlobalStyles();
@@ -8,12 +8,7 @@ export default function Equipe() {
 
   return (
     <View style={globalStyles.container}>
-      <View style={globalStyles.topBarMainMenuOptionsContainer}>
-        <MenuButton label="Registrar" options={dropdownOptions} />
-        <MenuButton label="Editar" options={dropdownOptions} />
-        <MenuButton label="Pesquisar" options={dropdownOptions} />
-        <MenuButton label="Excluir" options={dropdownOptions} />
-      </View>
+      <View style={globalStyles.topBarSubMenuOptionsContainer}></View>
 
       <View style={{ flex: 1, justifyContent: "center" }}>
         <Text>Equipe</Text>

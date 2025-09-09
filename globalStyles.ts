@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { colors } from "./utils/colors";
 
 export const getGlobalStyles = () =>
   StyleSheet.create({
@@ -21,7 +22,8 @@ export const getGlobalStyles = () =>
     },
     topBarMainMenuOptionsContainer: {
       width: "100%",
-      backgroundColor: "#89B6D5",
+      minHeight: 60,
+      backgroundColor: colors.main,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-evenly",
@@ -30,7 +32,8 @@ export const getGlobalStyles = () =>
     },
     topBarSubMenuOptionsContainer: {
       width: "100%",
-      backgroundColor: "#80acc9ff",
+      minHeight: 60,
+      backgroundColor: colors.topBarColor,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-evenly",

@@ -9,21 +9,33 @@ import {
 } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import { getGlobalStyles } from "../../globalStyles";
+import { colors } from "../../utils/colors";
 
+// tipo para menu
 type MenuOption = {
   label: string;
   onPress?: () => void;
+};
+
+// props do botão
+type MenuButtonProps = {
+  label: string;
+  options?: MenuOption[];
+  onPress?: () => void;
+  icon?: {
+    component: any; // Componente do ícone (ex: Entypo, Ionicons, etc)
+    name: string; // nome do ícone
+    size?: number;
+    color?: string;
+  };
 };
 
 export default function MenuButton({
   label,
   options,
   onPress,
-}: {
-  label: string;
-  options?: MenuOption[];
-  onPress?: () => void;
-}) {
+  icon,
+}: MenuButtonProps) {
   const globalStyles = getGlobalStyles();
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
@@ -72,15 +84,17 @@ export default function MenuButton({
       alignItems: "center",
       justifyContent: "center",
       padding: 10,
-      gap: 5,
+      paddingLeft: 5,
+      gap: 10,
       borderRadius: 10,
-      backgroundColor: "#89B6D5",
+      backgroundColor: colors.buttonColor,
       zIndex: 10,
       boxShadow: "0px 5px 5px rgba(0, 0, 0, 0.4)",
     },
     topBarMainMenuOptionsButtonText: {
       color: mainColor,
-      fontWeight: 600,
+      fontWeight: "600",
+      fontSize: 16,
     },
   });
 
@@ -131,6 +145,10 @@ export default function MenuButton({
     outputRange: ["0deg", "180deg"],
   });
 
+  // pega componente de ícone dinamicamente
+  // se o nome do componente nao for passado, IconComponent nao sera um componente valido
+  const IconComponent = icon?.component;
+
   return (
     <Pressable
       style={{ position: "relative" }}
@@ -142,7 +160,10 @@ export default function MenuButton({
       }
     >
       <TouchableOpacity
-        style={styles.topBarMainMenuOptionsButton}
+        style={[
+          styles.topBarMainMenuOptionsButton,
+          { paddingLeft: IconComponent ? 5 : 10 }, // se tiver ícone aplica 5, senão aplica o padrão definido no estilo
+        ]}
         onPress={() => {
           if (options) {
             if (Platform.OS !== "web") {
@@ -154,7 +175,19 @@ export default function MenuButton({
         }}
         disabled={Platform.OS === "web" && !!options}
       >
+        {/* Ícone opcional */}
+        {/* renderiza apenas se o icone passado existir ou for valido */}
+        {IconComponent && (
+          <IconComponent
+            name={icon.name}
+            size={icon.size || 18}
+            color={icon.color || mainColor}
+          />
+        )}
+
         <Text style={styles.topBarMainMenuOptionsButtonText}>{label}</Text>
+
+        {/* Chevron de dropdown */}
         {options && (
           <Animated.View style={{ transform: [{ rotate }] }}>
             <Entypo
