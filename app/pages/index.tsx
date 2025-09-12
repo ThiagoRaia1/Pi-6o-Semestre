@@ -6,7 +6,6 @@ import Alunos from "./alunos";
 import Equipe from "./equipe";
 import Financeiro from "./financeiro";
 import { pageNames, pagePathnames } from "../../utils/pageNames";
-import MenuButton from "../components/MenuButton";
 import SideBarMenu from "../components/SideBarMenu";
 
 export default function MainPage() {

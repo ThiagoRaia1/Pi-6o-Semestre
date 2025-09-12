@@ -15,7 +15,6 @@ export const getGlobalStyles = () =>
       height: "100%",
       width: "100%",
       justifyContent: "center",
-      alignItems: "center",
       gap: 20,
       backgroundColor: "#eee",
       zIndex: 1,
@@ -28,7 +27,8 @@ export const getGlobalStyles = () =>
       alignItems: "center",
       justifyContent: "space-evenly",
       padding: 10,
-      zIndex: 8,
+      zIndex: 9,
+      boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.6)",
     },
     topBarSubMenuOptionsContainer: {
       width: "100%",

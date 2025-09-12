@@ -36,7 +36,6 @@ export default function MenuButton({
   onPress,
   icon,
 }: MenuButtonProps) {
-  const globalStyles = getGlobalStyles();
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const mainColor: string = "white";
@@ -89,7 +88,9 @@ export default function MenuButton({
       borderRadius: 10,
       backgroundColor: colors.buttonColor,
       zIndex: 10,
-      boxShadow: "0px 5px 5px rgba(0, 0, 0, 0.4)",
+      boxShadow: "0px 5px 5px rgba(0, 0, 0, 0.6)",
+      borderColor: "white",
+      borderWidth: 1,
     },
     topBarMainMenuOptionsButtonText: {
       color: mainColor,
