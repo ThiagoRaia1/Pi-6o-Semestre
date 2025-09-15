@@ -1,11 +1,11 @@
 import { View, Text } from "react-native";
 import { getGlobalStyles } from "../../globalStyles";
 import Agenda from "./agenda";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import Alunos from "./alunos";
 import Equipe from "./equipe";
 import Financeiro from "./financeiro";
-import { pageNames, pagePathnames } from "../../utils/pageNames";
+import { pageNames } from "../../utils/pageNames";
 import SideBarMenu from "../components/SideBarMenu";
 
 export default function MainPage() {

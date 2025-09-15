@@ -4,15 +4,17 @@ import MenuButton from "../../components/MenuButton";
 
 export default function Alunos() {
   const globalStyles = getGlobalStyles();
-  const dropdownOptions = ["Aluno", "Instrutor", "Usuário"];
+
+  const onPressListar = () => {
+    console.log("Listar")
+  }
 
   return (
     <View style={globalStyles.container}>
       <View style={globalStyles.topBarMainMenuOptionsContainer}>
-        <MenuButton label="Registrar" options={dropdownOptions} />
-        <MenuButton label="Editar" options={dropdownOptions} />
-        <MenuButton label="Pesquisar" options={dropdownOptions} />
-        <MenuButton label="Excluir" options={dropdownOptions} />
+        <MenuButton label="Listar" onPress={onPressListar} />
+        <MenuButton label="Placeholder" />
+        <MenuButton label="Placeholder" />
       </View>
 
       <View style={{ flex: 1, justifyContent: "center" }}>

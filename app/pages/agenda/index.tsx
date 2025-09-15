@@ -12,9 +12,12 @@ import {
   Pressable,
   Platform,
   Alert,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { colors } from "../../../utils/colors";
 import { HoverableClassCard } from "../../components/HoverableClassCard";
+
+const cellsWidth: number = 170;
 
 /* ------------------------- Tipos / Dados ------------------------- */
 type Student = {
@@ -65,8 +68,6 @@ const initialClasses: ClassSession[] = [
     instructor: "Maria",
   },
 ];
-
-const cellsWidth: number = 170;
 
 /* ---------------------- Helpers utilitários ---------------------- */
 const uid = (p = "") => p + Math.random().toString(36).slice(2, 9);
@@ -166,35 +167,6 @@ export default function Agenda() {
     setSelectedClass(cls);
     setEditorVisible(true);
   };
-
-  const addStudentToClass = (classId: string, studentId: string) => {
-    setClasses((prev) =>
-      prev.map((c) =>
-        c.id === classId && !c.students.some((s) => s.id === studentId)
-          ? {
-              ...c,
-              students: [
-                ...c.students,
-                students.find((s) => s.id === studentId)!,
-              ],
-            }
-          : c
-      )
-    );
-  };
-
-  const removeStudentFromClass = (classId: string, studentId: string) => {
-    setClasses((prev) =>
-      prev.map((c) =>
-        c.id === classId
-          ? { ...c, students: c.students.filter((s) => s.id !== studentId) }
-          : c
-      )
-    );
-  };
-
-  const deleteClass = (classId: string) =>
-    setClasses((prev) => prev.filter((c) => c.id !== classId));
 
   /* ------------- gerador simples de plano de aula -------------- */
   const generatePlan = (cls: ClassSession) => {
@@ -416,105 +388,80 @@ export default function Agenda() {
       {/* Editor modal */}
       <Modal
         visible={editorVisible}
-        animationType="slide"
+        transparent
+        animationType="fade"
         onRequestClose={() => setEditorVisible(false)}
       >
-        <SafeAreaView style={S.modal}>
-          <Text style={S.modalTitle}>Editar Aula</Text>
-          {selectedClass ? (
-            <>
-              <Text style={S.modalSub}>{selectedClass.title}</Text>
-              <Text>
-                {isoToLabel(selectedClass.dateIso)} • {selectedClass.startHour}
-                :00
-              </Text>
-              <Text style={{ marginTop: 12, fontWeight: "700" }}>
-                Alunos inscritos
-              </Text>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            paddingHorizontal: 16,
+          }}
+        >
+          {/* Captura clique no fundo */}
+          <TouchableWithoutFeedback onPress={() => setEditorVisible(false)}>
+            <View
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+              }}
+            />
+          </TouchableWithoutFeedback>
 
-              <FlatList
-                data={selectedClass.students}
-                keyExtractor={(s) => s.id}
-                ListEmptyComponent={
-                  <Text style={{ color: "#666", marginTop: 8 }}>
-                    Nenhum aluno
-                  </Text>
-                }
-                renderItem={({ item }) => (
-                  <View style={S.rowItem}>
-                    <Text>
-                      {item.name} — {item.level}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() =>
-                        removeStudentFromClass(selectedClass.id, item.id)
-                      }
-                    >
-                      <Text style={{ color: "#e74c3c" }}>Remover</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-                style={{ marginTop: 8 }}
-              />
-
-              <Text style={{ marginTop: 12, fontWeight: "700" }}>
-                Adicionar aluno
-              </Text>
-              <FlatList
-                data={students}
-                keyExtractor={(s) => s.id}
-                renderItem={({ item }) => {
-                  const already = selectedClass.students.some(
-                    (x) => x.id === item.id
-                  );
-                  return (
-                    <View style={S.rowItem}>
-                      <Text style={{ color: already ? "#999" : undefined }}>
-                        {item.name} • {item.level}
-                      </Text>
-                      {!already && (
-                        <TouchableOpacity
-                          onPress={() =>
-                            addStudentToClass(selectedClass.id, item.id)
-                          }
-                        >
-                          <Text style={{ color: "#2ecc71" }}>Adicionar</Text>
-                        </TouchableOpacity>
-                      )}
-                    </View>
-                  );
-                }}
-                style={{ marginTop: 8, maxHeight: 200 }}
-              />
-
-              <View style={{ flexDirection: "row", gap: 12, marginTop: 20 }}>
+          {/* Conteúdo do modal */}
+          <View
+            style={{
+              width: "100%",
+              maxWidth: 700,
+              maxHeight: "80%",
+              backgroundColor: "#FFF",
+              borderRadius: 16,
+              overflow: "hidden",
+            }}
+          >
+            <ScrollView contentContainerStyle={{ padding: 20, gap: 10 }}>
+              <Text>Gerenciar aula</Text>
+              <Text>{"Horário: {horário da aula}"}</Text>
+              <Text>Alunos:</Text>
+              <View style={{ flexDirection: "row", gap: 20 }}>
                 <TouchableOpacity
-                  style={S.btn}
-                  onPress={() => generatePlan(selectedClass)}
-                >
-                  <Text style={S.btnText}>Gerar Plano de Aula</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[S.btn, { backgroundColor: "#e74c3c" }]}
-                  onPress={() => {
-                    deleteClass(selectedClass.id);
-                    setEditorVisible(false);
+                  style={{
+                    flex: 1,
+                    alignItems: "center",
+                    backgroundColor: "blue",
                   }}
                 >
-                  <Text style={S.btnText}>Excluir Aula</Text>
+                  <Text>Editar</Text>
                 </TouchableOpacity>
-
                 <TouchableOpacity
-                  style={[S.btn, { backgroundColor: "#aaa" }]}
-                  onPress={() => setEditorVisible(false)}
+                  style={{
+                    flex: 1,
+                    alignItems: "center",
+                    backgroundColor: "blue",
+                  }}
                 >
-                  <Text style={S.btnText}>Fechar</Text>
+                  <Text>Planejar</Text>
                 </TouchableOpacity>
               </View>
-            </>
-          ) : null}
-        </SafeAreaView>
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                  alignItems: "center",
+                  backgroundColor: "blue",
+                }}
+                onPress={() => setEditorVisible(false)}
+              >
+                <Text>Cancelar</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </View>
       </Modal>
 
       {/* Planner modal */}

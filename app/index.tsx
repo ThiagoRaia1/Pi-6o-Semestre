@@ -4,12 +4,15 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { getGlobalStyles } from "../globalStyles";
 import { useState } from "react";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { pageNames, pagePathnames } from "../utils/pageNames";
 import { router } from "expo-router";
+import { colors } from "../utils/colors";
+import DefaultProfileIcon from "./components/DefaultProfileIcon";
 
 export default function Login() {
   const globalStyles = getGlobalStyles();
@@ -32,17 +35,23 @@ export default function Login() {
       flex: 3,
       height: "100%",
       padding: 60,
-      backgroundColor: "#89B6D5",
-      boxShadow: "0px 0px 20px rgba(0, 0, 0, 1)",
+      backgroundColor: colors.main,
+      boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.6)",
+      borderTopLeftRadius: 20,
+      borderBottomLeftRadius: 20,
+      alignItems: "center",
     },
     loginItemsContainer: {
       flex: 1,
       width: "100%",
       justifyContent: "center",
       alignItems: "center",
-      gap: 30,
+      gap: 20,
+      marginBottom: 30,
+      maxWidth: 500,
     },
     label: {
+      width: "100%",
       color: textMainColor,
       fontSize: 18,
       fontWeight: 600,
@@ -50,6 +59,7 @@ export default function Login() {
     },
     labelInputContainer: {
       width: "100%",
+      alignItems: "center",
       gap: 5,
     },
     textInput: {
@@ -72,15 +82,16 @@ export default function Login() {
     button: {
       width: 200,
       height: 40,
-      borderRadius: 1000,
-      backgroundColor: "#4086DC",
+      marginTop: 20,
+      borderRadius: 10,
+      backgroundColor: "#08306B",
       justifyContent: "center",
       alignItems: "center",
     },
     buttonText: {
       color: textMainColor,
-      fontWeight: 600,
-      fontSize: 16,
+      fontWeight: 700,
+      fontSize: 18,
     },
   });
 
@@ -94,12 +105,15 @@ export default function Login() {
 
   return (
     <View style={[globalStyles.container, { flexDirection: "row" }]}>
-      <View style={styles.leftContainer}>
-        <Text>Logo placeholder</Text>
-      </View>
+      <Image
+        source={require("../assets/LoginMainImage.png")}
+        resizeMode="center"
+        style={{ flex: 5 }}
+      />
 
       <View style={styles.loginContainer}>
         <View style={styles.loginItemsContainer}>
+          <DefaultProfileIcon size={100} />
           <View style={styles.labelInputContainer}>
             <Text style={styles.label}>Email</Text>
             <TextInput
@@ -140,7 +154,7 @@ export default function Login() {
                 <FontAwesome5
                   name={passwordIsVisible ? "eye" : "eye-slash"}
                   size={24}
-                  color={textInputMainColor}
+                  color={"#d581a1"}
                 />
               </TouchableOpacity>
             </View>

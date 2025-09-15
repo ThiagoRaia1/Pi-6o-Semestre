@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
-import { getGlobalStyles } from "../../globalStyles";
 import { colors } from "../../utils/colors";
 
 // tipo para menu

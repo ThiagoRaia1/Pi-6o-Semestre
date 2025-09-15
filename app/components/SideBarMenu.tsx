@@ -13,14 +13,6 @@ export default function SideBarMenu() {
   const iconSize = 90;
 
   const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.main, // fundo definido no seu projeto
-      paddingHorizontal: 20,
-      paddingVertical: 40,
-      justifyContent: "space-between",
-      alignItems: "center",
-    },
     sideBarContent: {
       width: "100%",
       alignItems: "center",
@@ -96,9 +88,9 @@ export default function SideBarMenu() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => router.setParams({ pageName: pageNames.equipe })}
+          onPress={() => router.setParams({ pageName: pageNames.alunos })}
         >
-          <Text style={styles.buttonText}>{pageNames.equipe}</Text>
+          <Text style={styles.buttonText}>{pageNames.alunos}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
