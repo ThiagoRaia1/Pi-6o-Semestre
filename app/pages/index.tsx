@@ -6,7 +6,7 @@ import Alunos from "./alunos";
 import Equipe from "./equipe";
 import Financeiro from "./financeiro";
 import { pageNames } from "../../utils/pageNames";
-import SideBarMenu from "../components/SideBarMenu";
+import SideBarMenu from "./SideBarMenu";
 
 export default function MainPage() {
   const globalStyles = getGlobalStyles();

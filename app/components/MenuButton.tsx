@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
-import { colors } from "../../utils/colors";
 
 // tipo para menu
 type MenuOption = {
@@ -19,6 +18,31 @@ type MenuOption = {
 // props do botão
 type MenuButtonProps = {
   label: string;
+  fontSize?: number;
+  fontWeight?:
+    | "normal"
+    | "bold"
+    | "100"
+    | "200"
+    | "300"
+    | "400"
+    | "500"
+    | "600"
+    | "700"
+    | "800"
+    | "900"
+    | 100
+    | 200
+    | 300
+    | 400
+    | 500
+    | 600
+    | 700
+    | 800
+    | 900;
+  padding?: number;
+  color?: string;
+  maxWidth?: number;
   options?: MenuOption[];
   onPress?: () => void;
   icon?: {
@@ -31,6 +55,11 @@ type MenuButtonProps = {
 
 export default function MenuButton({
   label,
+  fontSize = 18,
+  fontWeight = "600",
+  padding = 8,
+  color,
+  maxWidth,
   options,
   onPress,
   icon,
@@ -59,42 +88,34 @@ export default function MenuButton({
       marginTop: -7,
       paddingTop: 10,
       zIndex: 9,
-      elevation: 5,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.3,
-      shadowRadius: 6,
-      ...(Platform.OS === "web"
-        ? { boxShadow: "0px 4px 10px rgba(0,0,0,0.4)" }
-        : {}),
+      boxShadow: "0px 4px 10px rgba(0,0,0,0.4)",
     },
     dropdownItem: {
       padding: 10,
     },
     dropdownText: {
-      color: "white",
+      color: mainColor,
       fontSize: 14,
     },
     topBarMainMenuOptionsButton: {
       flexDirection: "row",
-      minWidth: 250,
-      height: 40,
-      alignItems: "center",
-      justifyContent: "center",
-      padding: 10,
-      paddingLeft: 5,
+      width: "100%",
+      minWidth: 200,
+      maxWidth: maxWidth && maxWidth,
+      padding: padding,
       gap: 10,
       borderRadius: 10,
-      backgroundColor: colors.buttonColor,
       zIndex: 10,
-      boxShadow: "0px 5px 5px rgba(0, 0, 0, 0.6)",
-      borderColor: "white",
-      borderWidth: 1,
+      backgroundColor: color ? color : "rgba(255, 255, 255, 0.1)",
+      alignItems: "center",
+      justifyContent: "center",
+      boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)",
     },
     topBarMainMenuOptionsButtonText: {
       color: mainColor,
-      fontWeight: "600",
-      fontSize: 16,
+      textAlign: "center",
+      fontSize: fontSize,
+      fontWeight: fontWeight,
     },
   });
 
@@ -162,7 +183,7 @@ export default function MenuButton({
       <TouchableOpacity
         style={[
           styles.topBarMainMenuOptionsButton,
-          { paddingLeft: IconComponent ? 5 : 10 }, // se tiver ícone aplica 5, senão aplica o padrão definido no estilo
+          { paddingLeft: IconComponent && 5 }, // se tiver ícone aplica 5, senão aplica o padrão definido no estilo
         ]}
         onPress={() => {
           if (options) {

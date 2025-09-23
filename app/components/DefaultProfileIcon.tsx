@@ -16,7 +16,7 @@ export default function DefaultProfileIcon({ size }: DefaultProfileIconProps) {
         height: userIconCircleSize,
         justifyContent: "center",
         alignItems: "center",
-        paddingBottom: 10,
+        paddingBottom: 5,
       }}
     >
       <FontAwesome5 name="user-alt" size={size} color="#FAD2E0" />

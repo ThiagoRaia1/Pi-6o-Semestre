@@ -9,7 +9,7 @@ type HoverableClassCardProps = {
   onPlan: () => void;
 };
 
-export function HoverableClassCard({
+export default function HoverableClassCard({
   title,
   instructor,
   students,
@@ -30,7 +30,7 @@ export function HoverableClassCard({
 
   const handleMouseEnter = () => {
     setHovered(true);
-    animateTo(1.20);
+    animateTo(1.2);
   };
   const handleMouseLeave = () => {
     setHovered(false);
@@ -96,12 +96,11 @@ export function HoverableClassCard({
       style={{
         transform: [{ scale: scaleAnim }],
         backgroundColor: "white",
-        padding: 8,
+        padding: 80,
         borderRadius: 6,
-        shadowColor: "#000",
-        shadowOpacity: 0.15,
-        shadowRadius: 4,
-        elevation: 2,
+        boxShadow: !hovered
+          ? "0px 0px 5px rgba(0, 0, 0, 0.4)"
+          : "0px 0px 20px rgba(0, 0, 0, 0.6)",
       }}
     >
       <Text style={{ fontWeight: "700" }}>{title}</Text>

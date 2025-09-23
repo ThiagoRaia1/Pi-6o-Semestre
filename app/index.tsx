@@ -5,23 +5,31 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  useWindowDimensions,
 } from "react-native";
 import { getGlobalStyles } from "../globalStyles";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { pageNames, pagePathnames } from "../utils/pageNames";
 import { router } from "expo-router";
 import { colors } from "../utils/colors";
 import DefaultProfileIcon from "./components/DefaultProfileIcon";
+import { breakpoints } from "../utils/breakpoints";
+import { ILoginResponse, Login as LoginApi } from "../services/auth/login"
+import { useAuth } from "../context/AuthProvider";
 
 export default function Login() {
+  const { login, logout } = useAuth()
+  const width = useWindowDimensions().width;
+  const isLaptop = width >= breakpoints.laptop;
+
   const globalStyles = getGlobalStyles();
   const textMainColor: string = "white";
   const textInputMainColor: string = "black";
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [passwordIsVisible, setPasswordIsVisible] = useState<boolean>(true);
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(true);
 
   const styles = StyleSheet.create({
     leftContainer: {
@@ -37,8 +45,8 @@ export default function Login() {
       padding: 60,
       backgroundColor: colors.main,
       boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.6)",
-      borderTopLeftRadius: 20,
-      borderBottomLeftRadius: 20,
+      borderTopLeftRadius: isLaptop ? 20 : 0,
+      borderBottomLeftRadius: isLaptop ? 20 : 0,
       alignItems: "center",
     },
     loginItemsContainer: {
@@ -53,7 +61,7 @@ export default function Login() {
     label: {
       width: "100%",
       color: textMainColor,
-      fontSize: 18,
+      fontSize: 22,
       fontWeight: 600,
       marginLeft: 10,
     },
@@ -95,21 +103,35 @@ export default function Login() {
     },
   });
 
-  const handleLogin = () => {
+  useEffect(() => {
+    logout()
+  }, [])
+
+  const handleLogin = async () => {
     // Fazer a rota de login
-    router.push({
-      pathname: pagePathnames.pages,
-      params: { pageName: pageNames.agenda.main, subPage: "AGENDAR AULA" },
-    });
+    try {
+      const loginData: ILoginResponse = await LoginApi({ email, password })
+      login(loginData.access_token, loginData.name)
+      // alert(`retorno do login: ${loginData.access_token}`)
+      // alert(`retorno do login: ${loginData.name}`)
+      router.push({
+        pathname: pagePathnames.pages,
+        params: { pageName: pageNames.agenda.main, subPage: "AGENDAR AULA" },
+      });
+    } catch (erro: any) {
+      alert(erro.message)
+    }
   };
 
   return (
     <View style={[globalStyles.container, { flexDirection: "row" }]}>
-      <Image
-        source={require("../assets/LoginMainImage.png")}
-        resizeMode="center"
-        style={{ flex: 5 }}
-      />
+      {isLaptop && (
+        <Image
+          source={require("../assets/LoginMainImage.png")}
+          resizeMode="center"
+          style={{ flex: 5 }}
+        />
+      )}
 
       <View style={styles.loginContainer}>
         <View style={styles.loginItemsContainer}>
@@ -139,7 +161,7 @@ export default function Login() {
             >
               <TextInput
                 style={styles.textInput}
-                secureTextEntry={passwordIsVisible}
+                secureTextEntry={isPasswordVisible}
                 value={password}
                 onChangeText={(text) => {
                   setPassword(text);
@@ -148,11 +170,11 @@ export default function Login() {
               <TouchableOpacity
                 style={styles.showPasswordButton}
                 onPress={() => {
-                  setPasswordIsVisible(!passwordIsVisible);
+                  setIsPasswordVisible(!isPasswordVisible);
                 }}
               >
                 <FontAwesome5
-                  name={passwordIsVisible ? "eye" : "eye-slash"}
+                  name={isPasswordVisible ? "eye" : "eye-slash"}
                   size={24}
                   color={"#d581a1"}
                 />
