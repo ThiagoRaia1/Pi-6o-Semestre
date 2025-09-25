@@ -15,6 +15,7 @@ export const getGlobalStyles = () =>
       height: "100%",
       width: "100%",
       justifyContent: "center",
+      alignItems: "center",
       gap: 20,
       backgroundColor: "#eee",
       zIndex: 1,

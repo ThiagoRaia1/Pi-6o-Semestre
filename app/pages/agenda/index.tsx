@@ -52,7 +52,7 @@ LocaleConfig.locales["pt-br"] = {
 // Define o locale ativo
 LocaleConfig.defaultLocale = "pt-br";
 
-export default function CalendarScreen() {
+export default function Agenda() {
   const globalStyles = getGlobalStyles();
   const [selectedDay, setSelectedDay] = useState<string>("");
   type Aula = {
@@ -116,7 +116,7 @@ export default function CalendarScreen() {
           {/* FEAT ME: substituir por <Agenda/> */}
           <Calendar
             enableSwipeMonths={true}
-            // renderHeader server pra mudar o que é renderizado no cabeçalho
+            // renderHeader serve pra mudar o que é renderizado no cabeçalho
             // renderHeader={date => <Text>{date.toString()}</Text>}
             onDayPress={handleDayPress}
             markedDates={getMarkedDates(aulas, selectedDay)}
