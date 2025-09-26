@@ -6,18 +6,30 @@ import { getAlunos } from "../../../services/alunos";
 import React, { useEffect, useState } from "react";
 import { IAluno } from "../../../interfaces/aluno";
 import { formatDateToBR } from "../../../utils/formatDate";
+import Loading from "../../components/Loading";
+import { colors } from "../../../utils/colors";
+import { router } from "expo-router";
+import { pageNames } from "../../../utils/pageNames";
 
 export default function Alunos() {
   const globalStyles = getGlobalStyles();
   const [alunos, setAlunos] = useState<IAluno[]>([]);
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState<string>("");
   const [filteredAlunos, setFilteredAlunos] = useState<IAluno[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const loadAlunos = async () => {
-      const lista = await getAlunos();
-      setAlunos(lista);
-      setFilteredAlunos(lista);
+      try {
+        setIsLoading(true);
+        const lista = await getAlunos();
+        setAlunos(lista);
+        setFilteredAlunos(lista);
+      } catch (erro: any) {
+        alert(erro.message);
+      } finally {
+        setIsLoading(false);
+      }
     };
     loadAlunos();
   }, []);
@@ -33,10 +45,27 @@ export default function Alunos() {
     setFilteredAlunos(filtered);
   }, [searchText, alunos]);
 
-  const onPressListar = async () => {
-    const lista = await getAlunos();
-    setAlunos(lista);
-    setFilteredAlunos(lista);
+  const onPressListar = async (tableName: string) => {
+    try {
+      setIsLoading(true);
+      if (tableName === "Alunos") {
+        router.setParams({ subPage: pageNames.alunos });
+        const lista = await getAlunos();
+        setAlunos(lista);
+        setFilteredAlunos(lista);
+      }
+      if (tableName === "Instrutores") {
+        router.setParams({ subPage: pageNames.equipe });
+        // FEAT ME: Alterar para que pegue os dados dos instrutores
+        // const lista = await getAlunos();
+        // setAlunos(lista);
+        // setFilteredAlunos(lista);
+      }
+    } catch (erro: any) {
+      alert(erro.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const tableHead = [
@@ -86,7 +115,24 @@ export default function Alunos() {
   return (
     <View style={globalStyles.container}>
       <View style={globalStyles.topBarMainMenuOptionsContainer}>
-        <MenuButton label="Listar" onPress={onPressListar} />
+        <MenuButton
+          label="Listar"
+          options={[
+            {
+              label: "Alunos",
+              onPress: () => {
+                onPressListar("Alunos");
+              },
+            },
+            {
+              label: "Instrutores",
+              onPress: () => {
+                onPressListar("Instrutores");
+              },
+            },
+          ]}
+          color={colors.buttonMainColor}
+        />
         <MenuButton label="Placeholder" />
         <MenuButton label="Placeholder" />
       </View>
@@ -122,6 +168,7 @@ export default function Alunos() {
           </View>
         </ScrollView>
       </View>
+      {isLoading && <Loading />}
     </View>
   );
 }

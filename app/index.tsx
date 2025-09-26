@@ -15,13 +15,15 @@ import { router } from "expo-router";
 import { colors } from "../utils/colors";
 import DefaultProfileIcon from "./components/DefaultProfileIcon";
 import { breakpoints } from "../utils/breakpoints";
-import { ILoginResponse, Login as LoginApi } from "../services/auth/login"
+import { ILoginResponse, Login as LoginApi } from "../services/auth/login";
 import { useAuth } from "../context/AuthProvider";
+import Loading from "./components/Loading";
 
 export default function Login() {
-  const { login, logout } = useAuth()
-  const width = useWindowDimensions().width;
-  const isLaptop = width >= breakpoints.laptop;
+  const { login, logout } = useAuth();
+  const width: number = useWindowDimensions().width;
+  const isLaptop: boolean = width >= breakpoints.laptop;
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const globalStyles = getGlobalStyles();
   const textMainColor: string = "white";
@@ -104,14 +106,14 @@ export default function Login() {
   });
 
   useEffect(() => {
-    logout()
-  }, [])
+    logout();
+  }, []);
 
   const handleLogin = async () => {
-    // Fazer a rota de login
     try {
-      const loginData: ILoginResponse = await LoginApi({ email, password })
-      login(loginData.access_token, loginData.name)
+      setIsLoading(true);
+      const loginData: ILoginResponse = await LoginApi({ email, password });
+      login(loginData.access_token, loginData.name);
       // alert(`retorno do login: ${loginData.access_token}`)
       // alert(`retorno do login: ${loginData.name}`)
       router.push({
@@ -119,7 +121,14 @@ export default function Login() {
         params: { pageName: pageNames.agenda.main, subPage: "AGENDAR AULA" },
       });
     } catch (erro: any) {
-      alert(erro.message)
+      if (erro.message === "Failed to fetch") {
+        alert("Não foi possível conectar-se ao serviço de login");
+        return;
+      }
+      alert(erro.message);
+      return;
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -187,6 +196,7 @@ export default function Login() {
           </TouchableOpacity>
         </View>
       </View>
+      {isLoading && <Loading />}
     </View>
   );
 }
