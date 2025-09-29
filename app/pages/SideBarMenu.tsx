@@ -9,7 +9,7 @@ import MenuButton from "../components/MenuButton";
 import { useAuth } from "../../context/AuthProvider";
 
 export default function SideBarMenu() {
-  const { isAuthenticated, logout, name } = useAuth()
+  const { isAuthenticated, logout, name } = useAuth();
   const globalStyles = getGlobalStyles();
 
   const styles = StyleSheet.create({
@@ -38,8 +38,6 @@ export default function SideBarMenu() {
         {
           paddingHorizontal: 20,
           backgroundColor: colors.main,
-          boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.4)",
-          zIndex: 10,
           alignItems: "center",
         },
       ]}
@@ -47,9 +45,7 @@ export default function SideBarMenu() {
       <View style={styles.sideBarContent}>
         <View style={styles.userSection}>
           <DefaultProfileIcon size={70} />
-          <Text style={styles.usernameText}>
-            {`Usuário: ${name}`}
-          </Text>
+          <Text style={styles.usernameText}>{`Usuário: ${name}`}</Text>
         </View>
 
         <MenuButton
@@ -103,8 +99,8 @@ export default function SideBarMenu() {
           color="#E63946"
           maxWidth={100}
           onPress={() => {
-            logout()
-            router.push(pagePathnames.main)
+            logout();
+            router.push(pagePathnames.main);
           }}
         />
       </View>

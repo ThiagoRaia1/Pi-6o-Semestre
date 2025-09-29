@@ -111,9 +111,15 @@ export default function Agenda() {
         <MenuButton label="Placeholder" />
         <MenuButton label="Placeholder" />
       </View>
-      <View style={{ flex: 1, width: "100%", padding: 16 }}>
-        <View style={{ flex: 1, justifyContent: "center" }}>
-          {/* FEAT ME: substituir por <Agenda/> */}
+      <View style={globalStyles.mainContent}>
+        {/* FEAT ME: substituir por <Agenda/> */}
+        <View
+          style={{
+            flex: 1,
+            width: "100%",
+            justifyContent: "center",
+          }}
+        >
           <Calendar
             enableSwipeMonths={true}
             // renderHeader serve pra mudar o que é renderizado no cabeçalho
@@ -129,35 +135,32 @@ export default function Agenda() {
               selectedDayTextColor: "#fff",
             }}
             style={{
-              flex: 1,
               borderRadius: 20,
               overflow: "hidden",
-              padding: 16,
+              paddingVertical: 32,
             }}
           />
         </View>
 
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, width: "100%" }}>
           <Text style={styles.title}>
             {selectedDay
               ? `Aulas em ${formatDate(selectedDay)}`
               : "Selecione um dia"}
           </Text>
-          <View style={{ flex: 1 }}>
-            <ScrollView>
-              {aulasDoDia.length > 0 ? (
-                aulasDoDia.map((c) => (
-                  <View key={c.id} style={styles.classCard}>
-                    <Text style={styles.classTitle}>{c.title}</Text>
-                    <Text style={styles.classSub}>{c.students} alunos</Text>
-                    <Text style={styles.classSub}>{c.date}</Text>
-                  </View>
-                ))
-              ) : selectedDay ? (
-                <Text style={styles.noClass}>Nenhuma aula</Text>
-              ) : null}
-            </ScrollView>
-          </View>
+          <ScrollView contentContainerStyle={{ paddingRight: 12 }}>
+            {aulasDoDia.length > 0 ? (
+              aulasDoDia.map((c) => (
+                <View key={c.id} style={styles.classCard}>
+                  <Text style={styles.classTitle}>{c.title}</Text>
+                  <Text style={styles.classSub}>{c.students} alunos</Text>
+                  <Text style={styles.classSub}>{c.date}</Text>
+                </View>
+              ))
+            ) : selectedDay ? (
+              <Text style={styles.noClass}>Nenhuma aula</Text>
+            ) : null}
+          </ScrollView>
         </View>
       </View>
     </View>

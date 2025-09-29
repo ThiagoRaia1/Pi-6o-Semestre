@@ -88,16 +88,18 @@ export default function Alunos() {
 
   const styles = StyleSheet.create({
     header: {
-      backgroundColor: "#f1f8ff",
+      backgroundColor: colors.main,
       height: 40,
       width: "100%",
     },
     headerText: {
       textAlign: "center",
       fontWeight: "bold",
+      color: "white",
     },
     rowData: {
       width: "100%",
+      backgroundColor: "white",
     },
     rowText: {
       textAlign: "center",
@@ -105,10 +107,11 @@ export default function Alunos() {
     },
     searchInput: {
       borderWidth: 1,
-      borderColor: "#ccc",
+      borderColor: colors.main,
       borderRadius: 8,
       padding: 16,
       width: "100%",
+      backgroundColor: "white",
     },
   });
 
@@ -137,7 +140,7 @@ export default function Alunos() {
         <MenuButton label="Placeholder" />
       </View>
 
-      <View style={[globalStyles.mainContent, { padding: 32 }]}>
+      <View style={globalStyles.mainContent}>
         {/* Barra de pesquisa */}
         <TextInput
           style={styles.searchInput}
@@ -146,7 +149,7 @@ export default function Alunos() {
           onChangeText={setSearchText}
         />
 
-        <ScrollView style={{ width: "100%" }}>
+        <ScrollView style={{ width: "100%", borderRadius: 10 }}>
           <View>
             <Table
               borderStyle={{
