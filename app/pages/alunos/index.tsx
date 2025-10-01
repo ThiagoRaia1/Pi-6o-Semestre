@@ -1,4 +1,10 @@
-import { View, StyleSheet, ScrollView, TextInput } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  TextInput,
+  Animated,
+} from "react-native";
 import { Table, Row, Rows } from "react-native-table-component";
 import { getGlobalStyles } from "../../../globalStyles";
 import MenuButton from "../../components/MenuButton";
@@ -10,8 +16,10 @@ import Loading from "../../components/Loading";
 import { colors } from "../../../utils/colors";
 import { router } from "expo-router";
 import { pageNames } from "../../../utils/pageNames";
+import { useFadeSlide } from "../../../hooks/useFadeSlide";
 
 export default function Alunos() {
+  const { fadeAnim, slideAnim, fadeIn, fadeOut } = useFadeSlide();
   const globalStyles = getGlobalStyles();
   const [alunos, setAlunos] = useState<IAluno[]>([]);
   const [searchText, setSearchText] = useState<string>("");
@@ -29,6 +37,7 @@ export default function Alunos() {
         alert(erro.message);
       } finally {
         setIsLoading(false);
+        // fadeIn(); // entra animado
       }
     };
     loadAlunos();
@@ -140,7 +149,15 @@ export default function Alunos() {
         <MenuButton label="Placeholder" />
       </View>
 
-      <View style={globalStyles.mainContent}>
+      <Animated.View
+        style={[
+          globalStyles.mainContent,
+          {
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }],
+          },
+        ]}
+      >
         {/* Barra de pesquisa */}
         <TextInput
           style={styles.searchInput}
@@ -170,7 +187,7 @@ export default function Alunos() {
             </Table>
           </View>
         </ScrollView>
-      </View>
+      </Animated.View>
       {isLoading && <Loading />}
     </View>
   );

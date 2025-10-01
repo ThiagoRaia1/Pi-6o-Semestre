@@ -45,7 +45,7 @@ export default function SideBarMenu() {
       <View style={styles.sideBarContent}>
         <View style={styles.userSection}>
           <DefaultProfileIcon size={70} />
-          <Text style={styles.usernameText}>{`Usuário: ${name}`}</Text>
+          <Text style={styles.usernameText}>{name}</Text>
         </View>
 
         <MenuButton
@@ -63,6 +63,7 @@ export default function SideBarMenu() {
 
         <MenuButton
           label={pageNames.alunos}
+          // label="Placeholder"
           padding={14}
           onPress={() => router.setParams({ pageName: pageNames.alunos })}
         />
@@ -75,7 +76,8 @@ export default function SideBarMenu() {
         </TouchableOpacity> */}
 
         <MenuButton
-          label={pageNames.financeiro.main}
+          // label={pageNames.financeiro.main}
+          label="Placeholder"
           padding={14}
           onPress={() =>
             router.setParams({ pageName: pageNames.financeiro.main })
