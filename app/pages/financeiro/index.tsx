@@ -1,17 +1,16 @@
 import { View, Text } from "react-native";
 import { getGlobalStyles } from "../../../globalStyles";
-import MenuButton from "../../components/MenuButton";
 import { router, useLocalSearchParams } from "expo-router";
 import { pageNames } from "../../../utils/pageNames";
+import MenuButton from "../../../components/MenuButton";
 
 export default function Financeiro() {
   const globalStyles = getGlobalStyles();
-  const dropdownOptions = ["Aluno", "Instrutor", "Usuário"];
   const params = useLocalSearchParams();
 
   return (
     <View style={globalStyles.container}>
-      <View style={globalStyles.topBarSubMenuOptionsContainer}>
+      <View style={globalStyles.topBarMainMenuOptionsContainer}>
         <MenuButton
           label="Dashboards"
           onPress={() =>
@@ -20,11 +19,11 @@ export default function Financeiro() {
         />
         <MenuButton
           label="Agenda"
-          onPress={() => router.setParams({ pageName: pageNames.agenda })} // sem options vira botão normal
+          onPress={() => router.setParams({ pageName: pageNames.agenda.main })} // sem options vira botão normal
         />
         <MenuButton
           label="Agenda"
-          onPress={() => router.setParams({ pageName: pageNames.agenda })} // sem options vira botão normal
+          onPress={() => router.setParams({ pageName: pageNames.agenda.main })} // sem options vira botão normal
         />
       </View>
       <View style={{ flex: 1, justifyContent: "center" }}>

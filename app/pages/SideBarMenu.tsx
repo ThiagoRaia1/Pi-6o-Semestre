@@ -4,12 +4,12 @@ import { getGlobalStyles } from "../../globalStyles";
 import { router } from "expo-router";
 import { pageNames, pagePathnames } from "../../utils/pageNames";
 import { colors } from "../../utils/colors";
-import DefaultProfileIcon from "../components/DefaultProfileIcon";
-import MenuButton from "../components/MenuButton";
 import { useAuth } from "../../context/AuthProvider";
+import DefaultProfileIcon from "../../components/DefaultProfileIcon";
+import MenuButton from "../../components/MenuButton";
 
 export default function SideBarMenu() {
-  const { isAuthenticated, logout, name } = useAuth()
+  const { isAuthenticated, logout, name } = useAuth();
   const globalStyles = getGlobalStyles();
 
   const styles = StyleSheet.create({
@@ -38,8 +38,6 @@ export default function SideBarMenu() {
         {
           paddingHorizontal: 20,
           backgroundColor: colors.main,
-          boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.4)",
-          zIndex: 10,
           alignItems: "center",
         },
       ]}
@@ -47,9 +45,7 @@ export default function SideBarMenu() {
       <View style={styles.sideBarContent}>
         <View style={styles.userSection}>
           <DefaultProfileIcon size={70} />
-          <Text style={styles.usernameText}>
-            {`Usuário: ${name}`}
-          </Text>
+          <Text style={styles.usernameText}>{name}</Text>
         </View>
 
         <MenuButton
@@ -67,6 +63,7 @@ export default function SideBarMenu() {
 
         <MenuButton
           label={pageNames.alunos}
+          // label="Placeholder"
           padding={14}
           onPress={() => router.setParams({ pageName: pageNames.alunos })}
         />
@@ -79,7 +76,8 @@ export default function SideBarMenu() {
         </TouchableOpacity> */}
 
         <MenuButton
-          label={pageNames.financeiro.main}
+          // label={pageNames.financeiro.main}
+          label="Placeholder"
           padding={14}
           onPress={() =>
             router.setParams({ pageName: pageNames.financeiro.main })
@@ -100,11 +98,11 @@ export default function SideBarMenu() {
           fontSize={16}
           fontWeight={700}
           padding={10}
-          color="#E63946"
+          color={colors.cancelColor}
           maxWidth={100}
           onPress={() => {
-            logout()
-            router.push(pagePathnames.main)
+            logout();
+            router.push(pagePathnames.main);
           }}
         />
       </View>

@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
+import { colors } from "../utils/colors";
 
 // tipo para menu
 type MenuOption = {
@@ -106,7 +107,7 @@ export default function MenuButton({
       gap: 10,
       borderRadius: 10,
       zIndex: 10,
-      backgroundColor: color ? color : "rgba(255, 255, 255, 0.1)",
+      backgroundColor: color ? color : colors.buttonMainColor,
       alignItems: "center",
       justifyContent: "center",
       boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)",

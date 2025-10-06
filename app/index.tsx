@@ -13,11 +13,11 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { pageNames, pagePathnames } from "../utils/pageNames";
 import { router } from "expo-router";
 import { colors } from "../utils/colors";
-import DefaultProfileIcon from "./components/DefaultProfileIcon";
 import { breakpoints } from "../utils/breakpoints";
 import { ILoginResponse, Login as LoginApi } from "../services/auth/login";
 import { useAuth } from "../context/AuthProvider";
-import Loading from "./components/Loading";
+import DefaultProfileIcon from "../components/DefaultProfileIcon";
+import Loading from "../components/Loading";
 
 export default function Login() {
   const { login, logout } = useAuth();

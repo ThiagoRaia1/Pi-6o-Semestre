@@ -1,165 +1,321 @@
-// CalendarScreen.tsx
-import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { Calendar, DateData, LocaleConfig } from "react-native-calendars";
-import MenuButton from "../../components/MenuButton";
+import React, { useEffect, useMemo, useState } from "react";
+import { View, Text, StyleSheet, ScrollView, Animated } from "react-native";
+import { Calendar, LocaleConfig } from "react-native-calendars";
 import { getGlobalStyles } from "../../../globalStyles";
 import { colors } from "../../../utils/colors";
-
-// Configuração de idioma do calendário
-LocaleConfig.locales["pt-br"] = {
-  monthNames: [
-    "Janeiro",
-    "Fevereiro",
-    "Março",
-    "Abril",
-    "Maio",
-    "Junho",
-    "Julho",
-    "Agosto",
-    "Setembro",
-    "Outubro",
-    "Novembro",
-    "Dezembro",
-  ],
-  monthNamesShort: [
-    "Jan",
-    "Fev",
-    "Mar",
-    "Abr",
-    "Mai",
-    "Jun",
-    "Jul",
-    "Ago",
-    "Set",
-    "Out",
-    "Nov",
-    "Dez",
-  ],
-  dayNames: [
-    "Domingo",
-    "Segunda",
-    "Terça",
-    "Quarta",
-    "Quinta",
-    "Sexta",
-    "Sábado",
-  ],
-  dayNamesShort: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
-  today: "Hoje",
-};
-
-// Define o locale ativo
-LocaleConfig.defaultLocale = "pt-br";
+import { getAulas } from "../../../services/aulas";
+import { IAula } from "../../../interfaces/aula";
+import { DateDataToString, formatDateToBR } from "../../../utils/formatDate";
+import Feather from "@expo/vector-icons/Feather";
+import { useFadeSlide } from "../../../hooks/useFadeSlide";
+import RegistrarAula from "../../../modals/RegistrarAula";
+import Loading from "../../../components/Loading";
+import MenuButton from "../../../components/MenuButton";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 export default function Agenda() {
+  const { fadeAnim, slideAnim, fadeIn } = useFadeSlide();
   const globalStyles = getGlobalStyles();
-  const [selectedDay, setSelectedDay] = useState<string>("");
-  type Aula = {
-    id: number;
-    title: string;
-    students: number;
-    date: string; // YYYY-MM-DD
+  const [selectedDay, setSelectedDay] = useState<string>(
+    new Date().toDateString()
+  );
+  const [aulas, setAulas] = useState<IAula[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const [isAgendarModalVisible, setIsAgendarModalVisible] =
+    useState<boolean>(false);
+
+  LocaleConfig.locales["pt-br"] = {
+    monthNames: [
+      "Janeiro",
+      "Fevereiro",
+      "Março",
+      "Abril",
+      "Maio",
+      "Junho",
+      "Julho",
+      "Agosto",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Dezembro",
+    ],
+    monthNamesShort: [
+      "Jan",
+      "Fev",
+      "Mar",
+      "Abr",
+      "Mai",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Set",
+      "Out",
+      "Nov",
+      "Dez",
+    ],
+    dayNames: [
+      "Domingo",
+      "Segunda",
+      "Terça",
+      "Quarta",
+      "Quinta",
+      "Sexta",
+      "Sábado",
+    ],
+    dayNamesShort: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+    today: "Hoje",
   };
 
-  // Exemplo de aulas vindas do banco
-  const aulas: Aula[] = [
-    { id: 1, title: "Pilates", students: 5, date: "2025-09-15" },
-    { id: 2, title: "Yoga", students: 8, date: "2025-09-16" },
-    { id: 3, title: "Alongamento", students: 6, date: "2025-09-18" },
-    { id: 4, title: "Funcional", students: 4, date: "2025-09-18" },
-  ];
+  // Define o locale ativo
+  LocaleConfig.defaultLocale = "pt-br";
 
-  const formatDate = (dateString: string) => {
-    const [year, month, day] = dateString.split("-");
-    return `${day}/${month}/${year}`;
-  };
+  useEffect(() => {
+    const fetchAulas = async () => {
+      setIsLoading(true);
+      try {
+        const result = await getAulas();
+        // opcional: validar formato de cada aula aqui
+        setAulas(result);
+        // console.log("Aulas carregadas:", result);
+      } catch (erro: any) {
+        alert(erro?.message ?? "Erro ao carregar aulas");
+      } finally {
+        setIsLoading(false);
+        fadeIn(); // entra animado
+        // return () => fadeOut(); // sai animado
+      }
+    };
+    fetchAulas();
+  }, []);
 
-  const handleDayPress = (day: DateData) => {
-    // Armazena no formato ISO (YYYY-MM-DD) para buscar no objeto classes
-    setSelectedDay(day.dateString);
-  };
-
-  const getMarkedDates = (aulas: Aula[], selected?: string) => {
+  // memoiza markedDates para não recriar a cada render
+  const markedDates = useMemo(() => {
     const marked: Record<string, any> = {};
-
     aulas.forEach((aula) => {
-      marked[aula.date] = { marked: true, dotColor: "#0033A0" };
+      if (!aula || !aula.date) return;
+      const key = DateDataToString(aula.date);
+      if (!key) return;
+      marked[key] = { marked: true, dotColor: "#0033A0" };
     });
 
-    // marca o dia selecionado
-    if (selected) {
-      marked[selected] = {
-        ...(marked[selected] || {}),
+    if (selectedDay) {
+      marked[selectedDay] = {
+        ...(marked[selectedDay] || {}),
         selected: true,
         selectedColor: "#0033A0",
       };
     }
 
     return marked;
-  };
+  }, [aulas, selectedDay]);
 
-  // Filtra aulas do dia selecionado
-  const aulasDoDia = selectedDay
-    ? aulas.filter((a) => a.date === selectedDay)
-    : [];
+  // memoriza filtro de aulas do dia
+  const aulasDoDia = useMemo(() => {
+    if (!selectedDay) return [];
+    return aulas
+      .filter((a) => {
+        const key = a?.date ? DateDataToString(a.date) : null;
+        return key === selectedDay;
+      })
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Ordena do horario mais cedo para o mais tarde
+  }, [aulas, selectedDay]);
+
+  const openCloseAgendarModal = () => {
+    setIsAgendarModalVisible(!isAgendarModalVisible);
+  };
 
   return (
     <View style={globalStyles.container}>
       <View style={globalStyles.topBarMainMenuOptionsContainer}>
-        <MenuButton label="Listar" />
-        <MenuButton label="Placeholder" />
-        <MenuButton label="Placeholder" />
+        <MenuButton
+          label="Registrar aula"
+          onPress={openCloseAgendarModal}
+          icon={{
+            component: FontAwesome,
+            name: "calendar",
+            size: 20,
+            color: "white",
+          }}
+        />
+        <MenuButton
+          label="Próximas aulas"
+          icon={{
+            component: MaterialCommunityIcons,
+            name: "page-next-outline",
+            size: 20,
+            color: "white",
+          }}
+        />
+        <MenuButton
+          label="Planejar aula"
+          icon={{
+            component: MaterialCommunityIcons,
+            name: "robot-excited-outline",
+            size: 24,
+            color: "white",
+          }}
+        />
       </View>
-      <View style={{ flex: 1, width: "100%", padding: 16 }}>
-        <View style={{ flex: 1, justifyContent: "center" }}>
-          {/* FEAT ME: substituir por <Agenda/> */}
+
+      <Animated.View
+        style={[
+          globalStyles.mainContent,
+          {
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }],
+          },
+        ]}
+      >
+        <View style={{ flex: 1, width: "100%", justifyContent: "center" }}>
           <Calendar
             enableSwipeMonths={true}
-            // renderHeader serve pra mudar o que é renderizado no cabeçalho
-            // renderHeader={date => <Text>{date.toString()}</Text>}
-            onDayPress={handleDayPress}
-            markedDates={getMarkedDates(aulas, selectedDay)}
+            onDayPress={(datePressed) => {
+              // console.log(aulasS);
+              setSelectedDay(datePressed.dateString);
+            }}
+            markedDates={markedDates}
+            customHeader={(props: any) => {
+              const diasDaSemana = [
+                "Dom",
+                "Seg",
+                "Ter",
+                "Qua",
+                "Qui",
+                "Sex",
+                "Sáb",
+              ];
+              return (
+                <View>
+                  {/* Header com setas e mês */}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      paddingHorizontal: 75,
+                      alignItems: "center",
+                      marginBottom: 32,
+                    }}
+                  >
+                    <Feather
+                      name="chevron-left"
+                      size={24}
+                      color="black"
+                      onPress={() => props.addMonth(-1)}
+                    />
+                    <Text
+                      style={{
+                        fontSize: 22,
+                        color: colors.main,
+                      }}
+                      selectable={false}
+                    >
+                      {props.month.toString("MMMM yyyy")}
+                    </Text>
+                    <Feather
+                      name="chevron-right"
+                      size={24}
+                      color="black"
+                      onPress={() => props.addMonth(1)}
+                    />
+                  </View>
+
+                  {/* Dias da semana */}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginBottom: 10,
+                    }}
+                  >
+                    {diasDaSemana.map((dia) => (
+                      <Text
+                        key={dia}
+                        style={{
+                          flex: 1,
+                          textAlign: "center",
+                          fontWeight: "600",
+                          color: "#555",
+                        }}
+                      >
+                        {dia}
+                      </Text>
+                    ))}
+                  </View>
+                </View>
+              );
+            }}
             theme={{
               todayTextColor: "white",
               todayBackgroundColor: colors.main,
-              textDayFontWeight: 600,
-              arrowColor: "#000000ff",
+
+              textDayFontWeight: "600",
+
               selectedDayBackgroundColor: "#0033A0",
               selectedDayTextColor: "#fff",
             }}
+            renderArrow={(direction) => (
+              <Feather
+                name={`chevron-${direction}`}
+                size={20}
+                color="black"
+                style={{ marginHorizontal: 20 }}
+              />
+            )}
             style={{
-              flex: 1,
               borderRadius: 20,
               overflow: "hidden",
-              padding: 16,
+              paddingVertical: 32,
             }}
           />
         </View>
 
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, width: "100%" }}>
           <Text style={styles.title}>
-            {selectedDay
-              ? `Aulas em ${formatDate(selectedDay)}`
-              : "Selecione um dia"}
+            {`Aulas em: ${
+              selectedDay && formatDateToBR(new Date(selectedDay))
+            }`}
           </Text>
-          <View style={{ flex: 1 }}>
-            <ScrollView>
-              {aulasDoDia.length > 0 ? (
-                aulasDoDia.map((c) => (
-                  <View key={c.id} style={styles.classCard}>
-                    <Text style={styles.classTitle}>{c.title}</Text>
-                    <Text style={styles.classSub}>{c.students} alunos</Text>
-                    <Text style={styles.classSub}>{c.date}</Text>
-                  </View>
-                ))
-              ) : selectedDay ? (
-                <Text style={styles.noClass}>Nenhuma aula</Text>
-              ) : null}
-            </ScrollView>
-          </View>
+          <ScrollView contentContainerStyle={{ paddingRight: 12 }}>
+            {aulasDoDia.length > 0 ? (
+              aulasDoDia.map((c) => (
+                <View key={c.id} style={styles.classCard}>
+                  {/* horário da aula */}
+                  <Text style={styles.classTitle}>
+                    {new Date(c.date).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </Text>
+
+                  <Text>{`Instrutor: ${c.usuario.name}`}</Text>
+                  {/* lista de alunos */}
+                  {c.alunos && c.alunos.length > 0 ? (
+                    c.alunos.map((aluno) => (
+                      <Text key={aluno.id} style={styles.classSub}>
+                        {aluno.name}
+                      </Text>
+                    ))
+                  ) : (
+                    <Text style={styles.classSub}>Nenhum aluno</Text>
+                  )}
+                </View>
+              ))
+            ) : (
+              <Text style={styles.noClass}>Nenhuma aula</Text>
+            )}
+          </ScrollView>
         </View>
-      </View>
+      </Animated.View>
+
+      {isLoading && <Loading />}
+      {isAgendarModalVisible && (
+        <RegistrarAula
+          data={selectedDay}
+          openCloseModal={openCloseAgendarModal}
+        />
+      )}
     </View>
   );
 }
@@ -171,9 +327,10 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   title: {
-    fontWeight: "700",
-    fontSize: 18,
+    fontWeight: "300",
+    fontSize: 24,
     marginBottom: 12,
+    marginTop: -12,
   },
   classCard: {
     backgroundColor: "white",

@@ -1,17 +1,25 @@
-import { View, StyleSheet, ScrollView, TextInput } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  TextInput,
+  Animated,
+} from "react-native";
 import { Table, Row, Rows } from "react-native-table-component";
 import { getGlobalStyles } from "../../../globalStyles";
-import MenuButton from "../../components/MenuButton";
 import { getAlunos } from "../../../services/alunos";
 import React, { useEffect, useState } from "react";
 import { IAluno } from "../../../interfaces/aluno";
 import { formatDateToBR } from "../../../utils/formatDate";
-import Loading from "../../components/Loading";
 import { colors } from "../../../utils/colors";
 import { router } from "expo-router";
 import { pageNames } from "../../../utils/pageNames";
+import { useFadeSlide } from "../../../hooks/useFadeSlide";
+import Loading from "../../../components/Loading";
+import MenuButton from "../../../components/MenuButton";
 
 export default function Alunos() {
+  const { fadeAnim, slideAnim, fadeIn, fadeOut } = useFadeSlide();
   const globalStyles = getGlobalStyles();
   const [alunos, setAlunos] = useState<IAluno[]>([]);
   const [searchText, setSearchText] = useState<string>("");
@@ -29,6 +37,7 @@ export default function Alunos() {
         alert(erro.message);
       } finally {
         setIsLoading(false);
+        fadeIn(); // entra animado
       }
     };
     loadAlunos();
@@ -88,16 +97,18 @@ export default function Alunos() {
 
   const styles = StyleSheet.create({
     header: {
-      backgroundColor: "#f1f8ff",
+      backgroundColor: colors.main,
       height: 40,
       width: "100%",
     },
     headerText: {
       textAlign: "center",
       fontWeight: "bold",
+      color: "white",
     },
     rowData: {
       width: "100%",
+      backgroundColor: "white",
     },
     rowText: {
       textAlign: "center",
@@ -105,10 +116,11 @@ export default function Alunos() {
     },
     searchInput: {
       borderWidth: 1,
-      borderColor: "#ccc",
+      borderColor: colors.main,
       borderRadius: 8,
       padding: 16,
       width: "100%",
+      backgroundColor: "white",
     },
   });
 
@@ -137,7 +149,15 @@ export default function Alunos() {
         <MenuButton label="Placeholder" />
       </View>
 
-      <View style={[globalStyles.mainContent, { padding: 32 }]}>
+      <Animated.View
+        style={[
+          globalStyles.mainContent,
+          {
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }],
+          },
+        ]}
+      >
         {/* Barra de pesquisa */}
         <TextInput
           style={styles.searchInput}
@@ -146,7 +166,7 @@ export default function Alunos() {
           onChangeText={setSearchText}
         />
 
-        <ScrollView style={{ width: "100%" }}>
+        <ScrollView style={{ width: "100%", borderRadius: 10 }}>
           <View>
             <Table
               borderStyle={{
@@ -167,7 +187,7 @@ export default function Alunos() {
             </Table>
           </View>
         </ScrollView>
-      </View>
+      </Animated.View>
       {isLoading && <Loading />}
     </View>
   );
