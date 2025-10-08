@@ -8,11 +8,11 @@ export async function getAulas(): Promise<IAula[]> {
 }
 
 export async function createAula(
-  date: Date,
+  data: Date,
   usuarioId: number,
   alunosIds?: number[]
 ) {
-  const body: any = { date, usuarioId };
+  const body: any = { data, usuarioId };
 
   if (alunosIds && alunosIds.length > 0) {
     body.alunosIds = alunosIds;
@@ -20,6 +20,6 @@ export async function createAula(
 
   return await httpClient("/aulas", {
     method: "POST",
-    body: JSON.stringify({ date, usuarioId, alunosIds }),
+    body: JSON.stringify({ data, usuarioId, alunosIds }),
   });
 }

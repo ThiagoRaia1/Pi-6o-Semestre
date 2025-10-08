@@ -9,7 +9,7 @@ import DefaultProfileIcon from "../../components/DefaultProfileIcon";
 import MenuButton from "../../components/MenuButton";
 
 export default function SideBarMenu() {
-  const { isAuthenticated, logout, name } = useAuth();
+  const { isAuthenticated, logout, nome } = useAuth();
   const globalStyles = getGlobalStyles();
 
   const styles = StyleSheet.create({
@@ -45,13 +45,20 @@ export default function SideBarMenu() {
       <View style={styles.sideBarContent}>
         <View style={styles.userSection}>
           <DefaultProfileIcon size={70} />
-          <Text style={styles.usernameText}>{name}</Text>
+          <Text style={styles.usernameText}>{nome}</Text>
         </View>
 
         <MenuButton
           label={pageNames.agenda.main}
           padding={14}
-          onPress={() => router.setParams({ pageName: pageNames.agenda.main })}
+          onPress={() =>
+            router.push({
+              pathname: pagePathnames.pages,
+              params: {
+                pageName: pageNames.agenda.main,
+              },
+            })
+          }
         />
 
         {/* <TouchableOpacity
@@ -65,7 +72,15 @@ export default function SideBarMenu() {
           label={pageNames.alunos}
           // label="Placeholder"
           padding={14}
-          onPress={() => router.setParams({ pageName: pageNames.alunos })}
+          onPress={() =>
+            router.push({
+              pathname: pagePathnames.pages,
+              params: {
+                pageName: pageNames.alunos,
+                subPage: pageNames.alunos,
+              },
+            })
+          }
         />
 
         {/* <TouchableOpacity

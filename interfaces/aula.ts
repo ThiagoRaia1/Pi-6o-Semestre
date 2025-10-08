@@ -3,7 +3,7 @@ import { IUser } from "./user";
 
 export interface IAula {
   id: number;
-  date: Date;
+  data: Date;
   alunos: IAluno[];
   usuario: IUser;
 }

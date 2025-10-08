@@ -3,7 +3,7 @@ import { httpClient } from "../httpsClient";
 
 export interface ILoginResponse {
     access_token: string,
-    name: string
+    nome: string
 }
 
 export async function Login(

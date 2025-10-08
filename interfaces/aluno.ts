@@ -1,9 +1,9 @@
 export interface IAluno {
   id: number;
-  name: string;
+  nome: string;
   cpf: string;
-  birthDate: Date;
+  dataNascimento: Date;
   email: string;
-  cellphone: string;
-  isActive: boolean;
+  telefone: string;
+  isAtivo: boolean;
 }

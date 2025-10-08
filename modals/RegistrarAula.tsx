@@ -17,6 +17,7 @@ import { createAula, getAulas } from "../services/aulas";
 import { decodeToken } from "../utils/decodeToken";
 import Loading from "../components/Loading";
 import { router } from "expo-router";
+import { pagePathnames, pageNames } from "../utils/pageNames";
 
 type RegistrarAulaProps = {
   data: string;
@@ -27,12 +28,12 @@ export default function RegistrarAula({
   data,
   openCloseModal,
 }: RegistrarAulaProps) {
-  const { token, name } = useAuth();
+  const { token, nome } = useAuth();
   const { fadeAnim, slideAnim, fadeIn, fadeOut } = useFadeSlide();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [erro, setErro] = useState<string>(" ");
 
-  const [instrutor, setInstrutor] = useState<string>(name || "");
+  const [instrutor, setInstrutor] = useState<string>(nome || "");
   const [selectedHora, setSelectedHora] = useState("07:00");
 
   const horasDisponiveis = Array.from({ length: 12 }, (_, i) => {
@@ -92,7 +93,10 @@ export default function RegistrarAula({
         await getAulas();
         alert("Aula agendada com sucesso!");
         openCloseModal();
-        router.reload()
+        router.push({
+          pathname: pagePathnames.pages,
+          params: { pageName: pageNames.agenda.main, subPage: "AGENDAR AULA" },
+        });
       }
     } catch (erro: any) {
       // alert(erro.message);

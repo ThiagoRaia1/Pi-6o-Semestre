@@ -18,7 +18,7 @@ export default function Agenda() {
   const { fadeAnim, slideAnim, fadeIn } = useFadeSlide();
   const globalStyles = getGlobalStyles();
   const [selectedDay, setSelectedDay] = useState<string>(
-    new Date().toDateString()
+    new Date().toISOString().split("T")[0] // "YYYY-MM-DD"
   );
   const [aulas, setAulas] = useState<IAula[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -94,8 +94,8 @@ export default function Agenda() {
   const markedDates = useMemo(() => {
     const marked: Record<string, any> = {};
     aulas.forEach((aula) => {
-      if (!aula || !aula.date) return;
-      const key = DateDataToString(aula.date);
+      if (!aula || !aula.data) return;
+      const key = DateDataToString(aula.data);
       if (!key) return;
       marked[key] = { marked: true, dotColor: "#0033A0" };
     });
@@ -116,10 +116,10 @@ export default function Agenda() {
     if (!selectedDay) return [];
     return aulas
       .filter((a) => {
-        const key = a?.date ? DateDataToString(a.date) : null;
+        const key = a?.data ? DateDataToString(a.data) : null;
         return key === selectedDay;
       })
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Ordena do horario mais cedo para o mais tarde
+      .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime()); // Ordena do horario mais cedo para o mais tarde
   }, [aulas, selectedDay]);
 
   const openCloseAgendarModal = () => {
@@ -283,18 +283,18 @@ export default function Agenda() {
                 <View key={c.id} style={styles.classCard}>
                   {/* horário da aula */}
                   <Text style={styles.classTitle}>
-                    {new Date(c.date).toLocaleTimeString([], {
+                    {new Date(c.data).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
                   </Text>
 
-                  <Text>{`Instrutor: ${c.usuario.name}`}</Text>
+                  <Text>{`Instrutor: ${c.usuario.nome}`}</Text>
                   {/* lista de alunos */}
                   {c.alunos && c.alunos.length > 0 ? (
                     c.alunos.map((aluno) => (
                       <Text key={aluno.id} style={styles.classSub}>
-                        {aluno.name}
+                        {aluno.nome}
                       </Text>
                     ))
                   ) : (

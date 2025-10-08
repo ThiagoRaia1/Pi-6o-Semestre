@@ -13,8 +13,8 @@ export async function getAlunoById(id: number): Promise<IAluno> {
   });
 }
 
-export async function getAlunoByName(name: string): Promise<IAluno> {
-  return await httpClient(`/alunos/name/${name}`, {
+export async function getAlunoByNome(nome: string): Promise<IAluno> {
+  return await httpClient(`/alunos/nome/${nome}`, {
     method: "GET",
   });
 }

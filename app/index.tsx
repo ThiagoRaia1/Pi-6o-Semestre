@@ -30,8 +30,8 @@ export default function Login() {
   const textInputMainColor: string = "black";
 
   const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(true);
+  const [senha, setSenha] = useState<string>("");
+  const [isSenhaVisible, setIsSenhaVisible] = useState<boolean>(true);
 
   const styles = StyleSheet.create({
     leftContainer: {
@@ -112,10 +112,10 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       setIsLoading(true);
-      const loginData: ILoginResponse = await LoginApi({ email, password });
-      login(loginData.access_token, loginData.name);
+      const loginData: ILoginResponse = await LoginApi({ email, senha });
+      login(loginData.access_token, loginData.nome);
       // alert(`retorno do login: ${loginData.access_token}`)
-      // alert(`retorno do login: ${loginData.name}`)
+      // alert(`retorno do login: ${loginData.nome}`)
       router.push({
         pathname: pagePathnames.pages,
         params: { pageName: pageNames.agenda.main, subPage: "AGENDAR AULA" },
@@ -170,20 +170,20 @@ export default function Login() {
             >
               <TextInput
                 style={styles.textInput}
-                secureTextEntry={isPasswordVisible}
-                value={password}
+                secureTextEntry={isSenhaVisible}
+                value={senha}
                 onChangeText={(text) => {
-                  setPassword(text);
+                  setSenha(text);
                 }}
               />
               <TouchableOpacity
                 style={styles.showPasswordButton}
                 onPress={() => {
-                  setIsPasswordVisible(!isPasswordVisible);
+                  setIsSenhaVisible(!isSenhaVisible);
                 }}
               >
                 <FontAwesome5
-                  name={isPasswordVisible ? "eye" : "eye-slash"}
+                  name={isSenhaVisible ? "eye" : "eye-slash"}
                   size={24}
                   color={"#d581a1"}
                 />
