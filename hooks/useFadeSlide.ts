@@ -5,7 +5,7 @@ export function useFadeSlide(initialOpacity = 0, initialOffset = 150) {
   const fadeAnim = useRef(new Animated.Value(initialOpacity)).current;
   const slideAnim = useRef(new Animated.Value(initialOffset)).current;
 
-  const fadeIn = (duration = 1200) => {
+  const fadeIn = (duration = 1200, callback?: () => void) => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -18,10 +18,10 @@ export function useFadeSlide(initialOpacity = 0, initialOffset = 150) {
         easing: Easing.out(Easing.cubic), // começa rápido e desacelera
         useNativeDriver: true,
       }),
-    ]).start();
+    ]).start(() => callback?.());
   };
 
-  const fadeOut = async (duration = 300) => {
+  const fadeOut = (duration = 300, callback?: () => void) => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 0,
@@ -33,7 +33,7 @@ export function useFadeSlide(initialOpacity = 0, initialOffset = 150) {
         duration,
         useNativeDriver: true,
       }),
-    ]).start();
+    ]).start(() => callback?.());
   };
 
   return { fadeAnim, slideAnim, fadeIn, fadeOut };

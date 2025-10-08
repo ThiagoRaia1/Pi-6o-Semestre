@@ -12,73 +12,29 @@ import React, { useEffect, useState } from "react";
 import { IAluno } from "../../../interfaces/aluno";
 import { formatDateToBR } from "../../../utils/formatDate";
 import { colors } from "../../../utils/colors";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { pageNames } from "../../../utils/pageNames";
 import { useFadeSlide } from "../../../hooks/useFadeSlide";
 import Loading from "../../../components/Loading";
 import MenuButton from "../../../components/MenuButton";
+import { IUser } from "../../../interfaces/user";
+import { getUsers } from "../../../services/usuarios";
 
 export default function Alunos() {
   const { fadeAnim, slideAnim, fadeIn, fadeOut } = useFadeSlide();
   const globalStyles = getGlobalStyles();
+
   const [alunos, setAlunos] = useState<IAluno[]>([]);
-  const [searchText, setSearchText] = useState<string>("");
+  const [users, setUsers] = useState<IUser[]>([]);
+
   const [filteredAlunos, setFilteredAlunos] = useState<IAluno[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
+  const [searchText, setSearchText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    const loadAlunos = async () => {
-      try {
-        setIsLoading(true);
-        const lista = await getAlunos();
-        setAlunos(lista);
-        setFilteredAlunos(lista);
-      } catch (erro: any) {
-        alert(erro.message);
-      } finally {
-        setIsLoading(false);
-        fadeIn(); // entra animado
-      }
-    };
-    loadAlunos();
-  }, []);
+  const { subPage } = useLocalSearchParams();
 
-  // Filtra alunos por nome, email ou CPF
-  useEffect(() => {
-    const filtered = alunos.filter(
-      (a) =>
-        a.name.toLowerCase().includes(searchText.toLowerCase()) ||
-        a.email.toLowerCase().includes(searchText.toLowerCase()) ||
-        a.cpf.toLowerCase().includes(searchText.toLowerCase())
-    );
-    setFilteredAlunos(filtered);
-  }, [searchText, alunos]);
-
-  const onPressListar = async (tableName: string) => {
-    try {
-      setIsLoading(true);
-      if (tableName === "Alunos") {
-        router.setParams({ subPage: pageNames.alunos });
-        const lista = await getAlunos();
-        setAlunos(lista);
-        setFilteredAlunos(lista);
-      }
-      if (tableName === "Instrutores") {
-        router.setParams({ subPage: pageNames.equipe });
-        // FEAT ME: Alterar para que pegue os dados dos instrutores
-        // const lista = await getAlunos();
-        // setAlunos(lista);
-        // setFilteredAlunos(lista);
-      }
-    } catch (erro: any) {
-      alert(erro.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const tableHead = [
-    "ID",
+  const tableHeadAlunos = [
     "Nome",
     "CPF",
     "Data de Nascimento",
@@ -86,14 +42,89 @@ export default function Alunos() {
     "Telefone",
   ];
 
-  const tableData = filteredAlunos.map((a) => [
-    a.id,
-    a.name,
-    a.cpf,
-    formatDateToBR(a.birthDate),
-    a.email,
-    a.cellphone,
-  ]);
+  const tableHeadUsuarios = ["Email", "Nome"];
+
+  const tableHead =
+    subPage === pageNames.equipe ? tableHeadUsuarios : tableHeadAlunos;
+
+  const tableData =
+    subPage === pageNames.equipe
+      ? filteredUsers.map((u) => [u.email, u.nome])
+      : filteredAlunos.map((a) => [
+          a.nome,
+          a.cpf,
+          formatDateToBR(a.dataNascimento),
+          a.email,
+          a.telefone,
+        ]);
+
+  const tableTitle =
+    subPage === pageNames.equipe ? "Tabela de Instrutores" : "Tabela de Alunos";
+
+  const placeholderText =
+    subPage === pageNames.equipe
+      ? "Pesquisar por nome ou e-mail..."
+      : "Pesquisar por nome, e-mail ou CPF...";
+
+  const loadData = async () => {
+    try {
+      setIsLoading(true);
+      const listaAlunos: IAluno[] = await getAlunos();
+      setAlunos(listaAlunos);
+      setFilteredAlunos(listaAlunos);
+
+      const listaUsers = await getUsers();
+      setUsers(listaUsers);
+      setFilteredUsers(listaUsers);
+    } catch (erro: any) {
+      alert(erro.message);
+    } finally {
+      setIsLoading(false);
+      fadeIn();
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    if (subPage === pageNames.alunos) {
+      const filtered = alunos.filter(
+        (a) =>
+          a.nome.toLowerCase().includes(searchText.toLowerCase()) ||
+          a.email.toLowerCase().includes(searchText.toLowerCase()) ||
+          a.cpf.toLowerCase().includes(searchText.toLowerCase())
+      );
+      setFilteredAlunos(filtered);
+    } else if (subPage === pageNames.equipe) {
+      const filtered = users.filter(
+        (u) =>
+          u.nome?.toLowerCase().includes(searchText.toLowerCase()) ||
+          u.email.toLowerCase().includes(searchText.toLowerCase())
+      );
+      setFilteredUsers(filtered);
+    }
+  }, [searchText, subPage]);
+
+  const onPressListar = async (tableName: string) => {
+    try {
+      setIsLoading(true);
+      fadeOut(100, () => {
+        if (tableName === "Alunos") {
+          router.setParams({ subPage: pageNames.alunos });
+        }
+        if (tableName === "Instrutores") {
+          router.setParams({ subPage: pageNames.equipe });
+        }
+        fadeIn();
+      });
+    } catch (erro: any) {
+      alert(erro.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const styles = StyleSheet.create({
     header: {
@@ -122,6 +153,12 @@ export default function Alunos() {
       width: "100%",
       backgroundColor: "white",
     },
+    tableTitle: {
+      fontSize: 32,
+      fontWeight: "200",
+      textAlign: "center",
+      marginTop: 10,
+    },
   });
 
   return (
@@ -132,15 +169,11 @@ export default function Alunos() {
           options={[
             {
               label: "Alunos",
-              onPress: () => {
-                onPressListar("Alunos");
-              },
+              onPress: () => onPressListar("Alunos"),
             },
             {
               label: "Instrutores",
-              onPress: () => {
-                onPressListar("Instrutores");
-              },
+              onPress: () => onPressListar("Instrutores"),
             },
           ]}
           color={colors.buttonMainColor}
@@ -158,10 +191,14 @@ export default function Alunos() {
           },
         ]}
       >
-        {/* Barra de pesquisa */}
+        <Animated.Text style={[styles.tableTitle, { opacity: fadeAnim }]}>
+          {tableTitle}
+        </Animated.Text>
+
         <TextInput
           style={styles.searchInput}
-          placeholder="Pesquisar por nome, email ou CPF..."
+          placeholder={placeholderText}
+          placeholderTextColor={"#aaa"}
           value={searchText}
           onChangeText={setSearchText}
         />
@@ -188,6 +225,7 @@ export default function Alunos() {
           </View>
         </ScrollView>
       </Animated.View>
+
       {isLoading && <Loading />}
     </View>
   );
