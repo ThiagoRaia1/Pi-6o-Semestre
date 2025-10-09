@@ -19,6 +19,7 @@ import Loading from "../../../components/Loading";
 import MenuButton from "../../../components/MenuButton";
 import { IUser } from "../../../interfaces/user";
 import { getUsers } from "../../../services/usuarios";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 export default function Alunos() {
   const { fadeAnim, slideAnim, fadeIn, fadeOut } = useFadeSlide();
@@ -177,6 +178,7 @@ export default function Alunos() {
             },
           ]}
           color={colors.buttonMainColor}
+          icon={{ component: FontAwesome6, name: "contact-book", size: 22 }}
         />
         <MenuButton label="Placeholder" />
         <MenuButton label="Placeholder" />

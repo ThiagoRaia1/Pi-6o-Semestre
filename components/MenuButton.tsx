@@ -180,6 +180,9 @@ export default function MenuButton({
       onHoverOut={() =>
         options && Platform.OS === "web" && setDropdownVisible(false)
       }
+      onPress={() =>
+        options && setDropdownVisible(!dropdownVisible)
+      }
     >
       <TouchableOpacity
         style={[

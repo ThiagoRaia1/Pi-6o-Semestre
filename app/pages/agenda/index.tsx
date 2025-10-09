@@ -13,6 +13,7 @@ import Loading from "../../../components/Loading";
 import MenuButton from "../../../components/MenuButton";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import NextClasses from "./nextClasses";
 
 export default function Agenda() {
   const { fadeAnim, slideAnim, fadeIn } = useFadeSlide();
@@ -24,6 +25,9 @@ export default function Agenda() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [isAgendarModalVisible, setIsAgendarModalVisible] =
+    useState<boolean>(false);
+
+  const [isNextClassesVisible, setIsNextClassesVisible] =
     useState<boolean>(false);
 
   LocaleConfig.locales["pt-br"] = {
@@ -126,6 +130,10 @@ export default function Agenda() {
     setIsAgendarModalVisible(!isAgendarModalVisible);
   };
 
+  const openCloseNextClasses = () => {
+    setIsNextClassesVisible(!isNextClassesVisible);
+  };
+
   return (
     <View style={globalStyles.container}>
       <View style={globalStyles.topBarMainMenuOptionsContainer}>
@@ -144,9 +152,10 @@ export default function Agenda() {
           icon={{
             component: MaterialCommunityIcons,
             name: "page-next-outline",
-            size: 20,
+            size: 22,
             color: "white",
           }}
+          onPress={openCloseNextClasses}
         />
         <MenuButton
           label="Planejar aula"
@@ -315,6 +324,9 @@ export default function Agenda() {
           data={selectedDay}
           openCloseModal={openCloseAgendarModal}
         />
+      )}
+      {isNextClassesVisible && (
+        <NextClasses aulas={aulas} closeModal={openCloseNextClasses} />
       )}
     </View>
   );

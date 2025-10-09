@@ -27,7 +27,9 @@ export const getGlobalStyles = () =>
       minHeight: 70,
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "space-evenly",
+      justifyContent: "flex-end",
+      paddingHorizontal: 64,
+      gap: 40,
       zIndex: 9,
     },
     topBarSubMenuOptionsContainer: {

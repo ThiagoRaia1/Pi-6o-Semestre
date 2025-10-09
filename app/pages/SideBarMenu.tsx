@@ -39,6 +39,7 @@ export default function SideBarMenu() {
           paddingHorizontal: 20,
           backgroundColor: colors.main,
           alignItems: "center",
+          zIndex: 999
         },
       ]}
     >
