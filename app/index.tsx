@@ -46,9 +46,6 @@ export default function Login() {
       height: "100%",
       padding: 60,
       backgroundColor: colors.main,
-      boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.6)",
-      borderTopLeftRadius: isLaptop ? 20 : 0,
-      borderBottomLeftRadius: isLaptop ? 20 : 0,
       alignItems: "center",
     },
     loginItemsContainer: {
@@ -57,7 +54,7 @@ export default function Login() {
       justifyContent: "center",
       alignItems: "center",
       gap: 20,
-      marginBottom: 30,
+      marginBottom: 40,
       maxWidth: 500,
     },
     label: {
@@ -68,7 +65,7 @@ export default function Login() {
       marginLeft: 10,
     },
     labelInputContainer: {
-      width: "100%",
+      width: "80%",
       alignItems: "center",
       gap: 5,
     },
@@ -79,7 +76,7 @@ export default function Login() {
       borderRadius: 20,
       paddingHorizontal: 16,
       color: textInputMainColor,
-      fontSize: 16,
+      fontSize: 18,
       justifyContent: "center",
       alignItems: "center",
       outlineStyle: "none" as any,
@@ -137,8 +134,8 @@ export default function Login() {
       {isLaptop && (
         <Image
           source={require("../assets/LoginMainImage.png")}
-          resizeMode="center"
-          style={{ flex: 5 }}
+          resizeMode="cover"
+          style={{ flex: 4, height: "100%", margin: 100,  }}
         />
       )}
 
@@ -146,7 +143,9 @@ export default function Login() {
         <View style={styles.loginItemsContainer}>
           <DefaultProfileIcon size={100} />
           <View style={styles.labelInputContainer}>
-            <Text style={styles.label}>Email</Text>
+            <Text style={styles.label} selectable={false}>
+              Email
+            </Text>
             <TextInput
               style={styles.textInput}
               value={email}
@@ -157,7 +156,9 @@ export default function Login() {
           </View>
 
           <View style={styles.labelInputContainer}>
-            <Text style={styles.label}>Senha</Text>
+            <Text style={styles.label} selectable={false}>
+              Senha
+            </Text>
             <View
               style={[
                 styles.textInput,
@@ -192,7 +193,7 @@ export default function Login() {
           </View>
 
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Login</Text>
+            <Text style={styles.buttonText}>LOGIN</Text>
           </TouchableOpacity>
         </View>
       </View>

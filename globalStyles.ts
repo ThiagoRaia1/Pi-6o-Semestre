@@ -1,8 +1,11 @@
 import { StyleSheet } from "react-native";
 import { colors } from "./utils/colors";
+import { useBreakpoint } from "./hooks/useBreakpoint";
 
-export const getGlobalStyles = () =>
-  StyleSheet.create({
+export const getGlobalStyles = () => {
+  const { isDesktop } = useBreakpoint();
+
+  return StyleSheet.create({
     container: {
       flex: 1,
       width: "100%",
@@ -17,20 +20,10 @@ export const getGlobalStyles = () =>
       justifyContent: "center",
       alignItems: "center",
       gap: 20,
-      backgroundColor: "#eee",
+      // backgroundColor: "#eee",
       zIndex: 1,
       paddingBottom: 16,
-      paddingHorizontal: 64,
-    },
-    topBarMainMenuOptionsContainer: {
-      width: "100%",
-      minHeight: 70,
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "flex-end",
-      paddingHorizontal: 64,
-      gap: 40,
-      zIndex: 9,
+      paddingHorizontal: isDesktop ? 64 : 16,
     },
     topBarSubMenuOptionsContainer: {
       width: "100%",
@@ -43,3 +36,4 @@ export const getGlobalStyles = () =>
       zIndex: 8,
     },
   });
+};

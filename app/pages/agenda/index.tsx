@@ -1,5 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Animated } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Animated,
+  TouchableOpacity,
+} from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { getGlobalStyles } from "../../../globalStyles";
 import { colors } from "../../../utils/colors";
@@ -14,8 +21,13 @@ import MenuButton from "../../../components/MenuButton";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import NextClasses from "./nextClasses";
+import TopBar from "../../../components/TopBar";
 
-export default function Agenda() {
+type AgendaProps = {
+  onToggleNextClasses?: (visible: boolean) => void;
+};
+
+export default function Agenda({ onToggleNextClasses }: AgendaProps) {
   const { fadeAnim, slideAnim, fadeIn } = useFadeSlide();
   const globalStyles = getGlobalStyles();
   const [selectedDay, setSelectedDay] = useState<string>(
@@ -131,42 +143,89 @@ export default function Agenda() {
   };
 
   const openCloseNextClasses = () => {
-    setIsNextClassesVisible(!isNextClassesVisible);
+    const newValue = !isNextClassesVisible;
+    setIsNextClassesVisible(newValue);
+    onToggleNextClasses?.(newValue); // avisa o MainPage
   };
+
+  const styles = StyleSheet.create({
+    title: {
+      fontWeight: "300",
+      fontSize: 24,
+      marginBottom: 12,
+      marginTop: -12,
+    },
+    classCard: {
+      backgroundColor: "white",
+      padding: 16,
+      borderRadius: 12,
+      marginBottom: 12,
+      boxShadow: "0px, 2px, 6px, rgba(0, 0, 0, 0.1)",
+    },
+    classTitle: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: "#0033A0",
+    },
+    classSub: {
+      color: "#555",
+      marginTop: 4,
+    },
+    noClass: {
+      color: "#888",
+      marginTop: 10,
+      fontStyle: "italic",
+    },
+    button: {
+      backgroundColor: colors.buttonMainColor,
+      paddingVertical: 5,
+      paddingHorizontal: 15,
+      justifyContent: "center",
+      alignItems: "center",
+      borderRadius: 10,
+    },
+    buttonText: {
+      fontSize: 14,
+      color: "white",
+      fontWeight: 600,
+    },
+  });
 
   return (
     <View style={globalStyles.container}>
-      <View style={globalStyles.topBarMainMenuOptionsContainer}>
-        <MenuButton
-          label="Registrar aula"
-          onPress={openCloseAgendarModal}
-          icon={{
-            component: FontAwesome,
-            name: "calendar",
-            size: 20,
-            color: "white",
-          }}
-        />
-        <MenuButton
-          label="Próximas aulas"
-          icon={{
-            component: MaterialCommunityIcons,
-            name: "page-next-outline",
-            size: 22,
-            color: "white",
-          }}
-          onPress={openCloseNextClasses}
-        />
-        <MenuButton
-          label="Planejar aula"
-          icon={{
-            component: MaterialCommunityIcons,
-            name: "robot-excited-outline",
-            size: 24,
-            color: "white",
-          }}
-        />
-      </View>
+      <TopBar
+        menuButtons={[
+          <MenuButton
+            label="Registrar aula"
+            onPress={openCloseAgendarModal}
+            icon={{
+              component: FontAwesome,
+              name: "calendar",
+              size: 20,
+              color: "white",
+            }}
+          />,
+          <MenuButton
+            label="Próximas aulas"
+            icon={{
+              component: MaterialCommunityIcons,
+              name: "page-next-outline",
+              size: 22,
+              color: "white",
+            }}
+            onPress={openCloseNextClasses}
+          />,
+          // <MenuButton
+          //   label="Planejar aula"
+          //   icon={{
+          //     component: MaterialCommunityIcons,
+          //     name: "robot-excited-outline",
+          //     size: 24,
+          //     color: "white",
+          //   }}
+          // />,
+        ]}
+      />
 
       <Animated.View
         style={[
@@ -286,29 +345,57 @@ export default function Agenda() {
               selectedDay && formatDateToBR(new Date(selectedDay))
             }`}
           </Text>
-          <ScrollView contentContainerStyle={{ paddingRight: 12 }}>
+          <ScrollView>
             {aulasDoDia.length > 0 ? (
               aulasDoDia.map((c) => (
                 <View key={c.id} style={styles.classCard}>
-                  {/* horário da aula */}
-                  <Text style={styles.classTitle}>
-                    {new Date(c.data).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </Text>
-
-                  <Text>{`Instrutor: ${c.usuario.nome}`}</Text>
-                  {/* lista de alunos */}
-                  {c.alunos && c.alunos.length > 0 ? (
-                    c.alunos.map((aluno) => (
-                      <Text key={aluno.id} style={styles.classSub}>
-                        {aluno.nome}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <View>
+                      {/* horário da aula */}
+                      <Text style={styles.classTitle}>
+                        {new Date(c.data).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </Text>
-                    ))
-                  ) : (
-                    <Text style={styles.classSub}>Nenhum aluno</Text>
-                  )}
+
+                      <Text>{`Instrutor: ${c.usuario.nome}`}</Text>
+                      {/* lista de alunos */}
+                      {c.alunos && c.alunos.length > 0 ? (
+                        c.alunos.map((aluno) => (
+                          <Text key={aluno.id} style={styles.classSub}>
+                            {aluno.nome}
+                          </Text>
+                        ))
+                      ) : (
+                        <Text style={styles.classSub}>Nenhum aluno</Text>
+                      )}
+                    </View>
+                    <View style={{ gap: 10 }}>
+                      <TouchableOpacity style={styles.button}>
+                        <Text style={styles.buttonText}>Editar</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity style={styles.button}>
+                        <Text style={styles.buttonText}>Planejar aula</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={[
+                          styles.button,
+                          { backgroundColor: colors.cancelColor },
+                        ]}
+                      >
+                        <Text style={styles.buttonText}>Excluir aula</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 </View>
               ))
             ) : (
@@ -331,38 +418,3 @@ export default function Agenda() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f4f6f8",
-    padding: 16,
-  },
-  title: {
-    fontWeight: "300",
-    fontSize: 24,
-    marginBottom: 12,
-    marginTop: -12,
-  },
-  classCard: {
-    backgroundColor: "white",
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    boxShadow: "0px, 2px, 6px, rgba(0, 0, 0, 0.1)",
-  },
-  classTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#0033A0",
-  },
-  classSub: {
-    color: "#555",
-    marginTop: 4,
-  },
-  noClass: {
-    color: "#888",
-    marginTop: 10,
-    fontStyle: "italic",
-  },
-});

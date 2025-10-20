@@ -21,7 +21,7 @@ export default function NextClasses({ aulas, closeModal }: NextClassesProps) {
   const [aulasOrdenadas, setAulasOrdenadas] = useState<IAula[]>(aulas);
 
   // sidebar
-  const sidebarAnim = useRef(new Animated.Value(-400)).current;
+  const sidebarAnim = useRef(new Animated.Value(-sidePanelWidth)).current;
   const overlayAnim = useRef(new Animated.Value(0)).current;
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -47,7 +47,7 @@ export default function NextClasses({ aulas, closeModal }: NextClassesProps) {
   const closeSidebar = (callback?: () => void) => {
     Animated.parallel([
       Animated.timing(sidebarAnim, {
-        toValue: -400,
+        toValue: -sidePanelWidth,
         duration: 300,
         useNativeDriver: true,
       }),
@@ -193,6 +193,7 @@ export default function NextClasses({ aulas, closeModal }: NextClassesProps) {
                   minute: "2-digit",
                 })}
               </Text>
+              <Text style={styles.text}>{`Instrutor: ${a.usuario.nome}`}</Text>
 
               {a.alunos.length ? (
                 a.alunos.map((aluno, idx) => (

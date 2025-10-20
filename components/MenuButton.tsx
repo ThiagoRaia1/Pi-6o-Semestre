@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import { colors } from "../utils/colors";
+import { useBreakpoint } from "../hooks/useBreakpoint";
 
 // tipo para menu
 type MenuOption = {
@@ -49,7 +50,7 @@ type MenuButtonProps = {
   icon?: {
     component: any; // Componente do ícone (ex: Entypo, Ionicons, etc)
     name: string; // nome do ícone
-    size?: number;
+    size: number;
     color?: string;
   };
 };
@@ -67,8 +68,10 @@ export default function MenuButton({
 }: MenuButtonProps) {
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
+  const { isMobile, isTablet } = useBreakpoint();
+
   const mainColor: string = "white";
-  const dropdownIconSize: number = 20;
+  const dropdownIconSize: number = isTablet ? 10 : 20;
 
   // animações
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -78,6 +81,27 @@ export default function MenuButton({
   const animationDuration = 400;
 
   const styles = StyleSheet.create({
+    button: {
+      flexDirection: "row",
+      width: "100%",
+      height: 40,
+      minWidth: isMobile ? undefined : isTablet ? 130 : 200,
+      maxWidth: maxWidth && maxWidth,
+      padding: padding,
+      gap: 10,
+      borderRadius: 10,
+      zIndex: 10,
+      backgroundColor: color ? color : colors.buttonMainColor,
+      alignItems: "center",
+      justifyContent: "center",
+      boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)",
+    },
+    buttonText: {
+      color: mainColor,
+      textAlign: "center",
+      fontSize: isMobile || isTablet ? fontSize / 1.5 : fontSize,
+      fontWeight: fontWeight,
+    },
     dropdown: {
       position: "absolute",
       width: "100%",
@@ -97,26 +121,6 @@ export default function MenuButton({
     dropdownText: {
       color: mainColor,
       fontSize: 14,
-    },
-    topBarMainMenuOptionsButton: {
-      flexDirection: "row",
-      width: "100%",
-      minWidth: 200,
-      maxWidth: maxWidth && maxWidth,
-      padding: padding,
-      gap: 10,
-      borderRadius: 10,
-      zIndex: 10,
-      backgroundColor: color ? color : colors.buttonMainColor,
-      alignItems: "center",
-      justifyContent: "center",
-      boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)",
-    },
-    topBarMainMenuOptionsButtonText: {
-      color: mainColor,
-      textAlign: "center",
-      fontSize: fontSize,
-      fontWeight: fontWeight,
     },
   });
 
@@ -180,13 +184,11 @@ export default function MenuButton({
       onHoverOut={() =>
         options && Platform.OS === "web" && setDropdownVisible(false)
       }
-      onPress={() =>
-        options && setDropdownVisible(!dropdownVisible)
-      }
+      onPress={() => options && setDropdownVisible(!dropdownVisible)}
     >
       <TouchableOpacity
         style={[
-          styles.topBarMainMenuOptionsButton,
+          styles.button,
           { paddingLeft: IconComponent && 5 }, // se tiver ícone aplica 5, senão aplica o padrão definido no estilo
         ]}
         onPress={() => {
@@ -202,15 +204,21 @@ export default function MenuButton({
       >
         {/* Ícone opcional */}
         {/* renderiza apenas se o icone passado existir ou for valido */}
-        {IconComponent && (
+        {IconComponent && !isMobile && (
           <IconComponent
             name={icon.name}
-            size={icon.size || 18}
+            size={
+              isTablet
+                ? icon.size / 1.2
+                : isMobile
+                ? icon.size / 1.5
+                : icon.size || 18
+            }
             color={icon.color || mainColor}
           />
         )}
 
-        <Text style={styles.topBarMainMenuOptionsButtonText}>{label}</Text>
+        <Text style={styles.buttonText}>{label}</Text>
 
         {/* Chevron de dropdown */}
         {options && (

@@ -20,6 +20,7 @@ import MenuButton from "../../../components/MenuButton";
 import { IUser } from "../../../interfaces/user";
 import { getUsers } from "../../../services/usuarios";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import TopBar from "../../../components/TopBar";
 
 export default function Alunos() {
   const { fadeAnim, slideAnim, fadeIn, fadeOut } = useFadeSlide();
@@ -164,25 +165,27 @@ export default function Alunos() {
 
   return (
     <View style={globalStyles.container}>
-      <View style={globalStyles.topBarMainMenuOptionsContainer}>
-        <MenuButton
-          label="Listar"
-          options={[
-            {
-              label: "Alunos",
-              onPress: () => onPressListar("Alunos"),
-            },
-            {
-              label: "Instrutores",
-              onPress: () => onPressListar("Instrutores"),
-            },
-          ]}
-          color={colors.buttonMainColor}
-          icon={{ component: FontAwesome6, name: "contact-book", size: 22 }}
-        />
-        <MenuButton label="Placeholder" />
-        <MenuButton label="Placeholder" />
-      </View>
+      <TopBar
+        menuButtons={[
+          <MenuButton
+            label="Listar"
+            options={[
+              {
+                label: "Alunos",
+                onPress: () => onPressListar("Alunos"),
+              },
+              {
+                label: "Instrutores",
+                onPress: () => onPressListar("Instrutores"),
+              },
+            ]}
+            color={colors.buttonMainColor}
+            icon={{ component: FontAwesome6, name: "contact-book", size: 22 }}
+          />,
+          <MenuButton label="Placeholder" />,
+          <MenuButton label="Placeholder" />,
+        ]}
+      />
 
       <Animated.View
         style={[

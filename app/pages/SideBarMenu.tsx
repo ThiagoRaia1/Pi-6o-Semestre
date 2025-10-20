@@ -8,7 +8,11 @@ import { useAuth } from "../../context/AuthProvider";
 import DefaultProfileIcon from "../../components/DefaultProfileIcon";
 import MenuButton from "../../components/MenuButton";
 
-export default function SideBarMenu() {
+type SideBarMenuProps = {
+  shadow?: boolean;
+};
+
+export default function SideBarMenu({ shadow }: SideBarMenuProps) {
   const { isAuthenticated, logout, nome } = useAuth();
   const globalStyles = getGlobalStyles();
 
@@ -39,8 +43,9 @@ export default function SideBarMenu() {
           paddingHorizontal: 20,
           backgroundColor: colors.main,
           alignItems: "center",
-          zIndex: 999
+          zIndex: 999,
         },
+        shadow && { boxShadow: "5px 0px 10px rgba(0, 0, 0, 0.4)" },
       ]}
     >
       <View style={styles.sideBarContent}>
