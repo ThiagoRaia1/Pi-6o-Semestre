@@ -7,6 +7,18 @@ export async function getAulas(): Promise<IAula[]> {
   });
 }
 
+export async function getAulasRegistradas(data: string): Promise<string[]> {
+  return await httpClient(`/aulas/registradas/${data}`, {
+    method: "GET",
+  });
+}
+
+export async function getHorariosAulasCheias(data: string): Promise<string[]> {
+  return await httpClient(`/aulas/cheias/${data}`, {
+    method: "GET",
+  });
+}
+
 export async function createAula(
   data: Date,
   usuarioId: number,

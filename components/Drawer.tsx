@@ -13,7 +13,7 @@ import MenuButton from "./MenuButton";
 import { router } from "expo-router";
 import { pageNames, pagePathnames } from "../utils/pageNames";
 import logout from "../app/auth/logout";
-import { breakpoints } from "../utils/breakpoints";
+import { breakpoints } from "../hooks/useBreakpoint";
 
 type DrawerProps = {
   closeModal: () => void;
