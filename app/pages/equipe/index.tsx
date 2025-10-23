@@ -1,6 +1,5 @@
 import { View, Text } from "react-native";
 import { getGlobalStyles } from "../../../globalStyles";
-import MenuButton from "../../components/MenuButton";
 
 export default function Equipe() {
   const globalStyles = getGlobalStyles();

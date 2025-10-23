@@ -13,16 +13,16 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { pageNames, pagePathnames } from "../utils/pageNames";
 import { router } from "expo-router";
 import { colors } from "../utils/colors";
-import { breakpoints } from "../utils/breakpoints";
 import { ILoginResponse, Login as LoginApi } from "../services/auth/login";
 import { useAuth } from "../context/AuthProvider";
 import DefaultProfileIcon from "../components/DefaultProfileIcon";
 import Loading from "../components/Loading";
+import { useBreakpoint } from "../hooks/useBreakpoint";
 
 export default function Login() {
   const { login, logout } = useAuth();
-  const width: number = useWindowDimensions().width;
-  const isLaptop: boolean = width >= breakpoints.laptop;
+  const { isLaptop, isDesktop } = useBreakpoint();
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const globalStyles = getGlobalStyles();
@@ -131,11 +131,11 @@ export default function Login() {
 
   return (
     <View style={[globalStyles.container, { flexDirection: "row" }]}>
-      {isLaptop && (
+      {(isLaptop || isDesktop) && (
         <Image
           source={require("../assets/LoginMainImage.png")}
           resizeMode="cover"
-          style={{ flex: 4, height: "100%", margin: 100,  }}
+          style={{ flex: 5, height: "100%" }}
         />
       )}
 

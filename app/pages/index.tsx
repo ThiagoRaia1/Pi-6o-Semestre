@@ -31,7 +31,7 @@ export default function MainPage() {
 
   return (
     <View style={[globalStyles.container, { flexDirection: "row" }]}>
-      {(isLaptop || isDesktop) && <SideBarMenu shadow={isNextClassesVisible} />}
+      {isDesktop && <SideBarMenu shadow={isNextClassesVisible} />}
       {/* Main View */}
       <View style={styles.mainContent}>
         <ImageBackground

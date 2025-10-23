@@ -20,7 +20,7 @@ export default function TopBar({ menuButtons }: TopBarProps) {
       flexDirection: "row",
       width: "100%",
       paddingHorizontal: isDesktop ? 64 : 16,
-      minHeight: 70,
+      paddingVertical: 10,
       alignItems: "center",
       justifyContent: isDesktop ? "flex-end" : "space-between",
       gap: isMobile ? 10 : 40,

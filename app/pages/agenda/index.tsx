@@ -10,7 +10,7 @@ import {
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { getGlobalStyles } from "../../../globalStyles";
 import { colors } from "../../../utils/colors";
-import { getAulas } from "../../../services/aulas";
+import { deleteAula, getAulas } from "../../../services/aulas";
 import { IAula } from "../../../interfaces/aula";
 import { DateDataToString, formatDateToBR } from "../../../utils/formatDate";
 import Feather from "@expo/vector-icons/Feather";
@@ -22,6 +22,8 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import NextClasses from "./nextClasses";
 import TopBar from "../../../components/TopBar";
+import { router } from "expo-router";
+import { pagePathnames, pageNames } from "../../../utils/pageNames";
 
 type AgendaProps = {
   onToggleNextClasses?: (visible: boolean) => void;
@@ -159,8 +161,8 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
       backgroundColor: "white",
       padding: 16,
       borderRadius: 12,
-      marginBottom: 12,
-      boxShadow: "0px, 2px, 6px, rgba(0, 0, 0, 0.1)",
+      borderWidth: 1,
+      borderColor: "#aaa",
     },
     classTitle: {
       fontSize: 16,
@@ -190,6 +192,20 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
       fontWeight: 600,
     },
   });
+
+  const handleDeleteClass = async (aulaId: number) => {
+    try {
+      const resultado = await deleteAula(aulaId);
+
+      alert("Aula deletada com sucesso!");
+      router.push({
+        pathname: pagePathnames.pages,
+        params: { pageName: pageNames.agenda.main, subPage: "AGENDAR AULA" },
+      });
+    } catch (erro: any) {
+      alert(erro.message);
+    }
+  };
 
   return (
     <View style={globalStyles.container}>
@@ -345,7 +361,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
               selectedDay && formatDateToBR(new Date(selectedDay))
             }`}
           </Text>
-          <ScrollView>
+          <ScrollView contentContainerStyle={{ gap: 10 }}>
             {aulasDoDia.length > 0 ? (
               aulasDoDia.map((c) => (
                 <View key={c.id} style={styles.classCard}>
@@ -391,6 +407,9 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
                           styles.button,
                           { backgroundColor: colors.cancelColor },
                         ]}
+                        onPress={() => {
+                          handleDeleteClass(c.id);
+                        }}
                       >
                         <Text style={styles.buttonText}>Excluir aula</Text>
                       </TouchableOpacity>

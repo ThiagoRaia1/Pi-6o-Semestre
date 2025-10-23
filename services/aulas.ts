@@ -23,3 +23,9 @@ export async function createAula(
     body: JSON.stringify({ data, usuarioId, alunosIds }),
   });
 }
+
+export async function deleteAula(id: number) {
+  return await httpClient(`/aulas/${id}`, {
+    method: "DELETE",
+  });
+}

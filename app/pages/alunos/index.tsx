@@ -21,6 +21,7 @@ import { IUser } from "../../../interfaces/user";
 import { getUsers } from "../../../services/usuarios";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import TopBar from "../../../components/TopBar";
+import { useBreakpoint } from "../../../hooks/useBreakpoint";
 
 export default function Alunos() {
   const { fadeAnim, slideAnim, fadeIn, fadeOut } = useFadeSlide();
@@ -35,6 +36,8 @@ export default function Alunos() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { subPage } = useLocalSearchParams();
+
+  const { isMobile } = useBreakpoint();
 
   const tableHeadAlunos = [
     "Nome",
@@ -135,6 +138,7 @@ export default function Alunos() {
       width: "100%",
     },
     headerText: {
+      fontSize: isMobile ? 12 : 16,
       textAlign: "center",
       fontWeight: "bold",
       color: "white",
@@ -145,13 +149,14 @@ export default function Alunos() {
     },
     rowText: {
       textAlign: "center",
+      fontSize: isMobile ? 12 : 16,
       padding: 10,
     },
     searchInput: {
       borderWidth: 1,
       borderColor: colors.main,
       borderRadius: 8,
-      padding: 16,
+      padding: 12,
       width: "100%",
       backgroundColor: "white",
     },
@@ -159,7 +164,6 @@ export default function Alunos() {
       fontSize: 32,
       fontWeight: "200",
       textAlign: "center",
-      marginTop: 10,
     },
   });
 
