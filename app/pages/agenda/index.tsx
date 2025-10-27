@@ -25,6 +25,7 @@ import TopBar from "../../../components/TopBar";
 import { router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { pagePathnames, pageNames } from "../../../utils/pageNames";
+import { gerarPlanoDeAula } from "../../../services/groq";
 
 type AgendaProps = {
   onToggleNextClasses?: (visible: boolean) => void;
@@ -217,6 +218,17 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
     try {
       setIsLoading(true);
       console.log(aula);
+
+      const descricoes = aula.alunos.map((a) => {
+        return a.descricao;
+      });
+
+      console.log(descricoes);
+
+      if (aula.alunos.length === 0) {
+        throw new Error("Registre pelo menos 1 aluno na aula para planejá-la.");
+      }
+      console.log(await gerarPlanoDeAula(descricoes));
     } catch (erro: any) {
       alert(erro.message);
     } finally {
