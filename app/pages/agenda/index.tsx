@@ -181,10 +181,10 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
     },
     button: {
       flexDirection: "row",
-      gap: 10,
+      gap: 20,
       backgroundColor: colors.buttonMainColor,
       paddingVertical: 5,
-      paddingHorizontal: 15,
+      paddingHorizontal: 10,
       justifyContent: "space-between",
       alignItems: "center",
       borderRadius: 10,
@@ -198,6 +198,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
 
   const handleDeleteClass = async (aulaId: number) => {
     try {
+      setIsLoading(true);
       const resultado = await deleteAula(aulaId);
 
       alert("Aula deletada com sucesso!");
@@ -207,6 +208,19 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
       });
     } catch (erro: any) {
       alert(erro.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const planClass = async (aula: IAula) => {
+    try {
+      setIsLoading(true);
+      console.log(aula);
+    } catch (erro: any) {
+      alert(erro.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -259,7 +273,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
           <Calendar
             enableSwipeMonths={true}
             onDayPress={(datePressed) => {
-              // console.log(aulasS);
+              // console.log(aulas);
               setSelectedDay(datePressed.dateString);
             }}
             markedDates={markedDates}
@@ -402,7 +416,12 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
                         <Feather name="edit" size={24} color="white" />
                       </TouchableOpacity>
 
-                      <TouchableOpacity style={styles.button}>
+                      <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => {
+                          planClass(c);
+                        }}
+                      >
                         <Text style={styles.buttonText}>Planejar aula</Text>
                         <MaterialCommunityIcons
                           name="robot-outline"

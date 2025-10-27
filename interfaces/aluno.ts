@@ -5,5 +5,6 @@ export interface IAluno {
   dataNascimento: Date;
   email: string;
   telefone: string;
+  descricao: string;
   isAtivo: boolean;
 }
