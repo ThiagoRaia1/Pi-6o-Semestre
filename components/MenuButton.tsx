@@ -189,7 +189,7 @@ export default function MenuButton({
       <TouchableOpacity
         style={[
           styles.button,
-          { paddingLeft: IconComponent && 5 }, // se tiver ícone aplica 5, senão aplica o padrão definido no estilo
+          { paddingRight: IconComponent && 15 }, // se tiver ícone aplica 15, senão aplica o padrão definido no estilo
         ]}
         onPress={() => {
           if (options) {
@@ -202,6 +202,19 @@ export default function MenuButton({
         }}
         disabled={Platform.OS === "web" && !!options}
       >
+        {/* Chevron de dropdown */}
+        {options && (
+          <Animated.View style={{ transform: [{ rotate }] }}>
+            <Entypo
+              name="chevron-down"
+              size={dropdownIconSize}
+              color={mainColor}
+            />
+          </Animated.View>
+        )}
+
+        <Text style={styles.buttonText}>{label}</Text>
+
         {/* Ícone opcional */}
         {/* renderiza apenas se o icone passado existir ou for valido */}
         {IconComponent && !isMobile && (
@@ -216,19 +229,6 @@ export default function MenuButton({
             }
             color={icon.color || mainColor}
           />
-        )}
-
-        <Text style={styles.buttonText}>{label}</Text>
-
-        {/* Chevron de dropdown */}
-        {options && (
-          <Animated.View style={{ transform: [{ rotate }] }}>
-            <Entypo
-              name="chevron-down"
-              size={dropdownIconSize}
-              color={mainColor}
-            />
-          </Animated.View>
         )}
       </TouchableOpacity>
 

@@ -23,6 +23,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import NextClasses from "./nextClasses";
 import TopBar from "../../../components/TopBar";
 import { router } from "expo-router";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { pagePathnames, pageNames } from "../../../utils/pageNames";
 
 type AgendaProps = {
@@ -179,17 +180,19 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
       fontStyle: "italic",
     },
     button: {
+      flexDirection: "row",
+      gap: 10,
       backgroundColor: colors.buttonMainColor,
       paddingVertical: 5,
       paddingHorizontal: 15,
-      justifyContent: "center",
+      justifyContent: "space-between",
       alignItems: "center",
       borderRadius: 10,
     },
     buttonText: {
-      fontSize: 14,
+      fontSize: 16,
       color: "white",
-      fontWeight: 600,
+      fontWeight: 500,
     },
   });
 
@@ -396,10 +399,16 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
                     <View style={{ gap: 10 }}>
                       <TouchableOpacity style={styles.button}>
                         <Text style={styles.buttonText}>Editar</Text>
+                        <Feather name="edit" size={24} color="white" />
                       </TouchableOpacity>
 
                       <TouchableOpacity style={styles.button}>
                         <Text style={styles.buttonText}>Planejar aula</Text>
+                        <MaterialCommunityIcons
+                          name="robot-outline"
+                          size={24}
+                          color="white"
+                        />
                       </TouchableOpacity>
 
                       <TouchableOpacity
@@ -412,6 +421,11 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
                         }}
                       >
                         <Text style={styles.buttonText}>Excluir aula</Text>
+                        <Ionicons
+                          name="trash-outline"
+                          size={24}
+                          color="white"
+                        />
                       </TouchableOpacity>
                     </View>
                   </View>

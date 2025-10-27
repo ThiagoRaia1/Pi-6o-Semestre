@@ -109,11 +109,6 @@ export default function RegistrarAula({
 
       const dataCompleta = new Date(`${data}T${selectedHora}`);
 
-      if (alunosSelecionados.length === 0) {
-        setErro("Selecione ao menos um aluno para registrar a aula.");
-        return;
-      }
-
       if (token) {
         const decoded = await decodeToken(token);
         await createAula(dataCompleta, decoded, alunosSelecionados);

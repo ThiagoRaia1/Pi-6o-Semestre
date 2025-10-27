@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 
 export async function httpClient(endpoint: string, options: RequestInit) {
   const token = await AsyncStorage.getItem("token");
@@ -18,7 +19,12 @@ export async function httpClient(endpoint: string, options: RequestInit) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.message || "Erro na requisição");
+    if (response.status === 403) {
+      router.push("/");
+      throw new Error("Sessão expirada. Faça login novamente.");
+    } else {
+      throw new Error(data.message || "Erro na requisição");
+    }
   }
 
   return data;
