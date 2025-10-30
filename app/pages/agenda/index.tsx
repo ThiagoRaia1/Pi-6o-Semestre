@@ -15,7 +15,7 @@ import { IAula } from "../../../interfaces/aula";
 import { DateDataToString, formatDateToBR } from "../../../utils/formatDate";
 import Feather from "@expo/vector-icons/Feather";
 import { useFadeSlide } from "../../../hooks/useFadeSlide";
-import RegistrarAula from "../../../modals/RegistrarAula";
+import RegistrarAula from "./RegistrarAula";
 import Loading from "../../../components/Loading";
 import MenuButton from "../../../components/MenuButton";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
@@ -26,6 +26,9 @@ import { router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { pagePathnames, pageNames } from "../../../utils/pageNames";
 import { gerarPlanoDeAula } from "../../../services/groq";
+import EditClass from "./editClass";
+import { IAluno } from "../../../interfaces/aluno";
+import { getAlunos } from "../../../services/alunos";
 
 type AgendaProps = {
   onToggleNextClasses?: (visible: boolean) => void;
@@ -38,6 +41,8 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
     new Date().toISOString().split("T")[0] // "YYYY-MM-DD"
   );
   const [aulas, setAulas] = useState<IAula[]>([]);
+  const [alunos, setAlunos] = useState<IAluno[]>([]);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [isAgendarModalVisible, setIsAgendarModalVisible] =
@@ -45,6 +50,9 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
 
   const [isNextClassesVisible, setIsNextClassesVisible] =
     useState<boolean>(false);
+
+  const [isEditClassVisible, setIsEditClassVisible] = useState<boolean>(false);
+  const [aulaSelecionada, setAulaSelecionada] = useState<IAula | null>(null);
 
   LocaleConfig.locales["pt-br"] = {
     monthNames: [
@@ -92,13 +100,16 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
   LocaleConfig.defaultLocale = "pt-br";
 
   useEffect(() => {
-    const fetchAulas = async () => {
+    const fetchData = async () => {
       setIsLoading(true);
       try {
         const result = await getAulas();
         // opcional: validar formato de cada aula aqui
         setAulas(result);
         // console.log("Aulas carregadas:", result);
+
+        const getAlunosResult = await getAlunos();
+        setAlunos(getAlunosResult);
       } catch (erro: any) {
         alert(erro?.message ?? "Erro ao carregar aulas");
       } finally {
@@ -107,7 +118,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
         // return () => fadeOut(); // sai animado
       }
     };
-    fetchAulas();
+    fetchData();
   }, []);
 
   // memoiza markedDates para não recriar a cada render
@@ -150,6 +161,10 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
     const newValue = !isNextClassesVisible;
     setIsNextClassesVisible(newValue);
     onToggleNextClasses?.(newValue); // avisa o MainPage
+  };
+
+  const openCloseEditClass = () => {
+    setIsEditClassVisible(!isEditClassVisible);
   };
 
   const styles = StyleSheet.create({
@@ -228,6 +243,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
       if (aula.alunos.length === 0) {
         throw new Error("Registre pelo menos 1 aluno na aula para planejá-la.");
       }
+
       console.log(await gerarPlanoDeAula(descricoes));
     } catch (erro: any) {
       alert(erro.message);
@@ -423,7 +439,13 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
                       )}
                     </View>
                     <View style={{ gap: 10 }}>
-                      <TouchableOpacity style={styles.button}>
+                      <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => {
+                          setAulaSelecionada(c);
+                          setIsEditClassVisible(true);
+                        }}
+                      >
                         <Text style={styles.buttonText}>Editar</Text>
                         <Feather name="edit" size={24} color="white" />
                       </TouchableOpacity>
@@ -470,14 +492,24 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
       </Animated.View>
 
       {isLoading && <Loading />}
+
+      {/* MODAIS */}
       {isAgendarModalVisible && (
         <RegistrarAula
           data={selectedDay}
+          alunosRegistrados={alunos}
           openCloseModal={openCloseAgendarModal}
         />
       )}
       {isNextClassesVisible && (
         <NextClasses aulas={aulas} closeModal={openCloseNextClasses} />
+      )}
+      {isEditClassVisible && aulaSelecionada && (
+        <EditClass
+          aula={aulaSelecionada}
+          alunosData={alunos}
+          openCloseModal={openCloseEditClass}
+        />
       )}
     </View>
   );

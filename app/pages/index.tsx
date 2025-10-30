@@ -13,7 +13,7 @@ import { useState } from "react";
 export default function MainPage() {
   const globalStyles = getGlobalStyles();
   const params = useLocalSearchParams();
-  const { isLaptop, isDesktop } = useBreakpoint();
+  const { isDesktop } = useBreakpoint();
   const [isNextClassesVisible, setIsNextClassesVisible] = useState(false);
 
   const styles = StyleSheet.create({

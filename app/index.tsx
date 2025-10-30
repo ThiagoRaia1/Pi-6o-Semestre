@@ -134,7 +134,7 @@ export default function Login() {
       {(isLaptop || isDesktop) && (
         <Image
           source={require("../assets/LoginMainImage.png")}
-          resizeMode="cover"
+          resizeMode="center"
           style={{ flex: 5, height: "100%" }}
         />
       )}

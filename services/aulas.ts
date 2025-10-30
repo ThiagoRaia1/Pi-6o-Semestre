@@ -36,6 +36,13 @@ export async function createAula(
   });
 }
 
+export async function updateAula(id: number, alunosIds: number[]) {
+  return await httpClient(`/aulas/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({alunosIds}),
+  });
+}
+
 export async function deleteAula(id: number) {
   return await httpClient(`/aulas/${id}`, {
     method: "DELETE",

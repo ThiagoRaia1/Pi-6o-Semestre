@@ -8,29 +8,34 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
-import { colors } from "../utils/colors";
-import MenuButton from "../components/MenuButton";
-import { useFadeSlide } from "../hooks/useFadeSlide";
 import { useEffect, useMemo, useState } from "react";
-import { formatDateToBR } from "../utils/formatDate";
-import { useAuth } from "../context/AuthProvider";
 import { Picker } from "@react-native-picker/picker";
-import { createAula, getAulas, getAulasRegistradas } from "../services/aulas";
-import { decodeToken } from "../utils/decodeToken";
-import Loading from "../components/Loading";
 import { router } from "expo-router";
-import { pagePathnames, pageNames } from "../utils/pageNames";
-import { getAlunos } from "../services/alunos";
-import { IAluno } from "../interfaces/aluno";
-import { useBreakpoint } from "../hooks/useBreakpoint";
+import Loading from "../../../components/Loading";
+import MenuButton from "../../../components/MenuButton";
+import { useAuth } from "../../../context/AuthProvider";
+import { useBreakpoint } from "../../../hooks/useBreakpoint";
+import { useFadeSlide } from "../../../hooks/useFadeSlide";
+import { IAluno } from "../../../interfaces/aluno";
+import {
+  getAulasRegistradas,
+  createAula,
+  getAulas,
+} from "../../../services/aulas";
+import { colors } from "../../../utils/colors";
+import { decodeToken } from "../../../utils/decodeToken";
+import { formatDateToBR } from "../../../utils/formatDate";
+import { pagePathnames, pageNames } from "../../../utils/pageNames";
 
 type RegistrarAulaProps = {
   data: string;
+  alunosRegistrados: IAluno[];
   openCloseModal: () => void;
 };
 
 export default function RegistrarAula({
   data,
+  alunosRegistrados,
   openCloseModal,
 }: RegistrarAulaProps) {
   const { token, nome } = useAuth();
@@ -41,7 +46,7 @@ export default function RegistrarAula({
   const [erro, setErro] = useState(" ");
   const [instrutor, setInstrutor] = useState<string>(nome || "");
   const [selectedHora, setSelectedHora] = useState("07:00");
-  const [alunos, setAlunos] = useState<IAluno[]>([]);
+  const [alunos, setAlunos] = useState<IAluno[]>(alunosRegistrados);
   const [alunosSelecionados, setAlunosSelecionados] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -54,7 +59,6 @@ export default function RegistrarAula({
 
   useEffect(() => {
     const loadData = async () => {
-      setAlunos(await getAlunos());
       const resultadoAulasRegistradas = await getAulasRegistradas(data);
       setAulasRegistradas(resultadoAulasRegistradas);
     };
