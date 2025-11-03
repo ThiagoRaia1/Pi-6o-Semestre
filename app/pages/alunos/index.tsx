@@ -4,6 +4,7 @@ import {
   ScrollView,
   TextInput,
   Animated,
+  TouchableOpacity,
 } from "react-native";
 import { Table, Row, Rows } from "react-native-table-component";
 import { getGlobalStyles } from "../../../globalStyles";
@@ -22,6 +23,9 @@ import { getUsers } from "../../../services/usuarios";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import TopBar from "../../../components/TopBar";
 import { useBreakpoint } from "../../../hooks/useBreakpoint";
+import Feather from "@expo/vector-icons/Feather";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import EditRegister from "./editRegister";
 
 export default function Alunos() {
   const { fadeAnim, slideAnim, fadeIn, fadeOut } = useFadeSlide();
@@ -30,14 +34,24 @@ export default function Alunos() {
   const [alunos, setAlunos] = useState<IAluno[]>([]);
   const [users, setUsers] = useState<IUser[]>([]);
 
+  const [selectedItem, setSelectedItem] = useState<IAluno | IUser | null>(null);
+
   const [filteredAlunos, setFilteredAlunos] = useState<IAluno[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
   const [searchText, setSearchText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isEditVisible, setIsEditVisible] = useState<boolean>(false);
 
   const { subPage } = useLocalSearchParams();
 
   const { isMobile } = useBreakpoint();
+
+  const openCloseEditRegister = (item?: IAluno | IUser) => {
+    if (item) {
+      setSelectedItem(item); // seta o aluno ou usuário selecionado
+    }
+    setIsEditVisible((prev) => !prev); // abre/fecha o modal
+  };
 
   const tableHeadAlunos = [
     "Nome",
@@ -45,22 +59,73 @@ export default function Alunos() {
     "Data de Nascimento",
     "Email",
     "Telefone",
+    "Ação",
   ];
 
-  const tableHeadUsuarios = ["Email", "Nome"];
+  const tableHeadUsuarios = ["Email", "Nome", "Ação"];
 
   const tableHead =
     subPage === pageNames.equipe ? tableHeadUsuarios : tableHeadAlunos;
 
+  const renderEditDeleteContainer = (item: IUser | IAluno) => {
+    return (
+      <View
+        style={{
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "space-evenly",
+          padding: 10,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            openCloseEditRegister(item);
+          }}
+        >
+          <Feather
+            name="edit"
+            size={24}
+            color="white"
+            style={{
+              padding: 5,
+              backgroundColor: colors.buttonMainColor,
+              borderRadius: 10,
+              alignSelf: "center",
+            }}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity>
+          <Ionicons
+            name="trash-outline"
+            size={24}
+            color="white"
+            style={{
+              padding: 5,
+              backgroundColor: colors.cancelColor,
+              borderRadius: 10,
+              alignSelf: "center",
+            }}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   const tableData =
     subPage === pageNames.equipe
-      ? filteredUsers.map((u) => [u.email, u.nome])
-      : filteredAlunos.map((a) => [
-          a.nome,
-          a.cpf,
-          formatDateToBR(a.dataNascimento),
-          a.email,
-          a.telefone,
+      ? filteredUsers.map((user) => [
+          user.email,
+          user.nome,
+          renderEditDeleteContainer(user),
+        ])
+      : filteredAlunos.map((aluno) => [
+          aluno.nome,
+          aluno.cpf,
+          formatDateToBR(aluno.dataNascimento),
+          aluno.email,
+          aluno.telefone,
+          renderEditDeleteContainer(aluno),
         ]);
 
   const tableTitle =
@@ -71,25 +136,25 @@ export default function Alunos() {
       ? "Pesquisar por nome ou e-mail..."
       : "Pesquisar por nome, e-mail ou CPF...";
 
-  const loadData = async () => {
-    try {
-      setIsLoading(true);
-      const listaAlunos: IAluno[] = await getAlunos();
-      setAlunos(listaAlunos);
-      setFilteredAlunos(listaAlunos);
-
-      const listaUsers = await getUsers();
-      setUsers(listaUsers);
-      setFilteredUsers(listaUsers);
-    } catch (erro: any) {
-      alert(erro.message);
-    } finally {
-      setIsLoading(false);
-      fadeIn();
-    }
-  };
-
   useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        const listaAlunos: IAluno[] = await getAlunos();
+        setAlunos(listaAlunos);
+        setFilteredAlunos(listaAlunos);
+
+        const listaUsers = await getUsers();
+        setUsers(listaUsers);
+        setFilteredUsers(listaUsers);
+      } catch (erro: any) {
+        alert(erro.message);
+      } finally {
+        setIsLoading(false);
+        fadeIn();
+      }
+    };
+
     loadData();
   }, []);
 
@@ -186,8 +251,7 @@ export default function Alunos() {
             color={colors.buttonMainColor}
             icon={{ component: FontAwesome6, name: "contact-book", size: 22 }}
           />,
-          <MenuButton label="Placeholder" />,
-          <MenuButton label="Placeholder" />,
+          <MenuButton label={`Registrar`} />,
         ]}
       />
 
@@ -236,6 +300,12 @@ export default function Alunos() {
       </Animated.View>
 
       {isLoading && <Loading />}
+      {isEditVisible && (
+        <EditRegister
+          item={selectedItem}
+          openCloseModal={openCloseEditRegister}
+        />
+      )}
     </View>
   );
 }
