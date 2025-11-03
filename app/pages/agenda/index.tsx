@@ -54,6 +54,8 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
   const [isEditClassVisible, setIsEditClassVisible] = useState<boolean>(false);
   const [aulaSelecionada, setAulaSelecionada] = useState<IAula | null>(null);
 
+  const iconSize: number = 24;
+
   LocaleConfig.locales["pt-br"] = {
     monthNames: [
       "Janeiro",
@@ -234,8 +236,8 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
       setIsLoading(true);
       console.log(aula);
 
-      const descricoes = aula.alunos.map((a) => {
-        return a.descricao;
+      const descricoes = aula.alunos.map((aluno) => {
+        return aluno.descricao;
       });
 
       console.log(descricoes);
@@ -281,7 +283,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
           //   icon={{
           //     component: MaterialCommunityIcons,
           //     name: "robot-excited-outline",
-          //     size: 24,
+          //     size: iconSize,
           //     color: "white",
           //   }}
           // />,
@@ -329,7 +331,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
                   >
                     <Feather
                       name="chevron-left"
-                      size={24}
+                      size={iconSize}
                       color="black"
                       onPress={() => props.addMonth(-1)}
                     />
@@ -344,7 +346,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
                     </Text>
                     <Feather
                       name="chevron-right"
-                      size={24}
+                      size={iconSize}
                       color="black"
                       onPress={() => props.addMonth(1)}
                     />
@@ -408,8 +410,8 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
           </Text>
           <ScrollView contentContainerStyle={{ gap: 10 }}>
             {aulasDoDia.length > 0 ? (
-              aulasDoDia.map((c) => (
-                <View key={c.id} style={styles.classCard}>
+              aulasDoDia.map((aula) => (
+                <View key={aula.id} style={styles.classCard}>
                   <View
                     style={{
                       flexDirection: "row",
@@ -420,16 +422,16 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
                     <View>
                       {/* horário da aula */}
                       <Text style={styles.classTitle}>
-                        {new Date(c.data).toLocaleTimeString([], {
+                        {new Date(aula.data).toLocaleTimeString([], {
                           hour: "2-digit",
                           minute: "2-digit",
                         })}
                       </Text>
 
-                      <Text>{`Instrutor: ${c.usuario.nome}`}</Text>
+                      <Text>{`Instrutor: ${aula.usuario.nome}`}</Text>
                       {/* lista de alunos */}
-                      {c.alunos && c.alunos.length > 0 ? (
-                        c.alunos.map((aluno) => (
+                      {aula.alunos && aula.alunos.length > 0 ? (
+                        aula.alunos.map((aluno) => (
                           <Text key={aluno.id} style={styles.classSub}>
                             {aluno.nome}
                           </Text>
@@ -442,24 +444,24 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
                       <TouchableOpacity
                         style={styles.button}
                         onPress={() => {
-                          setAulaSelecionada(c);
+                          setAulaSelecionada(aula);
                           setIsEditClassVisible(true);
                         }}
                       >
                         <Text style={styles.buttonText}>Editar</Text>
-                        <Feather name="edit" size={24} color="white" />
+                        <Feather name="edit" size={iconSize} color="white" />
                       </TouchableOpacity>
 
                       <TouchableOpacity
                         style={styles.button}
                         onPress={() => {
-                          planClass(c);
+                          planClass(aula);
                         }}
                       >
                         <Text style={styles.buttonText}>Planejar aula</Text>
                         <MaterialCommunityIcons
-                          name="robot-outline"
-                          size={24}
+                          name="robot-excited-outline"
+                          size={iconSize}
                           color="white"
                         />
                       </TouchableOpacity>
@@ -470,13 +472,13 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
                           { backgroundColor: colors.cancelColor },
                         ]}
                         onPress={() => {
-                          handleDeleteClass(c.id);
+                          handleDeleteClass(aula.id);
                         }}
                       >
                         <Text style={styles.buttonText}>Excluir aula</Text>
                         <Ionicons
                           name="trash-outline"
-                          size={24}
+                          size={iconSize}
                           color="white"
                         />
                       </TouchableOpacity>
@@ -502,7 +504,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
         />
       )}
       {isNextClassesVisible && (
-        <NextClasses aulas={aulas} closeModal={openCloseNextClasses} />
+        <NextClasses aulas={aulas} alunosData={alunos} closeModal={openCloseNextClasses} />
       )}
       {isEditClassVisible && aulaSelecionada && (
         <EditClass

@@ -33,7 +33,6 @@ export default function EditClass({
   alunosData,
   openCloseModal,
 }: EditClassProps) {
-  const { token, nome } = useAuth();
   const { fadeAnim, slideAnim, fadeIn } = useFadeSlide();
   const { isLaptop, isDesktop } = useBreakpoint();
 

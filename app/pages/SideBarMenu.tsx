@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { getGlobalStyles } from "../../globalStyles";
 import { router } from "expo-router";
 import { pageNames, pagePathnames } from "../../utils/pageNames";
