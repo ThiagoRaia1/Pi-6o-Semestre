@@ -10,7 +10,7 @@ import {
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { getGlobalStyles } from "../../../globalStyles";
 import { colors } from "../../../utils/colors";
-import { deleteAula, getAulas } from "../../../services/aulas";
+import { getAulas } from "../../../services/aulas";
 import { IAula } from "../../../interfaces/aula";
 import { DateDataToString, formatDateToBR } from "../../../utils/formatDate";
 import Feather from "@expo/vector-icons/Feather";
@@ -22,13 +22,12 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import NextClasses from "./nextClasses";
 import TopBar from "../../../components/TopBar";
-import { router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { pagePathnames, pageNames } from "../../../utils/pageNames";
 import { gerarPlanoDeAula } from "../../../services/groq";
 import EditClass from "./editClass";
 import { IAluno } from "../../../interfaces/aluno";
 import { getAlunos } from "../../../services/alunos";
+import ConfirmationModal from "../../../components/ConfirmationModal";
 
 type AgendaProps = {
   onToggleNextClasses?: (visible: boolean) => void;
@@ -53,6 +52,9 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
 
   const [isEditClassVisible, setIsEditClassVisible] = useState<boolean>(false);
   const [aulaSelecionada, setAulaSelecionada] = useState<IAula | null>(null);
+
+  const [isConfirmationModalVisible, setIsConfirmationModalVisible] =
+    useState<boolean>(false);
 
   const iconSize: number = 24;
 
@@ -169,6 +171,17 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
     setIsEditClassVisible(!isEditClassVisible);
   };
 
+  const openCloseConfirmationModal = (aulaId?: number) => {
+    setAulaSelecionada((prev) => {
+      if (aulaId && (!prev || prev.id !== aulaId)) {
+        const aula = aulas.find((a) => a.id === aulaId) || null;
+        return aula;
+      }
+      return prev;
+    });
+    setIsConfirmationModalVisible((prev) => !prev);
+  };
+
   const styles = StyleSheet.create({
     title: {
       fontWeight: "300",
@@ -213,23 +226,6 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
       fontWeight: 500,
     },
   });
-
-  const handleDeleteClass = async (aulaId: number) => {
-    try {
-      setIsLoading(true);
-      const resultado = await deleteAula(aulaId);
-
-      alert("Aula deletada com sucesso!");
-      router.push({
-        pathname: pagePathnames.pages,
-        params: { pageName: pageNames.agenda.main, subPage: "AGENDAR AULA" },
-      });
-    } catch (erro: any) {
-      alert(erro.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const planClass = async (aula: IAula) => {
     try {
@@ -472,7 +468,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
                           { backgroundColor: colors.cancelColor },
                         ]}
                         onPress={() => {
-                          handleDeleteClass(aula.id);
+                          openCloseConfirmationModal(aula.id);
                         }}
                       >
                         <Text style={styles.buttonText}>Excluir aula</Text>
@@ -503,14 +499,27 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
           openCloseModal={openCloseAgendarModal}
         />
       )}
+
       {isNextClassesVisible && (
-        <NextClasses aulas={aulas} alunosData={alunos} closeModal={openCloseNextClasses} />
+        <NextClasses
+          aulas={aulas}
+          alunosData={alunos}
+          closeModal={openCloseNextClasses}
+        />
       )}
+
       {isEditClassVisible && aulaSelecionada && (
         <EditClass
           aula={aulaSelecionada}
           alunosData={alunos}
           openCloseModal={openCloseEditClass}
+        />
+      )}
+
+      {isConfirmationModalVisible && aulaSelecionada && (
+        <ConfirmationModal
+          item={aulaSelecionada}
+          openCloseModal={() => openCloseConfirmationModal(aulaSelecionada.id)}
         />
       )}
     </View>
