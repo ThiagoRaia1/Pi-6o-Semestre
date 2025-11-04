@@ -26,6 +26,7 @@ import { useBreakpoint } from "../../../hooks/useBreakpoint";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import EditRegister from "./editRegister";
+import ConfirmationModal from "../../../components/ConfirmationModal";
 
 export default function Alunos() {
   const { fadeAnim, slideAnim, fadeIn, fadeOut } = useFadeSlide();
@@ -42,6 +43,9 @@ export default function Alunos() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isEditVisible, setIsEditVisible] = useState<boolean>(false);
 
+  const [isConfirmationModalVisible, setIsConfirmationModalVisible] =
+    useState<boolean>(false);
+
   const { subPage } = useLocalSearchParams();
 
   const { isMobile } = useBreakpoint();
@@ -51,6 +55,13 @@ export default function Alunos() {
       setSelectedItem(item); // seta o aluno ou usuário selecionado
     }
     setIsEditVisible((prev) => !prev); // abre/fecha o modal
+  };
+
+  const openCloseConfirmationModal = (item?: IAluno | IUser) => {
+    if (item) {
+      setSelectedItem(item); // seta o aluno ou usuário selecionado
+    }
+    setIsConfirmationModalVisible((prev) => !prev);
   };
 
   const tableHeadAlunos = [
@@ -95,7 +106,11 @@ export default function Alunos() {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            openCloseConfirmationModal(item);
+          }}
+        >
           <Ionicons
             name="trash-outline"
             size={24}
@@ -300,10 +315,18 @@ export default function Alunos() {
       </Animated.View>
 
       {isLoading && <Loading />}
+
       {isEditVisible && (
         <EditRegister
           item={selectedItem}
           openCloseModal={openCloseEditRegister}
+        />
+      )}
+
+      {isConfirmationModalVisible && selectedItem && (
+        <ConfirmationModal
+          item={selectedItem}
+          openCloseModal={() => openCloseConfirmationModal(selectedItem)}
         />
       )}
     </View>

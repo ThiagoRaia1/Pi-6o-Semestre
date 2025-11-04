@@ -50,6 +50,19 @@ export default function ConfirmationModal({
     }
   };
 
+  console.log(
+    item && "data" in item
+      ? `a aula do dia ${formatDateToBR(item.data)} às ${new Date(
+          item.data
+        ).toLocaleTimeString("pt-BR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}?`
+      : item && "senha" in item
+      ? `o usuário ${item.nome} (${item.email})`
+      : `o aluno ${item?.nome}`
+  );
+
   const styles = StyleSheet.create({
     title: {
       color: "black",
