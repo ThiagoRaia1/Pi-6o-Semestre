@@ -40,7 +40,10 @@ export default function EditClass({
   const [erro, setErro] = useState(" ");
   const [instrutor, setInstrutor] = useState<string>(aula.usuario.nome || "");
 
-  const alunos: IAluno[] = alunosData;
+  // Exibe alunos ativos + alunos já cadastrados na aula
+  const alunos: IAluno[] = alunosData.filter(
+    (a) => a.isAtivo || aula.alunos.some((alunoAula) => alunoAula.id === a.id)
+  );
 
   const [alunosSelecionados, setAlunosSelecionados] = useState<number[]>(
     aula.alunos.map((aluno) => aluno.id)
@@ -259,7 +262,13 @@ export default function EditClass({
                   onPress={() => toggleAluno(aluno.id)}
                 >
                   <View style={styles.selecionadoChip}>
-                    <Text style={styles.selecionadoTexto}>{aluno.nome}</Text>
+                    <Text style={styles.selecionadoTexto}>
+                      {aluno.nome}
+                      {!aluno.isAtivo &&
+                        aula.alunos.some((a) => a.id === aluno.id) &&
+                        " (desativado)"}
+                    </Text>
+
                     <Text style={styles.removerChip}>×</Text>
                   </View>
                 </TouchableOpacity>
@@ -298,7 +307,13 @@ export default function EditClass({
                 const selecionado = alunosSelecionados.includes(item.id);
                 return (
                   <View style={styles.alunoItem}>
-                    <Text style={styles.alunoNome}>{item.nome}</Text>
+                    <Text style={styles.alunoNome}>
+                      {item.nome}
+                      {!item.isAtivo &&
+                        aula.alunos.some((a) => a.id === item.id) &&
+                        " (desativado)"}
+                    </Text>
+
                     <TouchableOpacity
                       style={[
                         styles.botaoAddRemove,

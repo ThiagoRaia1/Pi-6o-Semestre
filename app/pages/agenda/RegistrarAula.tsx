@@ -46,7 +46,11 @@ export default function RegistrarAula({
   const [erro, setErro] = useState(" ");
   const [instrutor, setInstrutor] = useState<string>(nome || "");
   const [selectedHora, setSelectedHora] = useState("07:00");
-  const [alunos, setAlunos] = useState<IAluno[]>(alunosRegistrados);
+  // Só alunos ativos serão exibidos
+  const [alunos, setAlunos] = useState<IAluno[]>(
+    alunosRegistrados.filter((a) => a.isAtivo)
+  );
+
   const [alunosSelecionados, setAlunosSelecionados] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 

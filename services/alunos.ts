@@ -18,3 +18,21 @@ export async function getAlunoByNome(nome: string): Promise<IAluno> {
     method: "GET",
   });
 }
+
+export async function ativarAluno(id: number) {
+  return await httpClient(`/alunos/ativar/${id}`, {
+    method: "PATCH",
+  });
+}
+
+export async function desativarAluno(id: number) {
+  return await httpClient(`/alunos/desativar/${id}`, {
+    method: "PATCH",
+  });
+}
+
+export async function deleteAluno(id: number) {
+  return await httpClient(`/alunos/${id}`, {
+    method: "DELETE",
+  });
+}

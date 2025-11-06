@@ -6,3 +6,9 @@ export async function getUsers(): Promise<IUser[]> {
     method: "GET",
   });
 }
+
+export async function deleteUser(id: number) {
+  return await httpClient(`/usuarios/${id}`, {
+    method: "DELETE",
+  });
+}

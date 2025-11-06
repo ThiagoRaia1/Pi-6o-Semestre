@@ -27,6 +27,8 @@ import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import EditRegister from "./editRegister";
 import ConfirmationModal from "../../../components/ConfirmationModal";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 export default function Alunos() {
   const { fadeAnim, slideAnim, fadeIn, fadeOut } = useFadeSlide();
@@ -70,6 +72,7 @@ export default function Alunos() {
     "Data de Nascimento",
     "Email",
     "Telefone",
+    "Ativo?",
     "Ação",
   ];
 
@@ -111,17 +114,31 @@ export default function Alunos() {
             openCloseConfirmationModal(item);
           }}
         >
-          <Ionicons
-            name="trash-outline"
-            size={24}
-            color="white"
-            style={{
-              padding: 5,
-              backgroundColor: colors.cancelColor,
-              borderRadius: 10,
-              alignSelf: "center",
-            }}
-          />
+          {item && "descricao" in item && item.isAtivo ? (
+            <Ionicons
+              name="trash-outline"
+              size={24}
+              color="white"
+              style={{
+                padding: 5,
+                backgroundColor: colors.cancelColor,
+                borderRadius: 10,
+                alignSelf: "center",
+              }}
+            />
+          ) : (
+            <MaterialCommunityIcons
+              name="account-reactivate-outline"
+              size={24}
+              color="white"
+              style={{
+                padding: 5,
+                backgroundColor: colors.buttonMainColor,
+                borderRadius: 10,
+                alignSelf: "center",
+              }}
+            />
+          )}
         </TouchableOpacity>
       </View>
     );
@@ -140,6 +157,21 @@ export default function Alunos() {
           formatDateToBR(aluno.dataNascimento),
           aluno.email,
           aluno.telefone,
+          aluno.isAtivo ? (
+            <FontAwesome
+              name="check-square"
+              size={36}
+              color="green"
+              style={{ alignSelf: "center" }}
+            />
+          ) : (
+            <FontAwesome
+              name="minus-square"
+              size={36}
+              color={colors.cancelColor}
+              style={{ alignSelf: "center" }}
+            />
+          ),
           renderEditDeleteContainer(aluno),
         ]);
 
@@ -158,6 +190,8 @@ export default function Alunos() {
         const listaAlunos: IAluno[] = await getAlunos();
         setAlunos(listaAlunos);
         setFilteredAlunos(listaAlunos);
+
+        console.log(listaAlunos);
 
         const listaUsers = await getUsers();
         setUsers(listaUsers);

@@ -13,6 +13,8 @@ import { router } from "expo-router";
 import { deleteAula } from "../services/aulas";
 import { pagePathnames, pageNames } from "../utils/pageNames";
 import { formatDateToBR } from "../utils/formatDate";
+import { ativarAluno, desativarAluno } from "../services/alunos";
+import { deleteUser } from "../services/usuarios";
 
 type ConfirmationModalProps = {
   item: IAluno | IAula | IUser | null;
@@ -23,45 +25,65 @@ export default function ConfirmationModal({
   item,
   openCloseModal,
 }: ConfirmationModalProps) {
-  const { token, nome } = useAuth();
+  const { nome } = useAuth();
   const { fadeAnim, slideAnim, fadeIn } = useFadeSlide();
   const { isLaptop, isDesktop } = useBreakpoint();
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const itemIsAula = item && "data" in item && true;
+  const itemIsAluno = item && "descricao" in item && true;
+  const itemIsUser = item && "senha" in item && true;
+
   useEffect(() => {
     fadeIn(500);
   }, []);
 
-  const handleDeleteClass = async (aulaId: number) => {
+  const handleDeleteItem = async (item: IAluno | IUser | IAula) => {
     try {
       setIsLoading(true);
-      const resultado = await deleteAula(aulaId);
+      if (itemIsAula) {
+        const resultado = await deleteAula(item.id);
 
-      alert("Aula deletada com sucesso!");
-      router.push({
-        pathname: pagePathnames.pages,
-        params: { pageName: pageNames.agenda.main, subPage: "AGENDAR AULA" },
-      });
+        alert("Aula deletada com sucesso!");
+        router.push({
+          pathname: pagePathnames.pages,
+          params: { pageName: pageNames.agenda.main, subPage: "AGENDAR AULA" },
+        });
+      }
+
+      if (itemIsAluno) {
+        if (item && "descricao" in item && !item.isAtivo) {
+          const resultado = await ativarAluno(item.id);
+          alert("Aluno(a) ativado(a) com sucesso!");
+        }
+
+        if (item && "descricao" in item && item.isAtivo) {
+          const resultado = await desativarAluno(item.id);
+          alert("Aluno(a) desativado(a) com sucesso!");
+        }
+
+        router.push({
+          pathname: pagePathnames.pages,
+          params: { pageName: pageNames.alunos, subPage: "ALUNOS" },
+        });
+      }
+
+      if (itemIsUser) {
+        const resultado = await deleteUser(item.id);
+
+        alert("Usuário deletado com sucesso!");
+        router.push({
+          pathname: pagePathnames.pages,
+          params: { pageName: pageNames.alunos, subPage: "EQUIPE" },
+        });
+      }
     } catch (erro: any) {
       alert(erro.message);
     } finally {
       setIsLoading(false);
     }
   };
-
-  console.log(
-    item && "data" in item
-      ? `a aula do dia ${formatDateToBR(item.data)} às ${new Date(
-          item.data
-        ).toLocaleTimeString("pt-BR", {
-          hour: "2-digit",
-          minute: "2-digit",
-        })}?`
-      : item && "senha" in item
-      ? `o usuário ${item.nome} (${item.email})`
-      : `o aluno ${item?.nome}`
-  );
 
   const styles = StyleSheet.create({
     title: {
@@ -126,18 +148,25 @@ export default function ConfirmationModal({
           }}
         >
           <Text style={styles.title}>
-            {`Tem certeza que deseja excluir ${
-              item && "data" in item
-                ? `a aula do dia ${formatDateToBR(item.data)} às ${new Date(
-                    item.data
-                  ).toLocaleTimeString("pt-BR", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}?`
-                : item && "senha" in item
-                ? `o usuário ${item.nome} (${item.email})`
-                : `o aluno ${item?.nome}`
-            }`}
+            {item &&
+              `Tem certeza que deseja ${
+                "email" in item && item.isAtivo
+                  ? "excluir"
+                  : "email" in item && !item.isAtivo
+                  ? "ativar"
+                  : "excluir"
+              } ${
+                "data" in item
+                  ? `a aula do dia ${formatDateToBR(item.data)} às ${new Date(
+                      item.data
+                    ).toLocaleTimeString("pt-BR", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}`
+                  : "senha" in item
+                  ? `o usuário "${item.nome} (${item.email})"`
+                  : `o(a) aluno(a) "${item?.nome}"`
+              }?`}
           </Text>
 
           {/* BOTÕES FINAIS */}
@@ -149,19 +178,25 @@ export default function ConfirmationModal({
             }}
           >
             <MenuButton
-              label="Excluir"
+              label={
+                item && "email" in item && item.isAtivo
+                  ? "Excluir"
+                  : item && "email" in item && !item.isAtivo
+                  ? "Ativar"
+                  : "Excluir"
+              }
               fontWeight={700}
-              color={colors.cancelColor}
+              color={
+                item && "email" in item && item.isAtivo
+                  ? colors.cancelColor
+                  : item && "email" in item && !item.isAtivo
+                  ? "green"
+                  : colors.cancelColor
+              }
               maxWidth={130}
               onPress={() => {
-                if (item) {
-                  if ("data" in item) {
-                    handleDeleteClass(item.id);
-                  }
-                  if ("senha" in item) {
-                  }
-                }
-                openCloseModal(); // fecha o modal após exclusão
+                if (item) handleDeleteItem(item);
+                openCloseModal; // fecha o modal após exclusão
               }}
             />
 
