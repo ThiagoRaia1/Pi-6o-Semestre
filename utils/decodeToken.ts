@@ -8,7 +8,7 @@ interface JwtPayload {
 
 export async function decodeToken(token: string) {
   try {
-    const decoded = await jwtDecode<JwtPayload>(token);
+    const decoded = jwtDecode<JwtPayload>(token);
     // console.log("Id Usuário:", decoded.sub);
     // console.log("Expira em:", new Date(decoded.exp * 1000).toLocaleString());
     return decoded.sub;

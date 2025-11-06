@@ -14,7 +14,7 @@ import { deleteAula } from "../services/aulas";
 import { pagePathnames, pageNames } from "../utils/pageNames";
 import { formatDateToBR } from "../utils/formatDate";
 import { ativarAluno, desativarAluno } from "../services/alunos";
-import { deleteUser } from "../services/usuarios";
+import { ativarUsuario, desativarUsuario } from "../services/usuarios";
 
 type ConfirmationModalProps = {
   item: IAluno | IAula | IUser | null;
@@ -70,9 +70,16 @@ export default function ConfirmationModal({
       }
 
       if (itemIsUser) {
-        const resultado = await deleteUser(item.id);
+        if (item && "senha" in item && !item.isAtivo) {
+          const resultado = await ativarUsuario(item.id);
+          alert("Usuário ativado com sucesso!");
+        }
 
-        alert("Usuário deletado com sucesso!");
+        if (item && "senha" in item && item.isAtivo) {
+          const resultado = await desativarUsuario(item.id);
+          alert("Usuário desativado com sucesso!");
+        }
+
         router.push({
           pathname: pagePathnames.pages,
           params: { pageName: pageNames.alunos, subPage: "EQUIPE" },

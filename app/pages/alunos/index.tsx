@@ -114,7 +114,7 @@ export default function Alunos() {
             openCloseConfirmationModal(item);
           }}
         >
-          {item && "descricao" in item && item.isAtivo ? (
+          {item && "email" in item && item.isAtivo ? (
             <Ionicons
               name="trash-outline"
               size={24}
@@ -190,8 +190,6 @@ export default function Alunos() {
         const listaAlunos: IAluno[] = await getAlunos();
         setAlunos(listaAlunos);
         setFilteredAlunos(listaAlunos);
-
-        console.log(listaAlunos);
 
         const listaUsers = await getUsers();
         setUsers(listaUsers);
