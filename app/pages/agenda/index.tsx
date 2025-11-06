@@ -518,7 +518,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
 
       {isConfirmationModalVisible && aulaSelecionada && (
         <ConfirmationModal
-          item={aulaSelecionada}
+          aula={aulaSelecionada}
           openCloseModal={() => openCloseConfirmationModal(aulaSelecionada.id)}
         />
       )}

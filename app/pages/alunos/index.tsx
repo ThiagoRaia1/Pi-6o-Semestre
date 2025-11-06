@@ -5,6 +5,8 @@ import {
   TextInput,
   Animated,
   TouchableOpacity,
+  Text,
+  Modal,
 } from "react-native";
 import { Table, Row, Rows } from "react-native-table-component";
 import { getGlobalStyles } from "../../../globalStyles";
@@ -45,12 +47,19 @@ export default function Alunos() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isEditVisible, setIsEditVisible] = useState<boolean>(false);
 
+  const [selectedFilter, setSelectedFilter] = useState<
+    "Ativos" | "Desativados" | "Todos"
+  >("Todos");
+  const [isFilterOptionsVisible, setIsFilterOptionsVisible] = useState(false);
+
   const [isConfirmationModalVisible, setIsConfirmationModalVisible] =
     useState<boolean>(false);
 
   const { subPage } = useLocalSearchParams();
 
-  const { isMobile } = useBreakpoint();
+  const { isMobile, isDesktop, isLaptop } = useBreakpoint();
+
+  const ativoDesativoIconSize: number = 36;
 
   const openCloseEditRegister = (item?: IAluno | IUser) => {
     if (item) {
@@ -66,17 +75,102 @@ export default function Alunos() {
     setIsConfirmationModalVisible((prev) => !prev);
   };
 
+  const styles = StyleSheet.create({
+    header: {
+      backgroundColor: colors.main,
+      height: 40,
+      width: "100%",
+    },
+    headerText: {
+      fontSize: isMobile ? 12 : 16,
+      textAlign: "center",
+      fontWeight: "bold",
+      color: "white",
+    },
+    rowData: {
+      width: "100%",
+      backgroundColor: "white",
+    },
+    rowText: {
+      textAlign: "center",
+      fontSize: isMobile ? 12 : 16,
+      padding: 10,
+    },
+    searchInput: {
+      borderWidth: 1,
+      borderColor: colors.main,
+      borderRadius: 8,
+      padding: 12,
+      width: "100%",
+      backgroundColor: "white",
+    },
+    tableTitle: {
+      fontSize: 32,
+      fontWeight: "200",
+      textAlign: "center",
+    },
+  });
+
   const tableHeadAlunos = [
     "Nome",
     "CPF",
     "Data de Nascimento",
     "Email",
     "Telefone",
-    "Ativo?",
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 5,
+        padding: 4,
+        borderRadius: 6,
+      }}
+    >
+      <Text style={styles.headerText}>{selectedFilter}</Text>
+      <TouchableOpacity
+        style={{
+          marginLeft: 6,
+          padding: 4,
+          backgroundColor: "#ffffff30",
+          borderRadius: 6,
+        }}
+        onPress={() => setIsFilterOptionsVisible(!isFilterOptionsVisible)}
+      >
+        <Feather name="filter" size={18} color="white" />
+      </TouchableOpacity>
+    </View>,
     "Ação",
   ];
 
-  const tableHeadUsuarios = ["Email", "Nome", "Ação"];
+  const tableHeadUsuarios = [
+    "Email",
+    "Nome",
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 5,
+        padding: 4,
+        borderRadius: 6,
+      }}
+    >
+      <Text style={styles.headerText}>{selectedFilter}</Text>
+      <TouchableOpacity
+        style={{
+          marginLeft: 6,
+          padding: 4,
+          backgroundColor: "#ffffff30",
+          borderRadius: 6,
+        }}
+        onPress={() => setIsFilterOptionsVisible(!isFilterOptionsVisible)}
+      >
+        <Feather name="filter" size={18} color="white" />
+      </TouchableOpacity>
+    </View>,
+    "Ação",
+  ];
 
   const tableHead =
     subPage === pageNames.equipe ? tableHeadUsuarios : tableHeadAlunos;
@@ -149,6 +243,21 @@ export default function Alunos() {
       ? filteredUsers.map((user) => [
           user.email,
           user.nome,
+          user.isAtivo ? (
+            <FontAwesome
+              name="check-square"
+              size={ativoDesativoIconSize}
+              color="green"
+              style={{ alignSelf: "center" }}
+            />
+          ) : (
+            <FontAwesome
+              name="minus-square"
+              size={ativoDesativoIconSize}
+              color={colors.cancelColor}
+              style={{ alignSelf: "center" }}
+            />
+          ),
           renderEditDeleteContainer(user),
         ])
       : filteredAlunos.map((aluno) => [
@@ -160,14 +269,14 @@ export default function Alunos() {
           aluno.isAtivo ? (
             <FontAwesome
               name="check-square"
-              size={36}
+              size={ativoDesativoIconSize}
               color="green"
               style={{ alignSelf: "center" }}
             />
           ) : (
             <FontAwesome
               name="minus-square"
-              size={36}
+              size={ativoDesativoIconSize}
               color={colors.cancelColor}
               style={{ alignSelf: "center" }}
             />
@@ -207,22 +316,40 @@ export default function Alunos() {
 
   useEffect(() => {
     if (subPage === pageNames.alunos) {
-      const filtered = alunos.filter(
-        (a) =>
+      const filtered = alunos.filter((a) => {
+        const matchSearch =
           a.nome.toLowerCase().includes(searchText.toLowerCase()) ||
           a.email.toLowerCase().includes(searchText.toLowerCase()) ||
-          a.cpf.toLowerCase().includes(searchText.toLowerCase())
-      );
+          a.cpf.toLowerCase().includes(searchText.toLowerCase());
+
+        const matchStatus =
+          selectedFilter === "Todos"
+            ? true
+            : selectedFilter === "Ativos"
+            ? a.isAtivo
+            : !a.isAtivo;
+
+        return matchSearch && matchStatus;
+      });
       setFilteredAlunos(filtered);
     } else if (subPage === pageNames.equipe) {
-      const filtered = users.filter(
-        (u) =>
+      const filtered = users.filter((u) => {
+        const matchSearch =
           u.nome?.toLowerCase().includes(searchText.toLowerCase()) ||
-          u.email.toLowerCase().includes(searchText.toLowerCase())
-      );
+          u.email.toLowerCase().includes(searchText.toLowerCase());
+
+        const matchStatus =
+          selectedFilter === "Todos"
+            ? true
+            : selectedFilter === "Ativos"
+            ? u.isAtivo
+            : !u.isAtivo;
+
+        return matchSearch && matchStatus;
+      });
       setFilteredUsers(filtered);
     }
-  }, [searchText, subPage]);
+  }, [searchText, selectedFilter, subPage]);
 
   const onPressListar = async (tableName: string) => {
     try {
@@ -242,42 +369,6 @@ export default function Alunos() {
       setIsLoading(false);
     }
   };
-
-  const styles = StyleSheet.create({
-    header: {
-      backgroundColor: colors.main,
-      height: 40,
-      width: "100%",
-    },
-    headerText: {
-      fontSize: isMobile ? 12 : 16,
-      textAlign: "center",
-      fontWeight: "bold",
-      color: "white",
-    },
-    rowData: {
-      width: "100%",
-      backgroundColor: "white",
-    },
-    rowText: {
-      textAlign: "center",
-      fontSize: isMobile ? 12 : 16,
-      padding: 10,
-    },
-    searchInput: {
-      borderWidth: 1,
-      borderColor: colors.main,
-      borderRadius: 8,
-      padding: 12,
-      width: "100%",
-      backgroundColor: "white",
-    },
-    tableTitle: {
-      fontSize: 32,
-      fontWeight: "200",
-      textAlign: "center",
-    },
-  });
 
   return (
     <View style={globalStyles.container}>
@@ -357,9 +448,94 @@ export default function Alunos() {
 
       {isConfirmationModalVisible && selectedItem && (
         <ConfirmationModal
-          item={selectedItem}
+          aluno={"descricao" in selectedItem ? selectedItem : undefined}
+          usuario={"senha" in selectedItem ? selectedItem : undefined}
           openCloseModal={() => openCloseConfirmationModal(selectedItem)}
         />
+      )}
+
+      {isFilterOptionsVisible && (
+        <>
+          <Modal transparent>
+            <View
+              style={{
+                backgroundColor: "rgba(0, 0, 0, 0.6)",
+                width: "100%",
+                height: "100%",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: isDesktop ? 64 : 16,
+                paddingVertical: isLaptop ? 64 : undefined,
+              }}
+            >
+              <Animated.View
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "#eee",
+                  borderRadius: 20,
+                  opacity: fadeAnim,
+                  transform: [{ translateY: slideAnim }],
+                  padding: 20,
+                  gap: 10,
+                }}
+              >
+                <Text style={[styles.tableTitle, { marginBottom: 20 }]}>
+                  Aplicar filtro:
+                </Text>
+                <MenuButton
+                  label="Ativos"
+                  fontWeight={700}
+                  color={colors.buttonMainColor}
+                  maxWidth={130}
+                  onPress={() => {
+                    setSelectedFilter("Ativos");
+                    setIsFilterOptionsVisible(!isFilterOptionsVisible);
+                  }}
+                />
+
+                <MenuButton
+                  label="Desativados"
+                  fontWeight={700}
+                  color={colors.buttonMainColor}
+                  maxWidth={130}
+                  onPress={() => {
+                    setSelectedFilter("Desativados");
+                    setIsFilterOptionsVisible(!isFilterOptionsVisible);
+                  }}
+                />
+
+                <MenuButton
+                  label="Todos"
+                  fontWeight={700}
+                  color={colors.buttonMainColor}
+                  maxWidth={130}
+                  onPress={() => {
+                    setSelectedFilter("Todos");
+                    setIsFilterOptionsVisible(!isFilterOptionsVisible);
+                  }}
+                />
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-evenly",
+                    marginTop: 20,
+                  }}
+                >
+                  <MenuButton
+                    label="Cancelar"
+                    fontWeight={700}
+                    color={colors.cancelColor}
+                    maxWidth={130}
+                    onPress={() =>
+                      setIsFilterOptionsVisible(!isFilterOptionsVisible)
+                    }
+                  />
+                </View>
+              </Animated.View>
+            </View>
+          </Modal>
+        </>
       )}
     </View>
   );

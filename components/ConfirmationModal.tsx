@@ -1,7 +1,6 @@
 import { Modal, View, StyleSheet, Animated, Text } from "react-native";
 import { useEffect, useState } from "react";
 import { IUser } from "../interfaces/user";
-import { useAuth } from "../context/AuthProvider";
 import { useBreakpoint } from "../hooks/useBreakpoint";
 import { useFadeSlide } from "../hooks/useFadeSlide";
 import { IAluno } from "../interfaces/aluno";
@@ -17,34 +16,32 @@ import { ativarAluno, desativarAluno } from "../services/alunos";
 import { ativarUsuario, desativarUsuario } from "../services/usuarios";
 
 type ConfirmationModalProps = {
-  item: IAluno | IAula | IUser | null;
+  aula?: IAula;
+  aluno?: IAluno;
+  usuario?: IUser;
   openCloseModal: () => void;
 };
 
 export default function ConfirmationModal({
-  item,
+  aula,
+  aluno,
+  usuario,
   openCloseModal,
 }: ConfirmationModalProps) {
-  const { nome } = useAuth();
   const { fadeAnim, slideAnim, fadeIn } = useFadeSlide();
   const { isLaptop, isDesktop } = useBreakpoint();
-
   const [isLoading, setIsLoading] = useState(false);
-
-  const itemIsAula = item && "data" in item && true;
-  const itemIsAluno = item && "descricao" in item && true;
-  const itemIsUser = item && "senha" in item && true;
 
   useEffect(() => {
     fadeIn(500);
   }, []);
 
-  const handleDeleteItem = async (item: IAluno | IUser | IAula) => {
+  const handleDeleteItem = async () => {
     try {
       setIsLoading(true);
-      if (itemIsAula) {
-        const resultado = await deleteAula(item.id);
 
+      if (aula) {
+        await deleteAula(aula.id);
         alert("Aula deletada com sucesso!");
         router.push({
           pathname: pagePathnames.pages,
@@ -52,15 +49,13 @@ export default function ConfirmationModal({
         });
       }
 
-      if (itemIsAluno) {
-        if (item && "descricao" in item && !item.isAtivo) {
-          const resultado = await ativarAluno(item.id);
-          alert("Aluno(a) ativado(a) com sucesso!");
-        }
-
-        if (item && "descricao" in item && item.isAtivo) {
-          const resultado = await desativarAluno(item.id);
+      if (aluno) {
+        if (aluno.isAtivo) {
+          await desativarAluno(aluno.id);
           alert("Aluno(a) desativado(a) com sucesso!");
+        } else {
+          await ativarAluno(aluno.id);
+          alert("Aluno(a) ativado(a) com sucesso!");
         }
 
         router.push({
@@ -69,15 +64,13 @@ export default function ConfirmationModal({
         });
       }
 
-      if (itemIsUser) {
-        if (item && "senha" in item && !item.isAtivo) {
-          const resultado = await ativarUsuario(item.id);
-          alert("Usuário ativado com sucesso!");
-        }
-
-        if (item && "senha" in item && item.isAtivo) {
-          const resultado = await desativarUsuario(item.id);
+      if (usuario) {
+        if (usuario.isAtivo) {
+          await desativarUsuario(usuario.id);
           alert("Usuário desativado com sucesso!");
+        } else {
+          await ativarUsuario(usuario.id);
+          alert("Usuário ativado com sucesso!");
         }
 
         router.push({
@@ -85,6 +78,8 @@ export default function ConfirmationModal({
           params: { pageName: pageNames.alunos, subPage: "EQUIPE" },
         });
       }
+
+      openCloseModal();
     } catch (erro: any) {
       alert(erro.message);
     } finally {
@@ -99,33 +94,42 @@ export default function ConfirmationModal({
       fontSize: 20,
       textAlign: "center",
     },
-    input: {
-      width: "100%",
-      borderWidth: 1,
-      borderColor: "#aaa",
-      paddingHorizontal: 15,
-      paddingVertical: 10,
-      borderRadius: 10,
-      fontSize: 16,
-      backgroundColor: "#fff",
-    },
-    botaoAddRemove: {
-      backgroundColor: colors.buttonMainColor,
-      borderRadius: 8,
-      minWidth: 50,
-      minHeight: 50,
-      justifyContent: "center",
-      alignItems: "center",
-    },
     botaoTexto: {
       color: "#fff",
       fontWeight: "900",
       fontSize: 20,
-      width: "100%",
-      height: "100%",
       textAlign: "center",
     },
   });
+
+  const mensagem = aula
+    ? `excluir a aula do dia ${formatDateToBR(aula.data)} às ${new Date(
+        aula.data
+      ).toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })}?`
+    : aluno
+    ? `${aluno.isAtivo ? "desativar" : "ativar"} o(a) aluno(a) ${aluno.nome}?`
+    : usuario
+    ? `${usuario.isAtivo ? "desativar" : "ativar"} o(a) usuário(a) ${
+        usuario.nome
+      }?`
+    : "";
+
+  const textoBotaoConfirmar =
+    aluno || usuario
+      ? aluno?.isAtivo || usuario?.isAtivo
+        ? "Desativar"
+        : "Ativar"
+      : "Excluir";
+
+  const corBotaoConfirmar =
+    aluno || usuario
+      ? aluno?.isAtivo || usuario?.isAtivo
+        ? colors.cancelColor
+        : "green"
+      : colors.cancelColor;
 
   return (
     <Modal transparent>
@@ -144,7 +148,6 @@ export default function ConfirmationModal({
           style={{
             width: "100%",
             maxWidth: 1000,
-            height: "20%",
             justifyContent: "center",
             backgroundColor: "#eee",
             borderRadius: 20,
@@ -154,29 +157,8 @@ export default function ConfirmationModal({
             gap: 10,
           }}
         >
-          <Text style={styles.title}>
-            {item &&
-              `Tem certeza que deseja ${
-                "email" in item && item.isAtivo
-                  ? "excluir"
-                  : "email" in item && !item.isAtivo
-                  ? "ativar"
-                  : "excluir"
-              } ${
-                "data" in item
-                  ? `a aula do dia ${formatDateToBR(item.data)} às ${new Date(
-                      item.data
-                    ).toLocaleTimeString("pt-BR", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}`
-                  : "senha" in item
-                  ? `o usuário "${item.nome} (${item.email})"`
-                  : `o(a) aluno(a) "${item?.nome}"`
-              }?`}
-          </Text>
+          <Text style={styles.title}>Tem certeza que deseja {mensagem}</Text>
 
-          {/* BOTÕES FINAIS */}
           <View
             style={{
               flexDirection: "row",
@@ -185,26 +167,11 @@ export default function ConfirmationModal({
             }}
           >
             <MenuButton
-              label={
-                item && "email" in item && item.isAtivo
-                  ? "Excluir"
-                  : item && "email" in item && !item.isAtivo
-                  ? "Ativar"
-                  : "Excluir"
-              }
+              label={textoBotaoConfirmar}
               fontWeight={700}
-              color={
-                item && "email" in item && item.isAtivo
-                  ? colors.cancelColor
-                  : item && "email" in item && !item.isAtivo
-                  ? "green"
-                  : colors.cancelColor
-              }
+              color={corBotaoConfirmar}
               maxWidth={130}
-              onPress={() => {
-                if (item) handleDeleteItem(item);
-                openCloseModal; // fecha o modal após exclusão
-              }}
+              onPress={handleDeleteItem}
             />
 
             <MenuButton
