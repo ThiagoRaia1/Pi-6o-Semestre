@@ -401,7 +401,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
         <View style={{ flex: 1, width: "100%" }}>
           <Text style={styles.title}>
             {`Aulas em: ${
-              selectedDay && formatDateToBR(new Date(selectedDay))
+              selectedDay && formatDateToBR(selectedDay)
             }`}
           </Text>
           <ScrollView contentContainerStyle={{ gap: 10 }}>

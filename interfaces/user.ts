@@ -3,5 +3,12 @@ export interface IUser {
   email: string;
   senha: string;
   nome?: string;
-  isAtivo: string;
+  isAtivo: boolean;
+}
+
+export interface ICreateUser {
+  email: string;
+  senha: string;
+  nome: string;
+  isAtivo: boolean;
 }

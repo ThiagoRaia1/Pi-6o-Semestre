@@ -9,26 +9,33 @@ import {
 import { useEffect, useState } from "react";
 import Loading from "../../../components/Loading";
 import MenuButton from "../../../components/MenuButton";
-import { useAuth } from "../../../context/AuthProvider";
 import { useBreakpoint } from "../../../hooks/useBreakpoint";
 import { useFadeSlide } from "../../../hooks/useFadeSlide";
-import { IAluno } from "../../../interfaces/aluno";
 import { colors } from "../../../utils/colors";
-import { IUser } from "../../../interfaces/user";
-import { formatDateToBR } from "../../../utils/formatDate";
+import { router, useLocalSearchParams } from "expo-router";
+import { createAluno } from "../../../services/alunos";
+import { createUsuario } from "../../../services/usuarios";
+import { pagePathnames } from "../../../utils/pageNames";
 
-type EditRegisterProps = {
-  item: IAluno | IUser | null;
+type CreateRegisterProps = {
   openCloseModal: () => void;
 };
 
-export default function EditRegister({
-  item,
+export default function CreateRegister({
   openCloseModal,
-}: EditRegisterProps) {
-  const { token, nome } = useAuth();
+}: CreateRegisterProps) {
+  const { subPage } = useLocalSearchParams();
   const { fadeAnim, slideAnim, fadeIn } = useFadeSlide();
   const { isLaptop, isDesktop } = useBreakpoint();
+
+  const [nome, setNome] = useState<string>("");
+  const [cpf, setCpf] = useState<string>("");
+  const [dataNascimentoState, setDataNascimentoState] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [telefone, setTelefone] = useState<string>("");
+  const [descricao, setDescricao] = useState<string>("");
+
+  const [senha, setSenha] = useState<string>("");
 
   // Incluir campo registradoPor/ultimaAlteracao na entidade Aluno
   // const [instrutor, setInstrutor] = useState(aluno.registradoPor)
@@ -115,6 +122,52 @@ export default function EditRegister({
     },
   });
 
+  const handleRegister = async () => {
+    try {
+      setIsLoading(true);
+      if (subPage.toString() === "ALUNOS") {
+        const dataFormatadaToNewDate = `${dataNascimentoState.slice(
+          6,
+          10
+        )}-${dataNascimentoState.slice(3, 5)}-${dataNascimentoState.slice(
+          0,
+          2
+        )}`;
+
+        const resultado = await createAluno({
+          nome,
+          cpf,
+          dataNascimento: dataFormatadaToNewDate,
+          email,
+          telefone,
+          descricao,
+          isAtivo: true,
+        });
+        router.push({
+          pathname: pagePathnames.pages,
+          params: { pageName: "ALUNOS", subPage: "ALUNOS" },
+        });
+      }
+
+      if (subPage.toString() === "EQUIPE") {
+        const resultado = await createUsuario({
+          email,
+          senha,
+          nome,
+          isAtivo: true,
+        });
+        router.push({
+          pathname: pagePathnames.pages,
+          params: { pageName: "ALUNOS", subPage: "EQUIPE" },
+        });
+      }
+    } catch (erro: any) {
+      console.log(erro.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Modal transparent>
       <View
@@ -141,7 +194,7 @@ export default function EditRegister({
             gap: 10,
           }}
         >
-          <Text style={styles.title}>Editar</Text>
+          <Text style={styles.title}>Criar registro</Text>
           <View
             style={{
               flex: 1,
@@ -149,16 +202,22 @@ export default function EditRegister({
               gap: 20,
             }}
           >
-            {item && !("senha" in item) ? (
+            {subPage.toString() === "ALUNOS" && (
               <>
                 <View style={styles.row}>
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Nome:</Text>
-                    <TextInput style={styles.input} value={item?.nome} />
+                    <TextInput
+                      style={styles.input}
+                      onChangeText={(text) => setNome(text)}
+                    />
                   </View>
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>CPF:</Text>
-                    <TextInput style={styles.input} value={item.cpf} />
+                    <TextInput
+                      style={styles.input}
+                      onChangeText={(text) => setCpf(text)}
+                    />
                   </View>
                 </View>
 
@@ -167,32 +226,38 @@ export default function EditRegister({
                     <Text style={styles.labelText}>Data de nascimento:</Text>
                     <TextInput
                       style={styles.input}
-                      value={formatDateToBR(item.dataNascimento)}
+                      onChangeText={(text) => setDataNascimentoState(text)}
                     />
                   </View>
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Email:</Text>
-                    <TextInput style={styles.input} value={item.email} />
+                    <TextInput
+                      style={styles.input}
+                      onChangeText={(text) => setEmail(text)}
+                    />
                   </View>
                 </View>
 
                 <View style={styles.row}>
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Telefone:</Text>
-                    <TextInput style={styles.input} value={item.telefone} />
+                    <TextInput
+                      style={styles.input}
+                      onChangeText={(text) => setTelefone(text)}
+                    />
                   </View>
-                  <View style={styles.rowColunm}>
+                  {/* <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Ativo:</Text>
-                    {/* Substituir por picker ou checkbox */}
+                    Substituir por picker ou checkbox
                     <TextInput style={styles.input} value="True" />
-                  </View>
+                  </View> */}
                 </View>
 
                 <View style={{ flex: 1 }}>
                   <Text style={styles.labelText}>Descrição:</Text>
                   <TextInput
                     style={[styles.input, { textAlignVertical: "top" }]}
-                    value={item.descricao}
+                    onChangeText={(text) => setDescricao(text)}
                     multiline
                   />
                 </View>
@@ -208,27 +273,38 @@ export default function EditRegister({
               />
             </View> */}
               </>
-            ) : (
+            )}
+
+            {subPage.toString() === "EQUIPE" && (
               <>
                 <View style={styles.row}>
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Nome:</Text>
-                    <TextInput style={styles.input} value={item?.nome} />
+                    <TextInput
+                      style={styles.input}
+                      onChangeText={(text) => setNome(text)}
+                    />
                   </View>
-                  <View style={styles.rowColunm}>
+                  {/* <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Ativo:</Text>
                     <TextInput style={styles.input} value="True" />
-                  </View>
+                  </View> */}
                 </View>
 
                 <View style={styles.row}>
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Email:</Text>
-                    <TextInput style={styles.input} value={item?.email} />
+                    <TextInput
+                      style={styles.input}
+                      onChangeText={(text) => setEmail(text)}
+                    />
                   </View>
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Senha:</Text>
-                    <TextInput style={styles.input} value={item?.senha} />
+                    <TextInput
+                      style={styles.input}
+                      onChangeText={(text) => setSenha(text)}
+                    />
                   </View>
                 </View>
 
@@ -261,7 +337,7 @@ export default function EditRegister({
               fontWeight={700}
               color={colors.buttonMainColor}
               maxWidth={130}
-              onPress={() => {}}
+              onPress={handleRegister}
             />
             <MenuButton
               label="Fechar"

@@ -279,7 +279,7 @@ export default function RegistrarAula({
           <Text
             style={{ fontSize: 26, fontWeight: "600", textAlign: "center" }}
           >
-            {`Registrar Aula - ${formatDateToBR(new Date(data))}`}
+            {`Registrar Aula - ${formatDateToBR(data)}`}
           </Text>
 
           {/* SEÇÃO HORÁRIO E INSTRUTOR */}

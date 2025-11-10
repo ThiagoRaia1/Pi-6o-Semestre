@@ -137,7 +137,6 @@ export default function Drawer({ closeModal }: DrawerProps) {
                     pathname: pagePathnames.pages,
                     params: {
                       pageName: pageNames.agenda.main,
-                      subPage: "AGENDAR AULA",
                     },
                   })
                 }
@@ -146,7 +145,12 @@ export default function Drawer({ closeModal }: DrawerProps) {
               <MenuButton
                 label={pageNames.alunos}
                 color={colors.buttonMainColor}
-                onPress={() => router.setParams({ pageName: pageNames.alunos })}
+                onPress={() =>
+                  router.setParams({
+                    pageName: pageNames.alunos,
+                    subPage: "ALUNOS",
+                  })
+                }
               />
 
               <MenuButton

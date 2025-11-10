@@ -1,5 +1,12 @@
-import { IUser } from "../interfaces/user";
+import { ICreateUser, IUser } from "../interfaces/user";
 import { httpClient } from "./httpsClient";
+
+export async function createUsuario(usuario: ICreateUser) {
+  return await httpClient("/usuarios", {
+    method: "POST",
+    body: JSON.stringify(usuario),
+  });
+}
 
 export async function getUsers(): Promise<IUser[]> {
   return await httpClient("/usuarios", {

@@ -1,5 +1,12 @@
-import { IAluno } from "../interfaces/aluno";
+import { IAluno, ICreateAluno } from "../interfaces/aluno";
 import { httpClient } from "./httpsClient";
+
+export async function createAluno(aluno: ICreateAluno) {
+  return await httpClient("/alunos", {
+    method: "POST",
+    body: JSON.stringify(aluno),
+  });
+}
 
 export async function getAlunos(): Promise<IAluno[]> {
   return await httpClient("/alunos", {

@@ -13,7 +13,7 @@ import { getGlobalStyles } from "../../../globalStyles";
 import { getAlunos } from "../../../services/alunos";
 import React, { useEffect, useState } from "react";
 import { IAluno } from "../../../interfaces/aluno";
-import { formatDateToBR } from "../../../utils/formatDate";
+import { formatDateToBR, showData } from "../../../utils/formatDate";
 import { colors } from "../../../utils/colors";
 import { router, useLocalSearchParams } from "expo-router";
 import { pageNames } from "../../../utils/pageNames";
@@ -31,8 +31,10 @@ import EditRegister from "./editRegister";
 import ConfirmationModal from "../../../components/ConfirmationModal";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import CreateRegister from "./CreateRegister";
 
 export default function Alunos() {
+  const { subPage } = useLocalSearchParams();
   const { fadeAnim, slideAnim, fadeIn, fadeOut } = useFadeSlide();
   const globalStyles = getGlobalStyles();
 
@@ -46,6 +48,8 @@ export default function Alunos() {
   const [searchText, setSearchText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isEditVisible, setIsEditVisible] = useState<boolean>(false);
+  const [isCreateRegisterVisible, setIsCreateRegisterVisible] =
+    useState<boolean>(false);
 
   const [selectedFilter, setSelectedFilter] = useState<
     "Ativos" | "Desativados" | "Todos"
@@ -54,8 +58,6 @@ export default function Alunos() {
 
   const [isConfirmationModalVisible, setIsConfirmationModalVisible] =
     useState<boolean>(false);
-
-  const { subPage } = useLocalSearchParams();
 
   const { isMobile, isDesktop, isLaptop } = useBreakpoint();
 
@@ -263,7 +265,7 @@ export default function Alunos() {
       : filteredAlunos.map((aluno) => [
           aluno.nome,
           aluno.cpf,
-          formatDateToBR(aluno.dataNascimento),
+          showData(aluno.dataNascimento),
           aluno.email,
           aluno.telefone,
           aluno.isAtivo ? (
@@ -297,6 +299,7 @@ export default function Alunos() {
       try {
         setIsLoading(true);
         const listaAlunos: IAluno[] = await getAlunos();
+
         setAlunos(listaAlunos);
         setFilteredAlunos(listaAlunos);
 
@@ -389,7 +392,10 @@ export default function Alunos() {
             color={colors.buttonMainColor}
             icon={{ component: FontAwesome6, name: "contact-book", size: 22 }}
           />,
-          <MenuButton label={`Registrar`} />,
+          <MenuButton
+            label={`Registrar`}
+            onPress={() => setIsCreateRegisterVisible(!isCreateRegisterVisible)}
+          />,
         ]}
       />
 
@@ -438,6 +444,14 @@ export default function Alunos() {
       </Animated.View>
 
       {isLoading && <Loading />}
+
+      {isCreateRegisterVisible && (
+        <CreateRegister
+          openCloseModal={() =>
+            setIsCreateRegisterVisible(!isCreateRegisterVisible)
+          }
+        />
+      )}
 
       {isEditVisible && (
         <EditRegister
