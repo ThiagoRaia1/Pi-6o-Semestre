@@ -143,12 +143,12 @@ export default function Drawer({ closeModal }: DrawerProps) {
               />
 
               <MenuButton
-                label={pageNames.alunos}
+                label={pageNames.cadastros.alunos}
                 color={colors.buttonMainColor}
                 onPress={() =>
                   router.setParams({
-                    pageName: pageNames.alunos,
-                    subPage: "ALUNOS",
+                    pageName: pageNames.cadastros.main,
+                    subPage: pageNames.cadastros.alunos,
                   })
                 }
               />

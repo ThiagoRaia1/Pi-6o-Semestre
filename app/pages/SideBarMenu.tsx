@@ -75,15 +75,15 @@ export default function SideBarMenu({ shadow }: SideBarMenuProps) {
         </TouchableOpacity> */}
 
         <MenuButton
-          label={pageNames.alunos}
+          label={pageNames.cadastros.main}
           // label="Placeholder"
           padding={14}
           onPress={() =>
             router.push({
               pathname: pagePathnames.pages,
               params: {
-                pageName: pageNames.alunos,
-                subPage: pageNames.alunos,
+                pageName: pageNames.cadastros.main,
+                subPage: pageNames.cadastros.alunos,
               },
             })
           }

@@ -33,7 +33,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import CreateRegister from "./CreateRegister";
 
-export default function Alunos() {
+export default function Cadastros() {
   const { subPage } = useLocalSearchParams();
   const { fadeAnim, slideAnim, fadeIn, fadeOut } = useFadeSlide();
   const globalStyles = getGlobalStyles();
@@ -175,7 +175,9 @@ export default function Alunos() {
   ];
 
   const tableHead =
-    subPage === pageNames.equipe ? tableHeadUsuarios : tableHeadAlunos;
+    subPage === pageNames.cadastros.equipe
+      ? tableHeadUsuarios
+      : tableHeadAlunos;
 
   const renderEditDeleteContainer = (item: IUser | IAluno) => {
     return (
@@ -241,7 +243,7 @@ export default function Alunos() {
   };
 
   const tableData =
-    subPage === pageNames.equipe
+    subPage === pageNames.cadastros.equipe
       ? filteredUsers.map((user) => [
           user.email,
           user.nome,
@@ -287,10 +289,12 @@ export default function Alunos() {
         ]);
 
   const tableTitle =
-    subPage === pageNames.equipe ? "Tabela de Instrutores" : "Tabela de Alunos";
+    subPage === pageNames.cadastros.equipe
+      ? "Tabela de Instrutores"
+      : "Tabela de Alunos";
 
   const placeholderText =
-    subPage === pageNames.equipe
+    subPage === pageNames.cadastros.equipe
       ? "Pesquisar por nome ou e-mail..."
       : "Pesquisar por nome, e-mail ou CPF...";
 
@@ -318,7 +322,7 @@ export default function Alunos() {
   }, []);
 
   useEffect(() => {
-    if (subPage === pageNames.alunos) {
+    if (subPage === pageNames.cadastros.alunos) {
       const filtered = alunos.filter((a) => {
         const matchSearch =
           a.nome.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -335,7 +339,7 @@ export default function Alunos() {
         return matchSearch && matchStatus;
       });
       setFilteredAlunos(filtered);
-    } else if (subPage === pageNames.equipe) {
+    } else if (subPage === pageNames.cadastros.equipe) {
       const filtered = users.filter((u) => {
         const matchSearch =
           u.nome?.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -358,11 +362,11 @@ export default function Alunos() {
     try {
       setIsLoading(true);
       fadeOut(100, () => {
-        if (tableName === "Alunos") {
-          router.setParams({ subPage: pageNames.alunos });
+        if (tableName === pageNames.cadastros.alunos) {
+          router.setParams({ subPage: pageNames.cadastros.alunos });
         }
-        if (tableName === "Instrutores") {
-          router.setParams({ subPage: pageNames.equipe });
+        if (tableName === pageNames.cadastros.equipe) {
+          router.setParams({ subPage: pageNames.cadastros.equipe });
         }
         fadeIn();
       });
@@ -382,11 +386,11 @@ export default function Alunos() {
             options={[
               {
                 label: "Alunos",
-                onPress: () => onPressListar("Alunos"),
+                onPress: () => onPressListar(pageNames.cadastros.alunos),
               },
               {
                 label: "Instrutores",
-                onPress: () => onPressListar("Instrutores"),
+                onPress: () => onPressListar(pageNames.cadastros.equipe),
               },
             ]}
             color={colors.buttonMainColor}

@@ -2,8 +2,11 @@ export const pageNames = {
   agenda: {
     main: "AGENDA",
   },
-  alunos: "ALUNOS",
-  equipe: "EQUIPE",
+  cadastros: {
+    main: "CADASTROS",
+    alunos: "ALUNOS",
+    equipe: "EQUIPE",
+  },
   financeiro: {
     main: "FINANCEIRO",
     dashboards: "DASHBOARDS",

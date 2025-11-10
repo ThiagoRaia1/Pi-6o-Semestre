@@ -115,7 +115,7 @@ export default function Login() {
       // alert(`retorno do login: ${loginData.nome}`)
       router.push({
         pathname: pagePathnames.pages,
-        params: { pageName: pageNames.agenda.main, subPage: "AGENDAR AULA" },
+        params: { pageName: pageNames.agenda.main },
       });
     } catch (erro: any) {
       if (erro.message === "Failed to fetch") {

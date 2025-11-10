@@ -2,12 +2,12 @@ import { View, Text, StyleSheet, ImageBackground } from "react-native";
 import { getGlobalStyles } from "../../globalStyles";
 import Agenda from "./agenda";
 import { useLocalSearchParams } from "expo-router";
-import Alunos from "./alunos";
 import Financeiro from "./financeiro";
 import { pageNames } from "../../utils/pageNames";
 import SideBarMenu from "./SideBarMenu";
 import { useBreakpoint } from "../../hooks/useBreakpoint";
 import { useState } from "react";
+import Cadastros from "./cadastros";
 
 export default function MainPage() {
   const globalStyles = getGlobalStyles();
@@ -54,7 +54,7 @@ export default function MainPage() {
                 }
               />
             )}
-            {params.pageName === pageNames.alunos && <Alunos />}
+            {params.pageName === pageNames.cadastros.main && <Cadastros />}
             {params.pageName === pageNames.financeiro.main && <Financeiro />}
           </View>
         </ImageBackground>
