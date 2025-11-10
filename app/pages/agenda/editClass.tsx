@@ -232,9 +232,7 @@ export default function EditClass({
           <Text
             style={{ fontSize: 26, fontWeight: "600", textAlign: "center" }}
           >
-            {`Editar Aula: ${formatDateToBR(new Date(aula.data))} - ${new Date(
-              aula.data
-            )
+            {`Editar Aula: ${formatDateToBR(aula.data)} - ${new Date(aula.data)
               .toLocaleTimeString()
               .slice(0, 5)}`}
           </Text>
