@@ -1,12 +1,12 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { getGlobalStyles } from "../../globalStyles";
 import { router } from "expo-router";
-import { pageNames, pagePathnames } from "../../utils/pageNames";
-import { colors } from "../../utils/colors";
-import { useAuth } from "../../context/AuthProvider";
-import DefaultProfileIcon from "../../components/DefaultProfileIcon";
-import MenuButton from "../../components/MenuButton";
+import { useAuth } from "../context/AuthProvider";
+import { getGlobalStyles } from "../globalStyles";
+import { colors } from "../utils/colors";
+import { pageNames, pagePathnames } from "../utils/pageNames";
+import DefaultProfileIcon from "./DefaultProfileIcon";
+import MenuButton from "./MenuButton";
 
 type SideBarMenuProps = {
   shadow?: boolean;

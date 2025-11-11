@@ -26,6 +26,13 @@ export async function getAlunoByNome(nome: string): Promise<IAluno> {
   });
 }
 
+export async function editAluno(id: number, aluno: ICreateAluno) {
+  return await httpClient(`/alunos/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(aluno),
+  });
+}
+
 export async function ativarAluno(id: number) {
   return await httpClient(`/alunos/ativar/${id}`, {
     method: "PATCH",

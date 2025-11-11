@@ -1,4 +1,4 @@
-import { ICreateUser, IUser } from "../interfaces/user";
+import { ICreateUser, IEditUser, IUser } from "../interfaces/user";
 import { httpClient } from "./httpsClient";
 
 export async function createUsuario(usuario: ICreateUser) {
@@ -11,6 +11,13 @@ export async function createUsuario(usuario: ICreateUser) {
 export async function getUsers(): Promise<IUser[]> {
   return await httpClient("/usuarios", {
     method: "GET",
+  });
+}
+
+export async function editUser(id: number, usuario: IEditUser) {
+  return await httpClient(`/usuarios/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(usuario),
   });
 }
 

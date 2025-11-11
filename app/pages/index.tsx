@@ -4,10 +4,10 @@ import Agenda from "./agenda";
 import { useLocalSearchParams } from "expo-router";
 import Financeiro from "./financeiro";
 import { pageNames } from "../../utils/pageNames";
-import SideBarMenu from "./SideBarMenu";
 import { useBreakpoint } from "../../hooks/useBreakpoint";
 import { useState } from "react";
 import Cadastros from "./cadastros";
+import SideBarMenu from "../../components/SideBarMenu";
 
 export default function MainPage() {
   const globalStyles = getGlobalStyles();

@@ -60,7 +60,10 @@ export default function ConfirmationModal({
 
         router.push({
           pathname: pagePathnames.pages,
-          params: { pageName: pageNames.alunos, subPage: "ALUNOS" },
+          params: {
+            pageName: pageNames.cadastros.main,
+            subPage: pageNames.cadastros.alunos,
+          },
         });
       }
 
@@ -75,7 +78,10 @@ export default function ConfirmationModal({
 
         router.push({
           pathname: pagePathnames.pages,
-          params: { pageName: pageNames.alunos, subPage: "EQUIPE" },
+          params: {
+            pageName: pageNames.cadastros.main,
+            subPage: pageNames.cadastros.equipe,
+          },
         });
       }
 

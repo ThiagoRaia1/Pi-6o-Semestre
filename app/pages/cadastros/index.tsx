@@ -53,7 +53,7 @@ export default function Cadastros() {
 
   const [selectedFilter, setSelectedFilter] = useState<
     "Ativos" | "Desativados" | "Todos"
-  >("Todos");
+  >("Ativos");
   const [isFilterOptionsVisible, setIsFilterOptionsVisible] = useState(false);
 
   const [isConfirmationModalVisible, setIsConfirmationModalVisible] =
@@ -356,7 +356,7 @@ export default function Cadastros() {
       });
       setFilteredUsers(filtered);
     }
-  }, [searchText, selectedFilter, subPage]);
+  }, [searchText, selectedFilter, subPage, alunos, users]);
 
   const onPressListar = async (tableName: string) => {
     try {

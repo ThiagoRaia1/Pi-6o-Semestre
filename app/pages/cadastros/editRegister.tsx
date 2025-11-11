@@ -9,12 +9,15 @@ import {
 import { useEffect, useState } from "react";
 import Loading from "../../../components/Loading";
 import MenuButton from "../../../components/MenuButton";
-import { useAuth } from "../../../context/AuthProvider";
 import { useBreakpoint } from "../../../hooks/useBreakpoint";
 import { useFadeSlide } from "../../../hooks/useFadeSlide";
-import { IAluno } from "../../../interfaces/aluno";
 import { colors } from "../../../utils/colors";
+import { router, useLocalSearchParams } from "expo-router";
+import { editAluno } from "../../../services/alunos";
+import { pageNames, pagePathnames } from "../../../utils/pageNames";
+import { IAluno } from "../../../interfaces/aluno";
 import { IUser } from "../../../interfaces/user";
+import { editUser } from "../../../services/usuarios";
 import { formatDateToBR } from "../../../utils/formatDate";
 
 type EditRegisterProps = {
@@ -26,17 +29,41 @@ export default function EditRegister({
   item,
   openCloseModal,
 }: EditRegisterProps) {
-  const { token, nome } = useAuth();
+  const { subPage } = useLocalSearchParams();
   const { fadeAnim, slideAnim, fadeIn } = useFadeSlide();
   const { isLaptop, isDesktop } = useBreakpoint();
-
-  // Incluir campo registradoPor/ultimaAlteracao na entidade Aluno
-  // const [instrutor, setInstrutor] = useState(aluno.registradoPor)
-
   const [isLoading, setIsLoading] = useState(false);
-  const [erro, setErro] = useState(" ");
+
+  const [nome, setNome] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [dataNascimentoState, setDataNascimentoState] = useState("");
+  const [email, setEmail] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [descricao, setDescricao] = useState("");
+  const [senha, setSenha] = useState("");
+
+  const [erros, setErros] = useState({
+    nome: "",
+    cpf: "",
+    dataNascimento: "",
+    email: "",
+    telefone: "",
+    senha: "",
+  });
+
+  const [erroGeral, setErroGeral] = useState("");
 
   useEffect(() => {
+    if (item) {
+      setNome(item.nome);
+      setEmail(item.email);
+      if ("dataNascimento" in item) {
+        setCpf(item.cpf);
+        setDataNascimentoState(formatDateToBR(item.dataNascimento));
+        setTelefone(item.telefone);
+        setDescricao(item.descricao);
+      }
+    }
     fadeIn(500);
   }, []);
 
@@ -70,50 +97,89 @@ export default function EditRegister({
       fontSize: 16,
       backgroundColor: "#fff",
     },
-    pickerContainer: {
-      borderWidth: 1,
-      borderColor: "#aaa",
-      borderRadius: 10,
-      backgroundColor: "#fff",
-    },
-    picker: {
-      borderRadius: 10,
-      paddingHorizontal: 15,
-      paddingVertical: 10,
-      fontSize: 16,
-    },
-    searchInput: {
-      borderWidth: 1,
-      borderColor: "#aaa",
-      borderRadius: 10,
-      backgroundColor: "#fff",
-      paddingHorizontal: 15,
-      paddingVertical: 8,
-      fontSize: 16,
-      marginBottom: 10,
-    },
-    botaoAddRemove: {
-      backgroundColor: colors.buttonMainColor,
-      borderRadius: 8,
-      minWidth: 50,
-      minHeight: 50,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    botaoTexto: {
-      color: "#fff",
-      fontWeight: "900",
-      fontSize: 20,
-      width: "100%",
-      height: "100%",
-      textAlign: "center",
-    },
     erroText: {
       color: "red",
       marginTop: 5,
-      textAlign: "center",
+      minHeight: 22, // <-- mantém o espaço fixo para a mensagem de erro
     },
   });
+
+  const validarCampos = () => {
+    const isAluno = subPage.toString() === pageNames.cadastros.alunos;
+    const isEquipe = subPage.toString() === pageNames.cadastros.equipe;
+
+    const novosErros = {
+      nome: nome.trim() ? "" : "Nome é obrigatório",
+      cpf: isAluno && !cpf.trim() ? "CPF é obrigatório" : "",
+      dataNascimento:
+        isAluno && !dataNascimentoState.trim()
+          ? "Data de nascimento é obrigatória"
+          : "",
+      email: email.trim() ? "" : "Email é obrigatório",
+      telefone: isAluno && !telefone.trim() ? "Telefone é obrigatório" : "",
+      senha: isEquipe && !senha.trim() ? "Senha é obrigatória" : "",
+    };
+
+    setErros(novosErros);
+    return Object.values(novosErros).every((e) => e === "");
+  };
+
+  const handleEdit = async () => {
+    if (!validarCampos()) return;
+
+    try {
+      setIsLoading(true);
+      if (subPage.toString() === pageNames.cadastros.alunos) {
+        const dataFormatadaToNewDate = `${dataNascimentoState.slice(
+          6,
+          10
+        )}-${dataNascimentoState.slice(3, 5)}-${dataNascimentoState.slice(
+          0,
+          2
+        )}`;
+
+        if (item && "dataNascimento" in item)
+          await editAluno(item.id, {
+            nome,
+            cpf,
+            dataNascimento: dataFormatadaToNewDate,
+            email,
+            telefone,
+            descricao,
+            isAtivo: true,
+          });
+        alert("Aluno editado com sucesso!");
+        router.push({
+          pathname: pagePathnames.pages,
+          params: {
+            pageName: pageNames.cadastros.main,
+            subPage: pageNames.cadastros.alunos,
+          },
+        });
+      }
+
+      if (subPage.toString() === pageNames.cadastros.equipe) {
+        if (item && "senha" in item)
+          await editUser(item.id, {
+            email,
+            senha,
+            nome,
+          });
+        alert("Usuário editado com sucesso!");
+        router.push({
+          pathname: pagePathnames.pages,
+          params: {
+            pageName: pageNames.cadastros.main,
+            subPage: pageNames.cadastros.equipe,
+          },
+        });
+      }
+    } catch (erro: any) {
+      setErroGeral(erro.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Modal transparent>
@@ -142,23 +208,28 @@ export default function EditRegister({
           }}
         >
           <Text style={styles.title}>Editar</Text>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              gap: 20,
-            }}
-          >
-            {item && !("senha" in item) ? (
+          <View style={{ flex: 1, justifyContent: "center", gap: 20 }}>
+            {subPage.toString() === pageNames.cadastros.alunos && (
               <>
                 <View style={styles.row}>
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Nome:</Text>
-                    <TextInput style={styles.input} value={item?.nome} />
+                    <TextInput
+                      style={styles.input}
+                      value={nome}
+                      onChangeText={setNome}
+                    />
+                    <Text style={styles.erroText}>{erros.nome}</Text>
                   </View>
+
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>CPF:</Text>
-                    <TextInput style={styles.input} value={item.cpf} />
+                    <TextInput
+                      style={styles.input}
+                      value={cpf}
+                      onChangeText={setCpf}
+                    />
+                    <Text style={styles.erroText}>{erros.cpf}</Text>
                   </View>
                 </View>
 
@@ -167,24 +238,34 @@ export default function EditRegister({
                     <Text style={styles.labelText}>Data de nascimento:</Text>
                     <TextInput
                       style={styles.input}
-                      value={formatDateToBR(item.dataNascimento)}
+                      value={dataNascimentoState}
+                      onChangeText={setDataNascimentoState}
+                      placeholder="dd/mm/aaaa"
+                      placeholderTextColor={"#bbb"}
                     />
+                    <Text style={styles.erroText}>{erros.dataNascimento}</Text>
                   </View>
+
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Email:</Text>
-                    <TextInput style={styles.input} value={item.email} />
+                    <TextInput
+                      style={styles.input}
+                      value={email}
+                      onChangeText={setEmail}
+                    />
+                    <Text style={styles.erroText}>{erros.email}</Text>
                   </View>
                 </View>
 
                 <View style={styles.row}>
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Telefone:</Text>
-                    <TextInput style={styles.input} value={item.telefone} />
-                  </View>
-                  <View style={styles.rowColunm}>
-                    <Text style={styles.labelText}>Ativo:</Text>
-                    {/* Substituir por picker ou checkbox */}
-                    <TextInput style={styles.input} value="True" />
+                    <TextInput
+                      style={styles.input}
+                      value={telefone}
+                      onChangeText={setTelefone}
+                    />
+                    <Text style={styles.erroText}>{erros.telefone}</Text>
                   </View>
                 </View>
 
@@ -192,63 +273,58 @@ export default function EditRegister({
                   <Text style={styles.labelText}>Descrição:</Text>
                   <TextInput
                     style={[styles.input, { textAlignVertical: "top" }]}
-                    value={item.descricao}
                     multiline
+                    value={descricao}
+                    onChangeText={setDescricao}
                   />
+                  {/* sem validação */}
+                  <Text style={styles.erroText}> </Text>
                 </View>
-
-                {/* <View style={styles.row}>
-              <Text style={styles.labelText}>Instrutor</Text>
-              Substituir TextInput
-              <TextInput
-                style={styles.input}
-                // value={instrutor}
-                // onChangeText={setInstrutor}
-                // editable={false}
-              />
-            </View> */}
               </>
-            ) : (
+            )}
+
+            {subPage.toString() === pageNames.cadastros.equipe && (
               <>
                 <View style={styles.row}>
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Nome:</Text>
-                    <TextInput style={styles.input} value={item?.nome} />
-                  </View>
-                  <View style={styles.rowColunm}>
-                    <Text style={styles.labelText}>Ativo:</Text>
-                    <TextInput style={styles.input} value="True" />
+                    <TextInput
+                      style={styles.input}
+                      value={nome}
+                      onChangeText={setNome}
+                    />
+                    <Text style={styles.erroText}>{erros.nome}</Text>
                   </View>
                 </View>
 
                 <View style={styles.row}>
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Email:</Text>
-                    <TextInput style={styles.input} value={item?.email} />
+                    <TextInput
+                      style={styles.input}
+                      value={email}
+                      onChangeText={setEmail}
+                    />
+                    <Text style={styles.erroText}>{erros.email}</Text>
                   </View>
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Senha:</Text>
-                    <TextInput style={styles.input} value={item?.senha} />
+                    <TextInput
+                      style={styles.input}
+                      value={senha}
+                      onChangeText={setSenha}
+                    />
+                    <Text style={styles.erroText}>{erros.senha}</Text>
                   </View>
                 </View>
-
-                {/* <View style={styles.row}>
-                  <Text style={styles.labelText}>Instrutor</Text>
-                  Substituir TextInput
-                  <TextInput
-                    style={styles.input}
-                    // value={instrutor}
-                    // onChangeText={setInstrutor}
-                    // editable={false}
-                  />
-                </View> */}
               </>
             )}
           </View>
 
-          <Text style={styles.erroText}>{erro}</Text>
+          <Text style={[styles.erroText, { textAlign: "center" }]}>
+            {erroGeral}
+          </Text>
 
-          {/* BOTÕES FINAIS */}
           <View
             style={{
               flexDirection: "row",
@@ -257,11 +333,11 @@ export default function EditRegister({
             }}
           >
             <MenuButton
-              label="Registrar"
+              label="Editar"
               fontWeight={700}
               color={colors.buttonMainColor}
               maxWidth={130}
-              onPress={() => {}}
+              onPress={handleEdit}
             />
             <MenuButton
               label="Fechar"

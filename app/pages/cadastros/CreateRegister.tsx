@@ -15,7 +15,7 @@ import { colors } from "../../../utils/colors";
 import { router, useLocalSearchParams } from "expo-router";
 import { createAluno } from "../../../services/alunos";
 import { createUsuario } from "../../../services/usuarios";
-import { pagePathnames } from "../../../utils/pageNames";
+import { pageNames, pagePathnames } from "../../../utils/pageNames";
 
 type CreateRegisterProps = {
   openCloseModal: () => void;
@@ -27,21 +27,26 @@ export default function CreateRegister({
   const { subPage } = useLocalSearchParams();
   const { fadeAnim, slideAnim, fadeIn } = useFadeSlide();
   const { isLaptop, isDesktop } = useBreakpoint();
-
-  const [nome, setNome] = useState<string>("");
-  const [cpf, setCpf] = useState<string>("");
-  const [dataNascimentoState, setDataNascimentoState] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [telefone, setTelefone] = useState<string>("");
-  const [descricao, setDescricao] = useState<string>("");
-
-  const [senha, setSenha] = useState<string>("");
-
-  // Incluir campo registradoPor/ultimaAlteracao na entidade Aluno
-  // const [instrutor, setInstrutor] = useState(aluno.registradoPor)
-
   const [isLoading, setIsLoading] = useState(false);
-  const [erro, setErro] = useState(" ");
+
+  const [nome, setNome] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [dataNascimentoState, setDataNascimentoState] = useState("");
+  const [email, setEmail] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [descricao, setDescricao] = useState("");
+  const [senha, setSenha] = useState("");
+
+  const [erros, setErros] = useState({
+    nome: "",
+    cpf: "",
+    dataNascimento: "",
+    email: "",
+    telefone: "",
+    senha: "",
+  });
+
+  const [erroGeral, setErroGeral] = useState("");
 
   useEffect(() => {
     fadeIn(500);
@@ -77,55 +82,39 @@ export default function CreateRegister({
       fontSize: 16,
       backgroundColor: "#fff",
     },
-    pickerContainer: {
-      borderWidth: 1,
-      borderColor: "#aaa",
-      borderRadius: 10,
-      backgroundColor: "#fff",
-    },
-    picker: {
-      borderRadius: 10,
-      paddingHorizontal: 15,
-      paddingVertical: 10,
-      fontSize: 16,
-    },
-    searchInput: {
-      borderWidth: 1,
-      borderColor: "#aaa",
-      borderRadius: 10,
-      backgroundColor: "#fff",
-      paddingHorizontal: 15,
-      paddingVertical: 8,
-      fontSize: 16,
-      marginBottom: 10,
-    },
-    botaoAddRemove: {
-      backgroundColor: colors.buttonMainColor,
-      borderRadius: 8,
-      minWidth: 50,
-      minHeight: 50,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    botaoTexto: {
-      color: "#fff",
-      fontWeight: "900",
-      fontSize: 20,
-      width: "100%",
-      height: "100%",
-      textAlign: "center",
-    },
     erroText: {
       color: "red",
       marginTop: 5,
-      textAlign: "center",
+      minHeight: 22, // <-- mantém o espaço fixo para a mensagem de erro
     },
   });
 
+  const validarCampos = () => {
+    const isAluno = subPage.toString() === pageNames.cadastros.alunos;
+    const isEquipe = subPage.toString() === pageNames.cadastros.equipe;
+
+    const novosErros = {
+      nome: nome.trim() ? "" : "Nome é obrigatório",
+      cpf: isAluno && !cpf.trim() ? "CPF é obrigatório" : "",
+      dataNascimento:
+        isAluno && !dataNascimentoState.trim()
+          ? "Data de nascimento é obrigatória"
+          : "",
+      email: email.trim() ? "" : "Email é obrigatório",
+      telefone: isAluno && !telefone.trim() ? "Telefone é obrigatório" : "",
+      senha: isEquipe && !senha.trim() ? "Senha é obrigatória" : "",
+    };
+
+    setErros(novosErros);
+    return Object.values(novosErros).every((e) => e === "");
+  };
+
   const handleRegister = async () => {
+    if (!validarCampos()) return;
+
     try {
       setIsLoading(true);
-      if (subPage.toString() === "ALUNOS") {
+      if (subPage.toString() === pageNames.cadastros.alunos) {
         const dataFormatadaToNewDate = `${dataNascimentoState.slice(
           6,
           10
@@ -134,7 +123,7 @@ export default function CreateRegister({
           2
         )}`;
 
-        const resultado = await createAluno({
+        await createAluno({
           nome,
           cpf,
           dataNascimento: dataFormatadaToNewDate,
@@ -143,26 +132,34 @@ export default function CreateRegister({
           descricao,
           isAtivo: true,
         });
+        alert("Aluno registrado com sucesso!");
         router.push({
           pathname: pagePathnames.pages,
-          params: { pageName: "ALUNOS", subPage: "ALUNOS" },
+          params: {
+            pageName: pageNames.cadastros.main,
+            subPage: pageNames.cadastros.alunos,
+          },
         });
       }
 
-      if (subPage.toString() === "EQUIPE") {
-        const resultado = await createUsuario({
+      if (subPage.toString() === pageNames.cadastros.equipe) {
+        await createUsuario({
           email,
           senha,
           nome,
           isAtivo: true,
         });
+        alert("Usuário registrado com sucesso!");
         router.push({
           pathname: pagePathnames.pages,
-          params: { pageName: "ALUNOS", subPage: "EQUIPE" },
+          params: {
+            pageName: pageNames.cadastros.main,
+            subPage: pageNames.cadastros.equipe,
+          },
         });
       }
     } catch (erro: any) {
-      console.log(erro.message);
+      setErroGeral(erro.message);
     } finally {
       setIsLoading(false);
     }
@@ -195,29 +192,28 @@ export default function CreateRegister({
           }}
         >
           <Text style={styles.title}>Criar registro</Text>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              gap: 20,
-            }}
-          >
-            {subPage.toString() === "ALUNOS" && (
+          <View style={{ flex: 1, justifyContent: "center", gap: 20 }}>
+            {subPage.toString() === pageNames.cadastros.alunos && (
               <>
                 <View style={styles.row}>
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Nome:</Text>
                     <TextInput
                       style={styles.input}
-                      onChangeText={(text) => setNome(text)}
+                      value={nome}
+                      onChangeText={setNome}
                     />
+                    <Text style={styles.erroText}>{erros.nome}</Text>
                   </View>
+
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>CPF:</Text>
                     <TextInput
                       style={styles.input}
-                      onChangeText={(text) => setCpf(text)}
+                      value={cpf}
+                      onChangeText={setCpf}
                     />
+                    <Text style={styles.erroText}>{erros.cpf}</Text>
                   </View>
                 </View>
 
@@ -226,15 +222,22 @@ export default function CreateRegister({
                     <Text style={styles.labelText}>Data de nascimento:</Text>
                     <TextInput
                       style={styles.input}
-                      onChangeText={(text) => setDataNascimentoState(text)}
+                      value={dataNascimentoState}
+                      onChangeText={setDataNascimentoState}
+                      placeholder="dd/mm/aaaa"
+                      placeholderTextColor={"#bbb"}
                     />
+                    <Text style={styles.erroText}>{erros.dataNascimento}</Text>
                   </View>
+
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Email:</Text>
                     <TextInput
                       style={styles.input}
-                      onChangeText={(text) => setEmail(text)}
+                      value={email}
+                      onChangeText={setEmail}
                     />
+                    <Text style={styles.erroText}>{erros.email}</Text>
                   </View>
                 </View>
 
@@ -243,52 +246,39 @@ export default function CreateRegister({
                     <Text style={styles.labelText}>Telefone:</Text>
                     <TextInput
                       style={styles.input}
-                      onChangeText={(text) => setTelefone(text)}
+                      value={telefone}
+                      onChangeText={setTelefone}
                     />
+                    <Text style={styles.erroText}>{erros.telefone}</Text>
                   </View>
-                  {/* <View style={styles.rowColunm}>
-                    <Text style={styles.labelText}>Ativo:</Text>
-                    Substituir por picker ou checkbox
-                    <TextInput style={styles.input} value="True" />
-                  </View> */}
                 </View>
 
                 <View style={{ flex: 1 }}>
                   <Text style={styles.labelText}>Descrição:</Text>
                   <TextInput
                     style={[styles.input, { textAlignVertical: "top" }]}
-                    onChangeText={(text) => setDescricao(text)}
                     multiline
+                    value={descricao}
+                    onChangeText={setDescricao}
                   />
+                  {/* sem validação */}
+                  <Text style={styles.erroText}> </Text>
                 </View>
-
-                {/* <View style={styles.row}>
-              <Text style={styles.labelText}>Instrutor</Text>
-              Substituir TextInput
-              <TextInput
-                style={styles.input}
-                // value={instrutor}
-                // onChangeText={setInstrutor}
-                // editable={false}
-              />
-            </View> */}
               </>
             )}
 
-            {subPage.toString() === "EQUIPE" && (
+            {subPage.toString() === pageNames.cadastros.equipe && (
               <>
                 <View style={styles.row}>
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Nome:</Text>
                     <TextInput
                       style={styles.input}
-                      onChangeText={(text) => setNome(text)}
+                      value={nome}
+                      onChangeText={setNome}
                     />
+                    <Text style={styles.erroText}>{erros.nome}</Text>
                   </View>
-                  {/* <View style={styles.rowColunm}>
-                    <Text style={styles.labelText}>Ativo:</Text>
-                    <TextInput style={styles.input} value="True" />
-                  </View> */}
                 </View>
 
                 <View style={styles.row}>
@@ -296,35 +286,29 @@ export default function CreateRegister({
                     <Text style={styles.labelText}>Email:</Text>
                     <TextInput
                       style={styles.input}
-                      onChangeText={(text) => setEmail(text)}
+                      value={email}
+                      onChangeText={setEmail}
                     />
+                    <Text style={styles.erroText}>{erros.email}</Text>
                   </View>
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Senha:</Text>
                     <TextInput
                       style={styles.input}
-                      onChangeText={(text) => setSenha(text)}
+                      value={senha}
+                      onChangeText={setSenha}
                     />
+                    <Text style={styles.erroText}>{erros.senha}</Text>
                   </View>
                 </View>
-
-                {/* <View style={styles.row}>
-                  <Text style={styles.labelText}>Instrutor</Text>
-                  Substituir TextInput
-                  <TextInput
-                    style={styles.input}
-                    // value={instrutor}
-                    // onChangeText={setInstrutor}
-                    // editable={false}
-                  />
-                </View> */}
               </>
             )}
           </View>
 
-          <Text style={styles.erroText}>{erro}</Text>
+          <Text style={[styles.erroText, { textAlign: "center" }]}>
+            {erroGeral}
+          </Text>
 
-          {/* BOTÕES FINAIS */}
           <View
             style={{
               flexDirection: "row",
