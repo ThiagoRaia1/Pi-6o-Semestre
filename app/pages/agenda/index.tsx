@@ -6,11 +6,12 @@ import {
   ScrollView,
   Animated,
   TouchableOpacity,
+  TextInput,
 } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { getGlobalStyles } from "../../../globalStyles";
 import { colors } from "../../../utils/colors";
-import { getAulas } from "../../../services/aulas";
+import { getAulas, updateAula } from "../../../services/aulas";
 import { IAula } from "../../../interfaces/aula";
 import { DateDataToString, formatDateToBR } from "../../../utils/formatDate";
 import Feather from "@expo/vector-icons/Feather";
@@ -28,6 +29,10 @@ import EditClass from "./editClass";
 import { IAluno } from "../../../interfaces/aluno";
 import { getAlunos } from "../../../services/alunos";
 import ConfirmationModal from "../../../components/ConfirmationModal";
+import { IPlanoDeAula } from "../../../interfaces/planoDeAula";
+import { createPlanoDeAula } from "../../../services/planoDeAula";
+import { router } from "expo-router";
+import { pagePathnames, pageNames } from "../../../utils/pageNames";
 
 type AgendaProps = {
   onToggleNextClasses?: (visible: boolean) => void;
@@ -149,6 +154,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
   // memoriza filtro de aulas do dia
   const aulasDoDia = useMemo(() => {
     if (!selectedDay) return [];
+    console.log(aulas);
     return aulas
       .filter((a) => {
         const key = a?.data ? DateDataToString(a.data) : null;
@@ -232,17 +238,32 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
       setIsLoading(true);
       console.log(aula);
 
-      const descricoes = aula.alunos.map((aluno) => {
-        return aluno.descricao;
-      });
-
-      console.log(descricoes);
-
       if (aula.alunos.length === 0) {
         throw new Error("Registre pelo menos 1 aluno na aula para planejá-la.");
       }
 
-      console.log(await gerarPlanoDeAula(descricoes));
+      const descricoes = aula.alunos.map((aluno) => {
+        return aluno.descricao;
+      });
+
+      const plano = await gerarPlanoDeAula(descricoes);
+
+      console.log(plano);
+
+      const planoDeAula: IPlanoDeAula = await createPlanoDeAula({
+        plano,
+        salvo: false,
+      });
+
+      await updateAula(aula.id, { planoDeAula });
+
+      // FEAT ME:
+      // Adicionar modal pedindo a confirmação se o plano de aula gerado deve ser adicionado a aula
+
+      router.push({
+        pathname: pagePathnames.pages,
+        params: { pageName: pageNames.agenda.main },
+      });
     } catch (erro: any) {
       alert(erro.message);
     } finally {
@@ -292,6 +313,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
           {
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }],
+            paddingBottom: 16,
           },
         ]}
       >
@@ -400,9 +422,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
 
         <View style={{ flex: 1, width: "100%" }}>
           <Text style={styles.title}>
-            {`Aulas em: ${
-              selectedDay && formatDateToBR(selectedDay)
-            }`}
+            {`Aulas em: ${selectedDay && formatDateToBR(selectedDay)}`}
           </Text>
           <ScrollView contentContainerStyle={{ gap: 10 }}>
             {aulasDoDia.length > 0 ? (
@@ -413,6 +433,8 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
                       flexDirection: "row",
                       justifyContent: "space-between",
                       alignItems: "center",
+                      gap: 40,
+                      height: 200,
                     }}
                   >
                     <View>
@@ -436,6 +458,33 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
                         <Text style={styles.classSub}>Nenhum aluno</Text>
                       )}
                     </View>
+
+                    <View
+                      style={{
+                        flex: 1,
+                        height: "100%",
+                        gap: 5,
+                      }}
+                    >
+                      <Text style={styles.classTitle}>Plano de aula</Text>
+                      <ScrollView
+                        style={{
+                          borderWidth: 1,
+                          padding: 10,
+                          borderColor: "#ccc",
+                          borderRadius: 10,
+                        }}
+                      >
+                        <Text
+                          style={{ color: aula.planoDeAula ? "black" : "#555" }}
+                        >
+                          {aula.planoDeAula
+                            ? aula.planoDeAula.plano
+                            : "Nenhum plano de aula selecionado."}
+                        </Text>
+                      </ScrollView>
+                    </View>
+
                     <View style={{ gap: 10 }}>
                       <TouchableOpacity
                         style={styles.button}

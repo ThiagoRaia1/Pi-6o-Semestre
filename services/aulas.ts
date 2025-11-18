@@ -1,4 +1,4 @@
-import { IAula } from "../interfaces/aula";
+import { IAula, IUpdateAula } from "../interfaces/aula";
 import { httpClient } from "./httpsClient";
 
 export async function getAulas(): Promise<IAula[]> {
@@ -36,10 +36,10 @@ export async function createAula(
   });
 }
 
-export async function updateAula(id: number, alunosIds: number[]) {
+export async function updateAula(id: number, updatedAula: IUpdateAula) {
   return await httpClient(`/aulas/${id}`, {
     method: "PATCH",
-    body: JSON.stringify({alunosIds}),
+    body: JSON.stringify(updatedAula),
   });
 }
 

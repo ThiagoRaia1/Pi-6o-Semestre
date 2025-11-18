@@ -22,7 +22,6 @@ export const getGlobalStyles = () => {
       gap: 10,
       // backgroundColor: "#eee",
       zIndex: 1,
-      paddingBottom: 16,
       paddingHorizontal: isDesktop ? 64 : 16,
     },
     topBarSubMenuOptionsContainer: {

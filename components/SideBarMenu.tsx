@@ -96,14 +96,14 @@ export default function SideBarMenu({ shadow }: SideBarMenuProps) {
           <Text style={styles.buttonText}>{pageNames.alunos}</Text>
         </TouchableOpacity> */}
 
-        <MenuButton
-          // label={pageNames.financeiro.main}
+        {/* <MenuButton
+          label={pageNames.financeiro.main}
           label="Placeholder"
           padding={14}
           onPress={() =>
             router.setParams({ pageName: pageNames.financeiro.main })
           }
-        />
+        /> */}
 
         {/* <TouchableOpacity
           style={styles.button}

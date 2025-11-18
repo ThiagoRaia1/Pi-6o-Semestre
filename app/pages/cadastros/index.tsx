@@ -59,9 +59,11 @@ export default function Cadastros() {
   const [isConfirmationModalVisible, setIsConfirmationModalVisible] =
     useState<boolean>(false);
 
-  const { isMobile, isDesktop, isLaptop } = useBreakpoint();
+  const { isMobile, isTablet, isDesktop, isLaptop } = useBreakpoint();
 
-  const ativoDesativoIconSize: number = 36;
+  const ativoDesativoIconSize: number = isMobile ? 28 : 36;
+  const actionsIconsSize: number = isMobile ? 16 : 24;
+  const filterIconSize: number = isTablet || isMobile ? 14 : 18;
 
   const openCloseEditRegister = (item?: IAluno | IUser) => {
     if (item) {
@@ -84,7 +86,7 @@ export default function Cadastros() {
       width: "100%",
     },
     headerText: {
-      fontSize: isMobile ? 12 : 16,
+      fontSize: isDesktop ? 16 : isLaptop ? 13 : 10,
       textAlign: "center",
       fontWeight: "bold",
       color: "white",
@@ -111,6 +113,24 @@ export default function Cadastros() {
       fontWeight: "200",
       textAlign: "center",
     },
+    actionButton: {
+      padding: 5,
+      borderRadius: 10,
+      alignSelf: "center",
+    },
+    filterHeader: {
+      flexDirection: isMobile ? "column" : "row",
+      justifyContent: "center",
+      alignItems: "center",
+      gap: isMobile ? 0 : 10,
+      padding: 4,
+      borderRadius: 6,
+    },
+    filterButton: {
+      padding: 4,
+      backgroundColor: "#ffffff30",
+      borderRadius: 6,
+    },
   });
 
   const tableHeadAlunos = [
@@ -119,27 +139,13 @@ export default function Cadastros() {
     "Data de Nascimento",
     "Email",
     "Telefone",
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: 5,
-        padding: 4,
-        borderRadius: 6,
-      }}
-    >
+    <View style={styles.filterHeader}>
       <Text style={styles.headerText}>{selectedFilter}</Text>
       <TouchableOpacity
-        style={{
-          marginLeft: 6,
-          padding: 4,
-          backgroundColor: "#ffffff30",
-          borderRadius: 6,
-        }}
+        style={styles.filterButton}
         onPress={() => setIsFilterOptionsVisible(!isFilterOptionsVisible)}
       >
-        <Feather name="filter" size={18} color="white" />
+        <Feather name="filter" size={filterIconSize} color="white" />
       </TouchableOpacity>
     </View>,
     "Ação",
@@ -148,27 +154,13 @@ export default function Cadastros() {
   const tableHeadUsuarios = [
     "Email",
     "Nome",
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: 5,
-        padding: 4,
-        borderRadius: 6,
-      }}
-    >
+    <View style={styles.filterHeader}>
       <Text style={styles.headerText}>{selectedFilter}</Text>
       <TouchableOpacity
-        style={{
-          marginLeft: 6,
-          padding: 4,
-          backgroundColor: "#ffffff30",
-          borderRadius: 6,
-        }}
+        style={styles.filterButton}
         onPress={() => setIsFilterOptionsVisible(!isFilterOptionsVisible)}
       >
-        <Feather name="filter" size={18} color="white" />
+        <Feather name="filter" size={filterIconSize} color="white" />
       </TouchableOpacity>
     </View>,
     "Ação",
@@ -196,14 +188,12 @@ export default function Cadastros() {
         >
           <Feather
             name="edit"
-            size={24}
+            size={actionsIconsSize}
             color="white"
-            style={{
-              padding: 5,
-              backgroundColor: colors.buttonMainColor,
-              borderRadius: 10,
-              alignSelf: "center",
-            }}
+            style={[
+              styles.actionButton,
+              { backgroundColor: colors.buttonMainColor },
+            ]}
           />
         </TouchableOpacity>
 
@@ -215,26 +205,22 @@ export default function Cadastros() {
           {item && "email" in item && item.isAtivo ? (
             <Ionicons
               name="trash-outline"
-              size={24}
+              size={actionsIconsSize}
               color="white"
-              style={{
-                padding: 5,
-                backgroundColor: colors.cancelColor,
-                borderRadius: 10,
-                alignSelf: "center",
-              }}
+              style={[
+                styles.actionButton,
+                { backgroundColor: colors.cancelColor },
+              ]}
             />
           ) : (
             <MaterialCommunityIcons
               name="account-reactivate-outline"
-              size={24}
+              size={actionsIconsSize}
               color="white"
-              style={{
-                padding: 5,
-                backgroundColor: colors.buttonMainColor,
-                borderRadius: 10,
-                alignSelf: "center",
-              }}
+              style={[
+                styles.actionButton,
+                { backgroundColor: colors.buttonMainColor },
+              ]}
             />
           )}
         </TouchableOpacity>
@@ -323,37 +309,43 @@ export default function Cadastros() {
 
   useEffect(() => {
     if (subPage === pageNames.cadastros.alunos) {
-      const filtered = alunos.filter((a) => {
-        const matchSearch =
-          a.nome.toLowerCase().includes(searchText.toLowerCase()) ||
-          a.email.toLowerCase().includes(searchText.toLowerCase()) ||
-          a.cpf.toLowerCase().includes(searchText.toLowerCase());
+      const filtered = alunos
+        .filter((a) => {
+          const matchSearch =
+            a.nome.toLowerCase().includes(searchText.toLowerCase()) ||
+            a.email.toLowerCase().includes(searchText.toLowerCase()) ||
+            a.cpf.toLowerCase().includes(searchText.toLowerCase());
 
-        const matchStatus =
-          selectedFilter === "Todos"
-            ? true
-            : selectedFilter === "Ativos"
-            ? a.isAtivo
-            : !a.isAtivo;
+          const matchStatus =
+            selectedFilter === "Todos"
+              ? true
+              : selectedFilter === "Ativos"
+              ? a.isAtivo
+              : !a.isAtivo;
 
-        return matchSearch && matchStatus;
-      });
+          return matchSearch && matchStatus;
+        })
+        .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR")); // <-- ordena por nome
+
       setFilteredAlunos(filtered);
     } else if (subPage === pageNames.cadastros.equipe) {
-      const filtered = users.filter((u) => {
-        const matchSearch =
-          u.nome?.toLowerCase().includes(searchText.toLowerCase()) ||
-          u.email.toLowerCase().includes(searchText.toLowerCase());
+      const filtered = users
+        .filter((u) => {
+          const matchSearch =
+            u.nome?.toLowerCase().includes(searchText.toLowerCase()) ||
+            u.email.toLowerCase().includes(searchText.toLowerCase());
 
-        const matchStatus =
-          selectedFilter === "Todos"
-            ? true
-            : selectedFilter === "Ativos"
-            ? u.isAtivo
-            : !u.isAtivo;
+          const matchStatus =
+            selectedFilter === "Todos"
+              ? true
+              : selectedFilter === "Ativos"
+              ? u.isAtivo
+              : !u.isAtivo;
 
-        return matchSearch && matchStatus;
-      });
+          return matchSearch && matchStatus;
+        })
+        .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR")); // <-- ordena por nome
+
       setFilteredUsers(filtered);
     }
   }, [searchText, selectedFilter, subPage, alunos, users]);
@@ -424,7 +416,9 @@ export default function Cadastros() {
           onChangeText={setSearchText}
         />
 
-        <ScrollView style={{ width: "100%", borderRadius: 10 }}>
+        <ScrollView
+          style={{ width: "100%", borderRadius: 10, marginBottom: 32 }}
+        >
           <View>
             <Table
               borderStyle={{

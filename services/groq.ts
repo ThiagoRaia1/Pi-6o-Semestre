@@ -46,26 +46,3 @@ export const gerarPlanoDeAula = async (prompt: string[]) => {
     return `Erro ao gerar resposta. ${erro.message}`;
   }
 };
-
-// export const gerarExplicacaoItem = async (explicacao: string) => {
-//   try {
-//     const body = {
-//       model: "llama3-8b-8192",
-//       messages: [
-//         {
-//           role: "system",
-//           content: `Você é um gerador de explicação detalhada do que lhe for informado. Instruções obrigatórias:
-// 1. Responda SOMENTE com a explicação, sem saudações.
-// 2. A explicação deve enriquecer o conteúdo que lhe for dado.`,
-//         },
-//         { role: "user", content: JSON.stringify(explicacao) },
-//       ],
-//       temperature: 0.7,
-//     };
-
-//     return await requestGroq("/chat/completions", body);
-//   } catch (erro: any) {
-//     console.error(erro.message);
-//     return `Erro ao gerar resposta. ${erro.message}`;
-//   }
-// };

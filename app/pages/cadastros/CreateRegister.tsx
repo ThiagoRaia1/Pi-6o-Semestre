@@ -197,7 +197,7 @@ export default function CreateRegister({
               <>
                 <View style={styles.row}>
                   <View style={styles.rowColunm}>
-                    <Text style={styles.labelText}>Nome:</Text>
+                    <Text style={styles.labelText}>Nome:*</Text>
                     <TextInput
                       style={styles.input}
                       value={nome}
@@ -207,7 +207,7 @@ export default function CreateRegister({
                   </View>
 
                   <View style={styles.rowColunm}>
-                    <Text style={styles.labelText}>CPF:</Text>
+                    <Text style={styles.labelText}>CPF:*</Text>
                     <TextInput
                       style={styles.input}
                       value={cpf}
@@ -219,7 +219,7 @@ export default function CreateRegister({
 
                 <View style={styles.row}>
                   <View style={styles.rowColunm}>
-                    <Text style={styles.labelText}>Data de nascimento:</Text>
+                    <Text style={styles.labelText}>Data de nascimento:*</Text>
                     <TextInput
                       style={styles.input}
                       value={dataNascimentoState}
@@ -231,7 +231,7 @@ export default function CreateRegister({
                   </View>
 
                   <View style={styles.rowColunm}>
-                    <Text style={styles.labelText}>Email:</Text>
+                    <Text style={styles.labelText}>Email:*</Text>
                     <TextInput
                       style={styles.input}
                       value={email}
@@ -243,7 +243,7 @@ export default function CreateRegister({
 
                 <View style={styles.row}>
                   <View style={styles.rowColunm}>
-                    <Text style={styles.labelText}>Telefone:</Text>
+                    <Text style={styles.labelText}>Telefone:*</Text>
                     <TextInput
                       style={styles.input}
                       value={telefone}
