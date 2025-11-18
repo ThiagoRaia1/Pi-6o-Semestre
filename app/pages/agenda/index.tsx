@@ -6,6 +6,7 @@ import {
   ScrollView,
   Animated,
   TouchableOpacity,
+  TextInput,
 } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { getGlobalStyles } from "../../../globalStyles";
@@ -149,6 +150,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
   // memoriza filtro de aulas do dia
   const aulasDoDia = useMemo(() => {
     if (!selectedDay) return [];
+    console.log(aulas)
     return aulas
       .filter((a) => {
         const key = a?.data ? DateDataToString(a.data) : null;
@@ -292,6 +294,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
           {
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }],
+            paddingBottom: 16,
           },
         ]}
       >
@@ -400,9 +403,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
 
         <View style={{ flex: 1, width: "100%" }}>
           <Text style={styles.title}>
-            {`Aulas em: ${
-              selectedDay && formatDateToBR(selectedDay)
-            }`}
+            {`Aulas em: ${selectedDay && formatDateToBR(selectedDay)}`}
           </Text>
           <ScrollView contentContainerStyle={{ gap: 10 }}>
             {aulasDoDia.length > 0 ? (
@@ -413,6 +414,8 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
                       flexDirection: "row",
                       justifyContent: "space-between",
                       alignItems: "center",
+                      gap: 40,
+                      height: 200,
                     }}
                   >
                     <View>
@@ -436,6 +439,28 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
                         <Text style={styles.classSub}>Nenhum aluno</Text>
                       )}
                     </View>
+
+                    <View
+                      style={{
+                        flex: 1,
+                        height: "100%",
+                        gap: 5,
+                      }}
+                    >
+                      <Text style={styles.classTitle}>Plano de aula</Text>
+                      <ScrollView
+                        style={{
+                          borderWidth: 1,
+                          padding: 10,
+                          borderColor: "#ccc",
+                          borderRadius: 10,
+                        }}
+                      >
+                        <Text>
+                        </Text>
+                      </ScrollView>
+                    </View>
+
                     <View style={{ gap: 10 }}>
                       <TouchableOpacity
                         style={styles.button}

@@ -143,7 +143,7 @@ export default function Drawer({ closeModal }: DrawerProps) {
               />
 
               <MenuButton
-                label={pageNames.cadastros.alunos}
+                label={pageNames.cadastros.main}
                 color={colors.buttonMainColor}
                 onPress={() =>
                   router.setParams({
@@ -166,7 +166,6 @@ export default function Drawer({ closeModal }: DrawerProps) {
               padding={10}
               color={colors.cancelColor}
               onPress={() => {
-                logout();
                 router.push(pagePathnames.main);
               }}
             />
