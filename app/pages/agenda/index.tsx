@@ -6,12 +6,11 @@ import {
   ScrollView,
   Animated,
   TouchableOpacity,
-  TextInput,
 } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { getGlobalStyles } from "../../../globalStyles";
 import { colors } from "../../../utils/colors";
-import { getAulas, updateAula } from "../../../services/aulas";
+import { getAulas } from "../../../services/aulas";
 import { IAula } from "../../../interfaces/aula";
 import { DateDataToString, formatDateToBR } from "../../../utils/formatDate";
 import Feather from "@expo/vector-icons/Feather";
@@ -31,8 +30,7 @@ import { getAlunos } from "../../../services/alunos";
 import ConfirmationModal from "../../../components/ConfirmationModal";
 import { IPlanoDeAula } from "../../../interfaces/planoDeAula";
 import { createPlanoDeAula } from "../../../services/planoDeAula";
-import { router } from "expo-router";
-import { pagePathnames, pageNames } from "../../../utils/pageNames";
+import SetPlanoDeAulaModal from "./SetPlanoDeAulaModal";
 
 type AgendaProps = {
   onToggleNextClasses?: (visible: boolean) => void;
@@ -60,6 +58,11 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
 
   const [isConfirmationModalVisible, setIsConfirmationModalVisible] =
     useState<boolean>(false);
+
+  const [isModalSetPlanoDeAulaVisible, setIsModalSetPlanoDeAulaVisible] =
+    useState<boolean>(false);
+
+  const [planoGerado, setPlanoGerado] = useState<string>("");
 
   const iconSize: number = 24;
 
@@ -154,7 +157,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
   // memoriza filtro de aulas do dia
   const aulasDoDia = useMemo(() => {
     if (!selectedDay) return [];
-    console.log(aulas);
+    
     return aulas
       .filter((a) => {
         const key = a?.data ? DateDataToString(a.data) : null;
@@ -186,6 +189,10 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
       return prev;
     });
     setIsConfirmationModalVisible((prev) => !prev);
+  };
+
+  const openCloseSetPlanoDeAulaModal = () => {
+    setIsModalSetPlanoDeAulaVisible(!isModalSetPlanoDeAulaVisible);
   };
 
   const styles = StyleSheet.create({
@@ -250,20 +257,24 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
 
       console.log(plano);
 
+      setPlanoGerado(plano);
+
+      setIsModalSetPlanoDeAulaVisible(true);
+
       const planoDeAula: IPlanoDeAula = await createPlanoDeAula({
         plano,
         salvo: false,
       });
 
-      await updateAula(aula.id, { planoDeAula });
+      // await updateAula(aula.id, { planoDeAula });
 
       // FEAT ME:
       // Adicionar modal pedindo a confirmação se o plano de aula gerado deve ser adicionado a aula
 
-      router.push({
-        pathname: pagePathnames.pages,
-        params: { pageName: pageNames.agenda.main },
-      });
+      // router.push({
+      //   pathname: pagePathnames.pages,
+      //   params: { pageName: pageNames.agenda.main },
+      // });
     } catch (erro: any) {
       alert(erro.message);
     } finally {
@@ -500,6 +511,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
                       <TouchableOpacity
                         style={styles.button}
                         onPress={() => {
+                          setAulaSelecionada(aula);
                           planClass(aula);
                         }}
                       >
@@ -569,6 +581,14 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
         <ConfirmationModal
           aula={aulaSelecionada}
           openCloseModal={() => openCloseConfirmationModal(aulaSelecionada.id)}
+        />
+      )}
+
+      {isModalSetPlanoDeAulaVisible && (
+        <SetPlanoDeAulaModal
+          openCloseModal={openCloseSetPlanoDeAulaModal}
+          planoGerado={planoGerado}
+          aulaId={aulaSelecionada?.id}
         />
       )}
     </View>

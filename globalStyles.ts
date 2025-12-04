@@ -34,5 +34,21 @@ export const getGlobalStyles = () => {
       padding: 10,
       zIndex: 8,
     },
+    input: {
+      flex: 1,
+      width: "100%",
+      borderWidth: 1,
+      borderColor: "#aaa",
+      paddingHorizontal: 15,
+      paddingVertical: 10,
+      borderRadius: 10,
+      fontSize: 16,
+      backgroundColor: "#fff",
+    },
+    erroText: {
+      color: "red",
+      marginTop: 5,
+      minHeight: 22, // <-- mantém o espaço fixo para a mensagem de erro
+    },
   });
 };

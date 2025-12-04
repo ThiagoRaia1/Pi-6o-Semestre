@@ -16,6 +16,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { createAluno } from "../../../services/alunos";
 import { createUsuario } from "../../../services/usuarios";
 import { pageNames, pagePathnames } from "../../../utils/pageNames";
+import { getGlobalStyles } from "../../../globalStyles";
 
 type CreateRegisterProps = {
   openCloseModal: () => void;
@@ -24,6 +25,8 @@ type CreateRegisterProps = {
 export default function CreateRegister({
   openCloseModal,
 }: CreateRegisterProps) {
+  const globalStyles = getGlobalStyles()
+
   const { subPage } = useLocalSearchParams();
   const { fadeAnim, slideAnim, fadeIn } = useFadeSlide();
   const { isLaptop, isDesktop } = useBreakpoint();
@@ -70,22 +73,6 @@ export default function CreateRegister({
       color: "black",
       marginBottom: 5,
       fontSize: 20,
-    },
-    input: {
-      flex: 1,
-      width: "100%",
-      borderWidth: 1,
-      borderColor: "#aaa",
-      paddingHorizontal: 15,
-      paddingVertical: 10,
-      borderRadius: 10,
-      fontSize: 16,
-      backgroundColor: "#fff",
-    },
-    erroText: {
-      color: "red",
-      marginTop: 5,
-      minHeight: 22, // <-- mantém o espaço fixo para a mensagem de erro
     },
   });
 
@@ -199,21 +186,21 @@ export default function CreateRegister({
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Nome:*</Text>
                     <TextInput
-                      style={styles.input}
+                      style={globalStyles.input}
                       value={nome}
                       onChangeText={setNome}
                     />
-                    <Text style={styles.erroText}>{erros.nome}</Text>
+                    <Text style={globalStyles.erroText}>{erros.nome}</Text>
                   </View>
 
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>CPF:*</Text>
                     <TextInput
-                      style={styles.input}
+                      style={globalStyles.input}
                       value={cpf}
                       onChangeText={setCpf}
                     />
-                    <Text style={styles.erroText}>{erros.cpf}</Text>
+                    <Text style={globalStyles.erroText}>{erros.cpf}</Text>
                   </View>
                 </View>
 
@@ -221,23 +208,23 @@ export default function CreateRegister({
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Data de nascimento:*</Text>
                     <TextInput
-                      style={styles.input}
+                      style={globalStyles.input}
                       value={dataNascimentoState}
                       onChangeText={setDataNascimentoState}
                       placeholder="dd/mm/aaaa"
                       placeholderTextColor={"#bbb"}
                     />
-                    <Text style={styles.erroText}>{erros.dataNascimento}</Text>
+                    <Text style={globalStyles.erroText}>{erros.dataNascimento}</Text>
                   </View>
 
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Email:*</Text>
                     <TextInput
-                      style={styles.input}
+                      style={globalStyles.input}
                       value={email}
                       onChangeText={setEmail}
                     />
-                    <Text style={styles.erroText}>{erros.email}</Text>
+                    <Text style={globalStyles.erroText}>{erros.email}</Text>
                   </View>
                 </View>
 
@@ -245,24 +232,24 @@ export default function CreateRegister({
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Telefone:*</Text>
                     <TextInput
-                      style={styles.input}
+                      style={globalStyles.input}
                       value={telefone}
                       onChangeText={setTelefone}
                     />
-                    <Text style={styles.erroText}>{erros.telefone}</Text>
+                    <Text style={globalStyles.erroText}>{erros.telefone}</Text>
                   </View>
                 </View>
 
                 <View style={{ flex: 1 }}>
                   <Text style={styles.labelText}>Descrição:</Text>
                   <TextInput
-                    style={[styles.input, { textAlignVertical: "top" }]}
+                    style={[globalStyles.input, { textAlignVertical: "top" }]}
                     multiline
                     value={descricao}
                     onChangeText={setDescricao}
                   />
                   {/* sem validação */}
-                  <Text style={styles.erroText}> </Text>
+                  <Text style={globalStyles.erroText}> </Text>
                 </View>
               </>
             )}
@@ -273,11 +260,11 @@ export default function CreateRegister({
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Nome:</Text>
                     <TextInput
-                      style={styles.input}
+                      style={globalStyles.input}
                       value={nome}
                       onChangeText={setNome}
                     />
-                    <Text style={styles.erroText}>{erros.nome}</Text>
+                    <Text style={globalStyles.erroText}>{erros.nome}</Text>
                   </View>
                 </View>
 
@@ -285,27 +272,27 @@ export default function CreateRegister({
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Email:</Text>
                     <TextInput
-                      style={styles.input}
+                      style={globalStyles.input}
                       value={email}
                       onChangeText={setEmail}
                     />
-                    <Text style={styles.erroText}>{erros.email}</Text>
+                    <Text style={globalStyles.erroText}>{erros.email}</Text>
                   </View>
                   <View style={styles.rowColunm}>
                     <Text style={styles.labelText}>Senha:</Text>
                     <TextInput
-                      style={styles.input}
+                      style={globalStyles.input}
                       value={senha}
                       onChangeText={setSenha}
                     />
-                    <Text style={styles.erroText}>{erros.senha}</Text>
+                    <Text style={globalStyles.erroText}>{erros.senha}</Text>
                   </View>
                 </View>
               </>
             )}
           </View>
 
-          <Text style={[styles.erroText, { textAlign: "center" }]}>
+          <Text style={[globalStyles.erroText, { textAlign: "center" }]}>
             {erroGeral}
           </Text>
 

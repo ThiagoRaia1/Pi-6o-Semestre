@@ -12,7 +12,7 @@ export interface IAula {
 
 export interface IUpdateAula {
   data?: string;
-  alunos?: IAluno[]
+  alunosIds?: number[]
   usuario?: IUser;
   planoDeAula?: IPlanoDeAula;
 }

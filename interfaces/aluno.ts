@@ -10,11 +10,11 @@ export interface IAluno {
 }
 
 export interface ICreateAluno {
-  nome: string;
-  cpf: string;
-  dataNascimento: string;
-  email: string;
-  telefone: string;
-  descricao: string;
-  isAtivo: boolean;
+  nome?: string;
+  cpf?: string;
+  dataNascimento?: string;
+  email?: string;
+  telefone?: string;
+  descricao?: string;
+  isAtivo?: boolean;
 }

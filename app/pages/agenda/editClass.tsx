@@ -11,7 +11,6 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import Loading from "../../../components/Loading";
 import MenuButton from "../../../components/MenuButton";
-import { useAuth } from "../../../context/AuthProvider";
 import { useBreakpoint } from "../../../hooks/useBreakpoint";
 import { useFadeSlide } from "../../../hooks/useFadeSlide";
 import { IAluno } from "../../../interfaces/aluno";
@@ -189,7 +188,16 @@ export default function EditClass({
   const confirmEdit = async () => {
     try {
       setIsLoading(true);
-      const resultado = await updateAula(aula.id, alunosSelecionados);
+
+      const alunosIds: number[] = await Promise.all(
+        alunosSelecionados.map((id) => {
+          return id;
+        })
+      );
+
+      console.log(alunosIds);
+
+      const resultado = await updateAula(aula.id, { alunosIds });
 
       alert("Aula atualizada com sucesso!");
       router.push({
