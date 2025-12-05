@@ -5,6 +5,12 @@ import {
 } from "../interfaces/planoDeAula";
 import { httpClient } from "./httpsClient";
 
+export async function getPlanoDeAula(id: number): Promise<IPlanoDeAula> {
+  return await httpClient("/planos-de-aula", {
+    method: "GET",
+  });
+}
+
 export async function getPlanosDeAula(): Promise<IPlanoDeAula[]> {
   return await httpClient("/planos-de-aula", {
     method: "GET",
