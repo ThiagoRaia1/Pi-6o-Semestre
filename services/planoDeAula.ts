@@ -27,3 +27,9 @@ export async function updatePlanoDeAula(
     body: JSON.stringify(updatePlanoDeAula),
   });
 }
+
+export async function deletePlanoDeAula(id: number) {
+  return await httpClient(`/planos-de-aula/${id}`, {
+    method: "DELETE",
+  });
+}

@@ -14,11 +14,14 @@ import { pagePathnames, pageNames } from "../utils/pageNames";
 import { formatDateToBR } from "../utils/formatDate";
 import { ativarAluno, desativarAluno } from "../services/alunos";
 import { ativarUsuario, desativarUsuario } from "../services/usuarios";
+import { IPlanoDeAula } from "../interfaces/planoDeAula";
+import { deletePlanoDeAula } from "../services/planoDeAula";
 
 type ConfirmationModalProps = {
   aula?: IAula;
   aluno?: IAluno;
   usuario?: IUser;
+  planoDeAula?: IPlanoDeAula;
   openCloseModal: () => void;
 };
 
@@ -26,6 +29,7 @@ export default function ConfirmationModal({
   aula,
   aluno,
   usuario,
+  planoDeAula,
   openCloseModal,
 }: ConfirmationModalProps) {
   const { fadeAnim, slideAnim, fadeIn } = useFadeSlide();
@@ -85,6 +89,15 @@ export default function ConfirmationModal({
         });
       }
 
+      if (planoDeAula) {
+        await deletePlanoDeAula(planoDeAula.id);
+        alert("Plano de Aula deletado com sucesso!");
+        router.push({
+          pathname: pagePathnames.pages,
+          params: { pageName: pageNames.planosDeAula.main },
+        });
+      }
+
       openCloseModal();
     } catch (erro: any) {
       alert(erro.message);
@@ -121,6 +134,8 @@ export default function ConfirmationModal({
     ? `${usuario.isAtivo ? "desativar" : "ativar"} o(a) usuário(a) ${
         usuario.nome
       }?`
+    : planoDeAula
+    ? `excluir o plano de aula "${planoDeAula?.titulo}"?`
     : "";
 
   const textoBotaoConfirmar =

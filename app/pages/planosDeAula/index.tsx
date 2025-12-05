@@ -1,33 +1,25 @@
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { getGlobalStyles } from "../../../globalStyles";
-import { router, useLocalSearchParams } from "expo-router";
-import { pageNames } from "../../../utils/pageNames";
-import MenuButton from "../../../components/MenuButton";
-import TopBar from "../../../components/TopBar";
+import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { IPlanoDeAula } from "../../../interfaces/planoDeAula";
 import { getPlanosDeAula } from "../../../services/planoDeAula";
 import { colors } from "../../../utils/colors";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useBreakpoint } from "../../../hooks/useBreakpoint";
 import EditPlanoDeAula from "./EditPlanoDeAula";
+import ViewPlanoDeAula from "./ViewPlanoDeAula";
+import ConfirmationModal from "../../../components/ConfirmationModal";
 
 export default function PlanosDeAula() {
   const globalStyles = getGlobalStyles();
   const params = useLocalSearchParams();
-  const { isMobile } = useBreakpoint();
-  const actionsIconsSize: number = isMobile ? 24 : 48;
+  const actionsIconsSize: number = 40;
 
   const [planosDeAula, setPlanosDeAula] = useState<IPlanoDeAula[]>([]);
   const [selectedPlano, setSelectedPlano] = useState<IPlanoDeAula>();
   const [isEditVisible, setIsEditVisible] = useState<boolean>(false);
+  const [isViewVisible, setIsViewVisible] = useState<boolean>(false);
 
   const [isConfirmationModalVisible, setIsConfirmationModalVisible] =
     useState<boolean>(false);
@@ -35,6 +27,11 @@ export default function PlanosDeAula() {
   const openCloseEditRegister = (plano?: IPlanoDeAula) => {
     if (plano) setSelectedPlano(plano);
     setIsEditVisible(!isEditVisible);
+  };
+
+  const openCloseViewRegister = (plano?: IPlanoDeAula) => {
+    if (plano) setSelectedPlano(plano);
+    setIsViewVisible(!isViewVisible);
   };
 
   const openCloseConfirmationModal = (plano: IPlanoDeAula) => {
@@ -60,9 +57,28 @@ export default function PlanosDeAula() {
           width: "100%",
           justifyContent: "space-evenly",
           alignItems: "center",
-          padding: 10,
         }}
       >
+        <TouchableOpacity
+          onPress={() => {
+            openCloseViewRegister(plano);
+          }}
+        >
+          <Feather
+            name="eye"
+            size={actionsIconsSize}
+            color="white"
+            style={[
+              globalStyles.actionButton,
+              {
+                backgroundColor: colors.main,
+                borderWidth: 3,
+                borderColor: "white",
+              },
+            ]}
+          />
+        </TouchableOpacity>
+
         <TouchableOpacity
           onPress={() => {
             openCloseEditRegister(plano);
@@ -124,7 +140,7 @@ export default function PlanosDeAula() {
           contentContainerStyle={{
             flexDirection: "row",
             flexWrap: "wrap",
-            justifyContent: "flex-start",
+            justifyContent: "center",
             alignItems: "flex-start",
             gap: 20,
           }}
@@ -159,6 +175,20 @@ export default function PlanosDeAula() {
       {isEditVisible && selectedPlano && (
         <EditPlanoDeAula
           openCloseModal={openCloseEditRegister}
+          planoDeAula={selectedPlano}
+        />
+      )}
+
+      {isViewVisible && selectedPlano && (
+        <ViewPlanoDeAula
+          openCloseModal={openCloseViewRegister}
+          planoDeAula={selectedPlano}
+        />
+      )}
+
+      {isConfirmationModalVisible && selectedPlano && (
+        <ConfirmationModal
+          openCloseModal={() => openCloseConfirmationModal(selectedPlano)}
           planoDeAula={selectedPlano}
         />
       )}
