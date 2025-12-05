@@ -53,7 +53,7 @@ export default function EditClass({
   );
   const [searchTerm, setSearchTerm] = useState("");
 
-  const [plano, setPlano] = useState<string>(aula.planoDeAula.plano);
+  const [plano, setPlano] = useState<string>(aula.planoDeAula?.plano || "");
 
   // limita 5 alunos
   const toggleAluno = (id: number) => {
@@ -349,7 +349,17 @@ export default function EditClass({
           </View>
 
           <View style={{ flex: 1 }}>
-            <Text style={styles.labelText}>Plano de Aula</Text>
+            <View style={{ flexDirection: "row", gap: 20 }}>
+              <Text style={styles.labelText}>Plano de Aula</Text>
+              <TouchableOpacity
+                style={styles.selecionadoChip}
+                onPress={() => {}}
+              >
+                <Text style={[styles.selecionadoTexto, { marginRight: 0 }]}>
+                  Selecionar plano
+                </Text>
+              </TouchableOpacity>
+            </View>
             <TextInput
               defaultValue={plano}
               multiline={true}

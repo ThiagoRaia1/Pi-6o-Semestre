@@ -1,4 +1,10 @@
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Animated,
+} from "react-native";
 import { getGlobalStyles } from "../../../globalStyles";
 import React, { useEffect, useState } from "react";
 import { IPlanoDeAula } from "../../../interfaces/planoDeAula";
@@ -12,10 +18,13 @@ import ConfirmationModal from "../../../components/ConfirmationModal";
 import MenuButton from "../../../components/MenuButton";
 import TopBar from "../../../components/TopBar";
 import CreatePlanoDeAula from "./CreatePlanoDeAula";
+import { useFadeSlide } from "../../../hooks/useFadeSlide";
 
 export default function PlanosDeAula() {
   const globalStyles = getGlobalStyles();
   const actionsIconsSize: number = 40;
+
+  const { fadeAnim, slideAnim, fadeIn, fadeOut } = useFadeSlide();
 
   const [isCreateRegisterVisible, setIsCreateRegisterVisible] =
     useState<boolean>(false);
@@ -54,6 +63,8 @@ export default function PlanosDeAula() {
     };
 
     fetchPlanosDeAula();
+
+    fadeIn();
   }, []);
 
   const renderEditDeleteContainer = (plano: IPlanoDeAula) => {
@@ -140,13 +151,18 @@ export default function PlanosDeAula() {
           />,
         ]}
       />
-      <View
-        style={{
-          flex: 1,
-          width: "100%",
-          padding: 36,
-          paddingTop: 96,
-        }}
+      <Animated.View
+        style={[
+          {
+            flex: 1,
+            width: "100%",
+            padding: 36,
+          },
+          {
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }],
+          },
+        ]}
       >
         <ScrollView
           style={{
@@ -168,7 +184,7 @@ export default function PlanosDeAula() {
                   key={planoDeAula.id}
                   style={{
                     backgroundColor: colors.main,
-                    width: 270,
+                    width: 260,
                     height: 200,
                     borderRadius: 20,
                     padding: 20,
@@ -179,6 +195,16 @@ export default function PlanosDeAula() {
                   <Text
                     style={{ color: "white", fontWeight: 600, fontSize: 24 }}
                   >
+                    {`ID: ${planoDeAula.id}`}
+                  </Text>
+                  <Text
+                    style={{
+                      color: "white",
+                      fontWeight: 600,
+                      fontSize: 18,
+                      textAlign: "center",
+                    }}
+                  >
                     {planoDeAula.titulo}
                   </Text>
                   {renderEditDeleteContainer(planoDeAula)}
@@ -186,7 +212,7 @@ export default function PlanosDeAula() {
               )
           )}
         </ScrollView>
-      </View>
+      </Animated.View>
 
       {isCreateRegisterVisible && (
         <CreatePlanoDeAula openCloseModal={openCloseCreateRegister} />

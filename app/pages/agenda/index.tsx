@@ -157,7 +157,7 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
   // memoriza filtro de aulas do dia
   const aulasDoDia = useMemo(() => {
     if (!selectedDay) return [];
-    
+
     return aulas
       .filter((a) => {
         const key = a?.data ? DateDataToString(a.data) : null;
@@ -253,9 +253,9 @@ export default function Agenda({ onToggleNextClasses }: AgendaProps) {
         return aluno.descricao;
       });
 
-      const plano = await gerarPlanoDeAula(descricoes);
+      console.log(descricoes);
 
-      console.log(plano);
+      const plano = await gerarPlanoDeAula(descricoes);
 
       setPlanoGerado(plano);
 

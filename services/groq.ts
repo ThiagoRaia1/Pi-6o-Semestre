@@ -25,19 +25,45 @@ async function requestGroq(endpoint: string, body: any) {
   return data.choices[0].message.content;
 }
 
-export const gerarPlanoDeAula = async (prompt: string[]) => {
+export const gerarPlanoDeAula = async (descricoes: string[]) => {
   try {
+    const listaDeAlunos = descricoes
+      .map((d, i) => `Aluno ${i + 1}: ${d}`)
+      .join("\n");
+
+    console.log(listaDeAlunos);
+
     const body = {
       model: "llama-3.1-8b-instant",
       messages: [
         {
           role: "system",
-          content:
-            "Você é um assistente para gerar um planejamento de aula de pilates baseado nas dificuldades que lhe forem informadas. Cada linha corresponde a um aluno.",
+          content: `
+                    Você é um assistente especializado em criação de planejamentos de aulas de Pilates.
+
+                    Sua função:
+                    - Ler a lista de alunos enviada pelo usuário
+                    - Cada linha representa um aluno diferente
+                    - Gerar um plano INDIVIDUALIZADO para CADA aluno, na mesma ordem fornecida.
+
+                    Para cada aluno, gerar:
+
+                    1) Resumo do aluno  
+                    2) Objetivo da aula  
+                    3) Sequência de exercícios (nome, propósito, intensidade, repetições/tempo)  
+                    4) Modificações opcionais  
+                    5) Cuidados especiais  
+                    6) Equipamentos sugeridos  
+
+                    O resultado deve ser direto, organizado e fácil para um instrutor aplicar.
+        `,
         },
-        { role: "user", content: prompt.join("\n") },
+        {
+          role: "user",
+          content: `Lista de alunos:\n${listaDeAlunos}`,
+        },
       ],
-      temperature: 1,
+      temperature: 0.7,
     };
 
     return await requestGroq("/chat/completions", body);
