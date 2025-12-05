@@ -76,7 +76,6 @@ export default function SideBarMenu({ shadow }: SideBarMenuProps) {
 
         <MenuButton
           label={pageNames.cadastros.main}
-          // label="Placeholder"
           padding={14}
           onPress={() =>
             router.push({
@@ -84,6 +83,19 @@ export default function SideBarMenu({ shadow }: SideBarMenuProps) {
               params: {
                 pageName: pageNames.cadastros.main,
                 subPage: pageNames.cadastros.alunos,
+              },
+            })
+          }
+        />
+
+        <MenuButton
+          label={pageNames.planosDeAula.main}
+          padding={14}
+          onPress={() =>
+            router.push({
+              pathname: pagePathnames.pages,
+              params: {
+                pageName: pageNames.planosDeAula.main,
               },
             })
           }

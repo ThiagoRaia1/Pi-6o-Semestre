@@ -16,10 +16,13 @@ import { useFadeSlide } from "../../../hooks/useFadeSlide";
 import { IAluno } from "../../../interfaces/aluno";
 import { colors } from "../../../utils/colors";
 import { formatDateToBR } from "../../../utils/formatDate";
-import { IAula } from "../../../interfaces/aula";
+import { IAula, IUpdateAula } from "../../../interfaces/aula";
 import { updateAula } from "../../../services/aulas";
 import { router } from "expo-router";
 import { pagePathnames, pageNames } from "../../../utils/pageNames";
+import { getGlobalStyles } from "../../../globalStyles";
+import { IUpdatePlanoDeAula } from "../../../interfaces/planoDeAula";
+import { updatePlanoDeAula } from "../../../services/planoDeAula";
 
 type EditClassProps = {
   aula: IAula;
@@ -32,6 +35,7 @@ export default function EditClass({
   alunosData,
   openCloseModal,
 }: EditClassProps) {
+  const globalStyles = getGlobalStyles();
   const { fadeAnim, slideAnim, fadeIn } = useFadeSlide();
   const { isLaptop, isDesktop } = useBreakpoint();
 
@@ -48,6 +52,8 @@ export default function EditClass({
     aula.alunos.map((aluno) => aluno.id)
   );
   const [searchTerm, setSearchTerm] = useState("");
+
+  const [plano, setPlano] = useState<string>(aula.planoDeAula.plano);
 
   // limita 5 alunos
   const toggleAluno = (id: number) => {
@@ -102,6 +108,7 @@ export default function EditClass({
       borderRadius: 10,
       fontSize: 16,
       backgroundColor: "#fff",
+      marginBottom: 10,
     },
     pickerContainer: {
       borderWidth: 1,
@@ -163,7 +170,6 @@ export default function EditClass({
       flexDirection: "row",
       flexWrap: "wrap",
       gap: 8,
-      marginBottom: 10,
     },
     selecionadoChip: {
       backgroundColor: colors.buttonMainColor,
@@ -172,6 +178,7 @@ export default function EditClass({
       paddingVertical: 8,
       flexDirection: "row",
       alignItems: "center",
+      marginBottom: 10,
     },
     selecionadoTexto: {
       color: "#fff",
@@ -189,15 +196,16 @@ export default function EditClass({
     try {
       setIsLoading(true);
 
-      const alunosIds: number[] = await Promise.all(
-        alunosSelecionados.map((id) => {
-          return id;
-        })
-      );
+      const alunosIds: number[] = alunosSelecionados;
 
       console.log(alunosIds);
 
-      const resultado = await updateAula(aula.id, { alunosIds });
+      const resultadoUpdateAula = await updateAula(aula.id, { alunosIds });
+
+      const resultadoUpdatePlano = await updatePlanoDeAula(
+        aula.planoDeAula.id,
+        { plano }
+      );
 
       alert("Aula atualizada com sucesso!");
       router.push({
@@ -234,7 +242,6 @@ export default function EditClass({
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }],
             padding: 20,
-            gap: 10,
           }}
         >
           <Text
@@ -246,7 +253,7 @@ export default function EditClass({
           </Text>
 
           {/* SEÇÃO HORÁRIO E INSTRUTOR */}
-          <View style={{ flexDirection: "row", marginTop: 10, gap: 20 }}>
+          <View style={{ flexDirection: "row", gap: 20 }}>
             <View style={styles.section}>
               <Text style={styles.labelText}>Instrutor</Text>
               <TextInput
@@ -337,6 +344,18 @@ export default function EditClass({
                     </TouchableOpacity>
                   </View>
                 );
+              }}
+            />
+          </View>
+
+          <View style={{ flex: 1 }}>
+            <Text style={styles.labelText}>Plano de Aula</Text>
+            <TextInput
+              defaultValue={plano}
+              multiline={true}
+              style={globalStyles.input}
+              onChangeText={(text) => {
+                setPlano(text);
               }}
             />
           </View>

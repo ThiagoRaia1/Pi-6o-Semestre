@@ -10,3 +10,9 @@ export interface ICreatePlanoDeAula {
   plano: string;
   salvo: boolean;
 }
+
+export interface IUpdatePlanoDeAula {
+  titulo?: string;
+  plano?: string;
+  salve?: boolean;
+}

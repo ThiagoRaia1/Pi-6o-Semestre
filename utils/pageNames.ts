@@ -7,9 +7,8 @@ export const pageNames = {
     alunos: "ALUNOS",
     equipe: "EQUIPE",
   },
-  financeiro: {
-    main: "FINANCEIRO",
-    dashboards: "DASHBOARDS",
+  planosDeAula: {
+    main: "PLANOS DE AULA",
   },
 };
 
