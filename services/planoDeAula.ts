@@ -1,5 +1,15 @@
-import { ICreatePlanoDeAula, IUpdatePlanoDeAula } from "../interfaces/planoDeAula";
+import {
+  ICreatePlanoDeAula,
+  IPlanoDeAula,
+  IUpdatePlanoDeAula,
+} from "../interfaces/planoDeAula";
 import { httpClient } from "./httpsClient";
+
+export async function getPlanosDeAula(): Promise<IPlanoDeAula[]> {
+  return await httpClient("/planos-de-aula", {
+    method: "GET",
+  });
+}
 
 export async function createPlanoDeAula(planoDeAula: ICreatePlanoDeAula) {
   return await httpClient("/planos-de-aula", {
@@ -8,7 +18,10 @@ export async function createPlanoDeAula(planoDeAula: ICreatePlanoDeAula) {
   });
 }
 
-export async function updatePlanoDeAula(id: number, updatePlanoDeAula: IUpdatePlanoDeAula) {
+export async function updatePlanoDeAula(
+  id: number,
+  updatePlanoDeAula: IUpdatePlanoDeAula
+) {
   return await httpClient(`/planos-de-aula/${id}`, {
     method: "PATCH",
     body: JSON.stringify(updatePlanoDeAula),

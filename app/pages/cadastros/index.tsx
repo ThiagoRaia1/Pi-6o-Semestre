@@ -113,11 +113,6 @@ export default function Cadastros() {
       fontWeight: "200",
       textAlign: "center",
     },
-    actionButton: {
-      padding: 5,
-      borderRadius: 10,
-      alignSelf: "center",
-    },
     filterHeader: {
       flexDirection: isMobile ? "column" : "row",
       justifyContent: "center",
@@ -191,7 +186,7 @@ export default function Cadastros() {
             size={actionsIconsSize}
             color="white"
             style={[
-              styles.actionButton,
+              globalStyles.actionButton,
               { backgroundColor: colors.buttonMainColor },
             ]}
           />
@@ -208,7 +203,7 @@ export default function Cadastros() {
               size={actionsIconsSize}
               color="white"
               style={[
-                styles.actionButton,
+                globalStyles.actionButton,
                 { backgroundColor: colors.cancelColor },
               ]}
             />
@@ -218,7 +213,7 @@ export default function Cadastros() {
               size={actionsIconsSize}
               color="white"
               style={[
-                styles.actionButton,
+                globalStyles.actionButton,
                 { backgroundColor: colors.buttonMainColor },
               ]}
             />

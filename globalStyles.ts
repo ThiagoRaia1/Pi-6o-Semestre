@@ -50,5 +50,10 @@ export const getGlobalStyles = () => {
       marginTop: 5,
       minHeight: 22, // <-- mantém o espaço fixo para a mensagem de erro
     },
+    actionButton: {
+      padding: 5,
+      borderRadius: 10,
+      alignSelf: "center",
+    },
   });
 };
