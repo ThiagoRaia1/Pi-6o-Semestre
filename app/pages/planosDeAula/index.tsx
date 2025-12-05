@@ -1,6 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { getGlobalStyles } from "../../../globalStyles";
-import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { IPlanoDeAula } from "../../../interfaces/planoDeAula";
 import { getPlanosDeAula } from "../../../services/planoDeAula";
@@ -10,28 +9,37 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import EditPlanoDeAula from "./EditPlanoDeAula";
 import ViewPlanoDeAula from "./ViewPlanoDeAula";
 import ConfirmationModal from "../../../components/ConfirmationModal";
+import MenuButton from "../../../components/MenuButton";
+import TopBar from "../../../components/TopBar";
+import CreatePlanoDeAula from "./CreatePlanoDeAula";
 
 export default function PlanosDeAula() {
   const globalStyles = getGlobalStyles();
-  const params = useLocalSearchParams();
   const actionsIconsSize: number = 40;
+
+  const [isCreateRegisterVisible, setIsCreateRegisterVisible] =
+    useState<boolean>(false);
 
   const [planosDeAula, setPlanosDeAula] = useState<IPlanoDeAula[]>([]);
   const [selectedPlano, setSelectedPlano] = useState<IPlanoDeAula>();
-  const [isEditVisible, setIsEditVisible] = useState<boolean>(false);
   const [isViewVisible, setIsViewVisible] = useState<boolean>(false);
+  const [isEditVisible, setIsEditVisible] = useState<boolean>(false);
 
   const [isConfirmationModalVisible, setIsConfirmationModalVisible] =
     useState<boolean>(false);
 
-  const openCloseEditRegister = (plano?: IPlanoDeAula) => {
-    if (plano) setSelectedPlano(plano);
-    setIsEditVisible(!isEditVisible);
+  const openCloseCreateRegister = () => {
+    setIsCreateRegisterVisible(!isCreateRegisterVisible);
   };
 
   const openCloseViewRegister = (plano?: IPlanoDeAula) => {
     if (plano) setSelectedPlano(plano);
     setIsViewVisible(!isViewVisible);
+  };
+
+  const openCloseEditRegister = (plano?: IPlanoDeAula) => {
+    if (plano) setSelectedPlano(plano);
+    setIsEditVisible(!isEditVisible);
   };
 
   const openCloseConfirmationModal = (plano: IPlanoDeAula) => {
@@ -124,6 +132,14 @@ export default function PlanosDeAula() {
 
   return (
     <View style={globalStyles.container}>
+      <TopBar
+        menuButtons={[
+          <MenuButton
+            label={`Registrar`}
+            onPress={() => setIsCreateRegisterVisible(!isCreateRegisterVisible)}
+          />,
+        ]}
+      />
       <View
         style={{
           flex: 1,
@@ -171,6 +187,10 @@ export default function PlanosDeAula() {
           )}
         </ScrollView>
       </View>
+
+      {isCreateRegisterVisible && (
+        <CreatePlanoDeAula openCloseModal={openCloseCreateRegister} />
+      )}
 
       {isEditVisible && selectedPlano && (
         <EditPlanoDeAula

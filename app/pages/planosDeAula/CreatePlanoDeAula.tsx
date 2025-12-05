@@ -5,7 +5,6 @@ import {
   TextInput,
   StyleSheet,
   Animated,
-  ScrollView,
 } from "react-native";
 import { useEffect, useState } from "react";
 import Loading from "../../../components/Loading";
@@ -18,37 +17,32 @@ import { createAluno } from "../../../services/alunos";
 import { createUsuario } from "../../../services/usuarios";
 import { pageNames, pagePathnames } from "../../../utils/pageNames";
 import { getGlobalStyles } from "../../../globalStyles";
-import { IPlanoDeAula } from "../../../interfaces/planoDeAula";
-import {
-  createPlanoDeAula,
-  updatePlanoDeAula,
-} from "../../../services/planoDeAula";
-import { updateAula } from "../../../services/aulas";
+import { createPlanoDeAula } from "../../../services/planoDeAula";
 
-type ViewPlanoDeAulaProps = {
+type CreatePlanoDeAulaProps = {
   openCloseModal: () => void;
-  planoDeAula: IPlanoDeAula;
 };
 
-export default function ViewPlanoDeAula({
+export default function CreatePlanoDeAula({
   openCloseModal,
-  planoDeAula,
-}: ViewPlanoDeAulaProps) {
+}: CreatePlanoDeAulaProps) {
   const globalStyles = getGlobalStyles();
 
-  const { subPage } = useLocalSearchParams();
   const { fadeAnim, slideAnim, fadeIn } = useFadeSlide();
   const { isLaptop, isDesktop } = useBreakpoint();
   const [isLoading, setIsLoading] = useState(false);
 
-  const [titulo, setTitulo] = useState<string>();
-  const [plano, setPlano] = useState<string>(planoDeAula.plano);
-  const [salvo, setSalvo] = useState<boolean>(planoDeAula.salvo);
+  const [titulo, setTitulo] = useState("");
+  const [plano, setPlano] = useState("");
+
+  const [erros, setErros] = useState({
+    titulo: "",
+    plano: "",
+  });
+
+  const [erroGeral, setErroGeral] = useState("");
 
   useEffect(() => {
-    if (planoDeAula.titulo) {
-      setTitulo(planoDeAula.titulo);
-    }
     fadeIn(500);
   }, []);
 
@@ -71,39 +65,35 @@ export default function ViewPlanoDeAula({
       marginBottom: 5,
       fontSize: 20,
     },
-    input: {
-      flex: 1,
-      width: "100%",
-      borderWidth: 1,
-      borderColor: "#aaa",
-      paddingHorizontal: 15,
-      paddingVertical: 10,
-      borderRadius: 10,
-      fontSize: 16,
-      backgroundColor: "#fff",
-    },
-    erroText: {
-      color: "red",
-      marginTop: 5,
-      minHeight: 22, // <-- mantém o espaço fixo para a mensagem de erro
-    },
   });
 
-  const handleEdit = async () => {
+  const validarCampos = () => {
+    const novosErros = {
+      titulo: titulo.trim() ? "" : "Titulo é obrigatório",
+      plano: plano.trim() ? "" : "Plano é obrigatório",
+    };
+
+    setErros(novosErros);
+    return Object.values(novosErros).every((e) => e === "");
+  };
+
+  const handleRegister = async () => {
+    if (!validarCampos()) return;
+
     try {
       setIsLoading(true);
-      const resultado: IPlanoDeAula = await updatePlanoDeAula(planoDeAula.id, {
-        titulo,
-        plano,
-      });
+      const resultado = await createPlanoDeAula({ titulo, plano, salvo: true });
 
-      alert("Plano de aula atualiado com sucesso!");
+      alert("Plano de aula criado com sucesso!");
+
       router.push({
         pathname: pagePathnames.pages,
-        params: { pageName: pageNames.planosDeAula.main },
+        params: {
+          pageName: pageNames.planosDeAula.main,
+        },
       });
     } catch (erro: any) {
-      console.log(erro.message);
+      setErroGeral(erro.message);
     } finally {
       setIsLoading(false);
     }
@@ -135,28 +125,34 @@ export default function ViewPlanoDeAula({
             gap: 10,
           }}
         >
-          <Text style={styles.title}>Editar plano</Text>
-          <View style={{ flex: 1, justifyContent: "center", gap: 10 }}>
-            <Text>Título</Text>
-            <Text
-              style={[globalStyles.input, { flex: 0, backgroundColor: "#ddd" }]}
-            >
-              {titulo}
-            </Text>
+          <Text style={styles.title}>Criar registro</Text>
+          <View style={{ flex: 1, justifyContent: "center", gap: 20 }}>
+            <View style={styles.row}>
+              <View style={styles.rowColunm}>
+                <Text style={styles.labelText}>Titulo:*</Text>
+                <TextInput
+                  style={globalStyles.input}
+                  value={titulo}
+                  onChangeText={setTitulo}
+                />
+                <Text style={globalStyles.erroText}>{erros.titulo}</Text>
+              </View>
 
-            <Text>Plano</Text>
-            <ScrollView
-              style={{
-                flex: 1,
-                width: "100%",
-              }}
-              contentContainerStyle={{ height: "100%" }}
-            >
-              <Text style={[globalStyles.input, { backgroundColor: "#ddd" }]}>
-                {plano}
-              </Text>
-            </ScrollView>
+              <View style={styles.rowColunm}>
+                <Text style={styles.labelText}>Plano:*</Text>
+                <TextInput
+                  style={globalStyles.input}
+                  value={plano}
+                  onChangeText={setPlano}
+                />
+                <Text style={globalStyles.erroText}>{erros.plano}</Text>
+              </View>
+            </View>
           </View>
+
+          <Text style={[globalStyles.erroText, { textAlign: "center" }]}>
+            {erroGeral}
+          </Text>
 
           <View
             style={{
@@ -165,6 +161,13 @@ export default function ViewPlanoDeAula({
               marginTop: 10,
             }}
           >
+            <MenuButton
+              label="Registrar"
+              fontWeight={700}
+              color={colors.buttonMainColor}
+              maxWidth={130}
+              onPress={handleRegister}
+            />
             <MenuButton
               label="Fechar"
               fontWeight={700}
